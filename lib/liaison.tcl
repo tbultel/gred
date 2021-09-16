@@ -45,11 +45,6 @@ proc Link:add {c oidSource oidDesti {points {}}} {
                  "Link:delete $c $loid" \
                  "Link:addFromUndo $id $c $oidSource $oidDesti"
                  
-  # points parameter is not operational and used for display instead
-  if {[string length $points] > 0} {
-    set grafcet($loid,display) $points
-  }
-
   # affichage de la liaison
   Link:draw $c $loid
   return $loid
@@ -60,12 +55,7 @@ proc Link:add {c oidSource oidDesti {points {}}} {
 # Ceci accélère le refresh et la sauvegarde du grafcet.
 proc Link:getCommandField {c loid oidSource oidDesti} {
     upvar #0 grafcet.[gred:getGrafcetName $c] grafcet
-
-    set command "Link:create -detail DETAILLED"
-    if {[info exists grafcet($loid,display)]} {
-	set displayMode $grafcet($loid,display)
-	set command "Link:create -detail $displayMode "
-    }
+    set command "Link:create "
     if { [Obj:getType $oidSource] == "Etape" } {
       lappend command -source E$grafcet($oidSource,name)
     } else {
@@ -148,12 +138,6 @@ proc Link:draw {c loid} {
   }
   
   set liaisons [Link:getLinks $c -$direction $transition]
-
-    set displayMode "DETAILLED"
-    if {[info exists grafcet($loid,display)]} {
-	set displayMode $grafcet($loid,display)
-    }
-    
   if { [llength $liaisons] == 1 } {
     # effacement de l'ancienne liaison
     $c delete $liaisons
@@ -182,18 +166,6 @@ proc Link:draw {c loid} {
          [expr $xmiddle-7] [expr ($y1+$y2)/2+10] \
          [expr $xmiddle]   [expr ($y1+$y2)/2] \
          [expr $xmiddle+7] [expr ($y1+$y2)/2+10]]
-	# test detail/simplifie
-	if {$displayMode == "SIMPLE" } {
-	    set coords "$x1 $y1 $x1 [expr $y1+25]"
-	    set fleche [concat \
-		[expr $x1-7] [expr $y1+20] \
-		[expr $x1]   [expr $y1+25] \
-		[expr $x1+7] [expr $y1+20]]
-	    set name $grafcet($desti,name)
-	    $c create text [expr $x1] [expr $y1+35] -text $name -anchor center \
-		-tags "Liaison $loid GrafcetTag"\
-		-font $gred(fontGrafcet)
-	}
     } else {
       # On décale la cassure de quelque pixel vers le haut ou vers le bas
       if {[expr $x2 - $x1] <= 0 } {
@@ -624,60 +596,6 @@ global gred
 }
 
 ########################################################################
-# Link:changeParams --
-# 
-# Modification d'un ou des parametres d'une liaison dans la base de 
-# donnée
-# 
-proc Link:changeParams {c oid what {value {}} } {
-  global gred
-  global displayMode
-  upvar #0 grafcet.[gred:getGrafcetName $c] grafcet
-
-    set oldvalue "DETAILLED"
-    if {[info exists grafcet($oid,display)]} {
-	set oldvalue $grafcet($oid,display)
-    }
-    
-    Prompt_Box 	\
-               -title "Changer les paramètres de la liaison $oid"\
-               -parent .top \
-               -entries [subst { 
-    {-type SEPARATOR -line down \
-      -label "Modification des $oldvalue parametres de la liaison $oid"}
-    {-type RADIOBUTTON -label "Affichage de la liaison"
-                     -default {DETAILLED}
-                     -typearg {DETAILLED SIMPLE}
-                     -variable displayMode} \
-    }]
-  
-    if {[string compare $displayMode $oldvalue] != 0} {
-	gred:markDirty .[gred:getGrafcetName $c]
-    }
-
-    set grafcet($oid,display) $displayMode
-
-  #Link:updateCommandField $c $oid
-  Link:draw $c $oid
-  Sel:redraw $c
-}
-
-proc Link:changeParamsFromUndo {oid c name {receptivity {}}\
-                                 {comment {}}} {
-    global gred
-    upvar #0 grafcet.[gred:getGrafcetName $c] grafcet
-    set grafcet($oid,name) $name
-    set grafcet($oid,receptivity) $receptivity
-    set grafcet($oid,comment) $comment
-    
-    Link:draw $c $oid
-    foreach link [Link:getLinks $c -all $oid] {
-        Link:draw $c $link
-    }
-    Sel:redraw $c
-}
-
-########################################################################
 # Link:create --
 # 
 # procédure interactive de création d'une liaison
@@ -686,9 +604,9 @@ proc Link:create {c args} {
 global gred
 
   if { ([string compare $args {}] == 0) || \
-       ([expr [llength $args] % 3] != 0 && [expr [llength $args] % 2] != 0) } {
+       ([expr [llength $args] % 2] != 0) } {
     puts stderr "\"Link:add $args\"\n\
-                 Liaison Error : one or two option(s) left."
+                 Liaison Error : one option left."
     return
   }
   
@@ -758,15 +676,6 @@ global gred
   }
   lappend command $oidDesti
   
-  # test du detail
-  if { ![info exist option(-detail)] } {
-    puts stderr "\"Link:add $args\"\n\
-                 ==> Warning Error : Missing detail."
-    # we use the non operational points options to pass
-    # display option value
-  } else {
-    lappend command $option(-detail)
-  }
   
   # test du nombre de points a afficher  
   if { [info exist option(-points)] && \

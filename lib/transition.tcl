@@ -278,7 +278,7 @@ proc Trans:delete {c transitionId} {
 proc Trans:changeParams {c oid what {value {}} } {
   global gred
   upvar #0 grafcet.[gred:getGrafcetName $c] grafcet
-
+  
   gred:markDirty .[gred:getGrafcetName $c]
     
   if { [string compare $what all] != 0 } {

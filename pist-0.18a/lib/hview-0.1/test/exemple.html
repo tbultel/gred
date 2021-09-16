@@ -1,0 +1,300 @@
+<TITLE> EXEMPLE DE FICHIER HTML pour htmlView_Box</TITLE>
+<BODY BGCOLOR=#FFFFFF>
+
+
+<a href = ./essai.html>essai.html</A>
+<H1>QUELQUES EXEMPLES</h1>
+<a name = #pointeurs>
+<h2> Des exemples de pointeurs </h2></a>
+<hr>
+<a href=#pointeurs>pointeurs</a>,
+<a href = #headings>headings</a>,
+<a href=#caracspec>les caracteres speciaux</a>,
+<a href=#lists>les listes</a>,
+<a href=#exlists>exemples de listes</a>,
+<a href=#mellistes>m&eacute;lange des listes</a>,
+<a href=#images>images</a>,
+<a href=#other>pour finir</a>.
+<hr>
+
+<a name=headings>
+<h2>Exemples de headings</h2>
+<h2><i>C'est un niveau 2 en italique...</i></h2>
+<h3>heading de niveau 3 <u>On peut meme souligner dans un heading...</u></h3>
+<h4>heading de niveau 4</h4>
+<h5>heading de niveau 5</h5>
+<h6>heading de niveau 6</h6>
+</a>
+<hr>
+<a>
+<h2>Modification de l'aspect du texte</h2>
+</a><p>
+En HTML, il existe &eacute;norm&eacute;ment de tag permettant de changer
+facilement l'aspect du texte. On peut facilement mettre en <b>gras</b> 
+ou en <i>italique</i>. Il existe d'autre tag <i>fonctionnel</i> comme 
+<strong>strong</strong> ou <cite>cite</cite>,
+<p>
+La fonte de base est medium-roman.<br>
+HTML permet d'alt&eacute;rer la fonte de base. Les 3 alt&eacute;rations 
+primaires sont :
+<ul>
+<li>gras:<br>
+<b>Voici un phrase qui va changer d'aspect.</b>
+<li>italic:<br>
+<i>Voici un phrase qui va changer d'aspect.</i>
+<li>mono-spaced font:<br>
+<tt>Voici un phrase qui va changer d'aspect.</tt>
+</ul>
+<p>
+Il y a 2 autres modifications d'aspect qui peuvent &ecirc;tre 
+appr&eacute;ci&eacute;es dans certain cas :
+<ul>
+<li>underline:<br>
+<u>Voici un phrase qui va changer d'aspect.</u>
+<li>strike-out:<br>
+<strike>Voici un phrase qui va changer d'aspect.</strike>
+</ul>
+<p>
+On peut m&ecirc;me pousser la magie en m&eacute;langeant les modifications 
+d'aspect ! 
+Par exemple : du <b><i>gras italique</i></b> ou
+une <u><b><tt>fonte "monospace" soulign&eacute;e et en gras</u></b></tt>.
+<p>
+Les tags <i>fonctionnel</i> tags sont :
+<menu>
+<li><cite>cite</cite> - pour les citations
+<li><code>code</code> - pour les fragments de codes
+<li><em>em</em> - pour l'emphase
+<li><kbd>kbd</kbd> - pour <i>user input</i>
+<li><samp>samp</samp> - pour les exemples
+<li><strong>strong</strong>
+<li><var>var</var> - pour des r&eacute;f&eacute;rences &eacute; des variables
+</menu>
+<hr>
+
+<a name=caracspec>
+<h2>Les caract&eacute;res sp&eacute;ciaux</h2>
+</a><p>
+On peut afficher des caract&eacute;res sp&eacute;ciaux :<br>
+<pre>
+	&amp;nbsp &nbsp;		&amp;iexcl &iexcl;		&amp;cent &cent;		&amp;pound &pound;
+	&amp;curren &curren;		&amp;yen &yen;		&amp;brvbar &brvbar;		&amp;sect &sect;
+	&amp;uml &uml;		&amp;copy &copy;		&amp;ordf &ordf;		&amp;laquo &laquo;
+	&amp;not &not;		&amp;shy &shy;		&amp;reg &reg;		&amp;hibar &hibar;
+	&amp;deg &deg;		&amp;plusmn &plusmn;		&amp;acute &acute;		&amp;micro &micro;
+	&amp;para &para;		&amp;middot &middot;		&amp;cedil &cedil;		&amp;ordm &ordm;
+	&amp;raquo &raquo;		&amp;iquest &iquest;		&amp;Agrave &Agrave;		&amp;Aacute &Aacute;
+	&amp;Acirc &Acirc;		&amp;Atilde &Atilde;		&amp;Auml &Auml;		&amp;Aring &Aring;
+	&amp;AElig &AElig;		&amp;Ccedil &Ccedil;		&amp;Egrave &Egrave;		&amp;Eacute &Eacute;
+	&amp;Ecirc &Ecirc;		&amp;Euml &Euml;		&amp;Igrave &Igrave;		&amp;Iacute &Iacute;
+	&amp;Icirc &Icirc;		&amp;Iuml &Iuml;		&amp;ETH &ETH;		&amp;Ntilde &Ntilde;
+	&amp;Ograve &Ograve;		&amp;Oacute &Oacute;		&amp;Ocirc &Ocirc;		&amp;Otilde &Otilde;
+	&amp;Ouml &Ouml;		&amp;times &times;		&amp;Oslash &Oslash;		&amp;Ugrave &Ugrave;
+	&amp;Uacute &Uacute;		&amp;Ucirc &Ucirc;		&amp;Uuml &Uuml;		&amp;Yacute &Yacute;
+	&amp;THORN &THORN;		&amp;szlig &szlig;		&amp;agrave &agrave;		&amp;aacute &aacute;
+	&amp;acirc &acirc;		&amp;atilde &atilde;		&amp;auml &auml;		&amp;aring &aring;
+	&amp;aelig &aelig;		&amp;ccedil &ccedil;		&amp;egrave &egrave;		&amp;eacute &eacute;
+	&amp;ecirc &ecirc;		&amp;euml &euml;		&amp;igrave &igrave;		&amp;iacute &iacute;
+	&amp;icirc &icirc;		&amp;iuml &iuml;		&amp;eth &eth;		&amp;ntilde &ntilde;
+	&amp;ograve &ograve;		&amp;oacute &oacute;		&amp;ocirc &ocirc;		&amp;otilde &otilde;
+	&amp;ouml &ouml;		&amp;divide &divide;		&amp;oslash &oslash;		&amp;ugrave &ugrave;
+	&amp;uacute &uacute;		&amp;ucirc &ucirc;		&amp;uuml &uuml;		&amp;yacute &yacute;
+	&amp;thorn &thorn;		&amp;yuml &yuml;		&amp;frac34 &frac34;		&amp;frac14 &frac14;
+	&amp;sup1 &sup1;		&amp;sup2 &sup2;		&amp;sup3 &sup3;		&amp;frac12 &frac12;
+
+</pre><br>
+C'est tr&eacute;s utile pour &eacute;crire (par exemple) 
+&laquo;caract&eacute;res sp&eacute;ciaux&raquo;, on doit taper : 
+caract&amp;eacute;res sp&amp;eacute;ciaux (rigolo non !)<br>
+Il existe encore une autre possibilit&eacute;, il s'agit de sp&eacute;cifier 
+la valeur ascii du caract&eacute;re &agrave; inserer :
+<pre>
+   &amp;#32 &#32   &amp;#33 &#33   &amp;#34 &#34   &amp;#35 &#35   &amp;#36 &#36   &amp;#37 &#37   &amp;#38 &#38   &amp;#39 &#39   &amp;#40 &#40   &amp;#41 &#41   &amp;#42 &#42
+   &amp;#43 &#43   &amp;#44 &#44   &amp;#45 &#45   &amp;#46 &#46   &amp;#47 &#47   &amp;#48 &#48   &amp;#49 &#49   &amp;#50 &#50   &amp;#51 &#51   &amp;#52 &#52   &amp;#53 &#53
+   &amp;#54 &#54   &amp;#55 &#55   &amp;#56 &#56   &amp;#57 &#57   &amp;#58 &#58   &amp;#59 &#59   &amp;#60 &#60   &amp;#61 &#61   &amp;#62 &#62   &amp;#63 &#63   &amp;#64 &#64
+   &amp;#65 &#65   &amp;#66 &#66   &amp;#67 &#67   &amp;#68 &#68   &amp;#69 &#69   &amp;#70 &#70   &amp;#71 &#71   &amp;#72 &#72   &amp;#73 &#73   &amp;#74 &#74   &amp;#75 &#75
+   &amp;#76 &#76   &amp;#77 &#77   &amp;#78 &#78   &amp;#79 &#79   &amp;#80 &#80   &amp;#81 &#81   &amp;#82 &#82   &amp;#83 &#83   &amp;#84 &#84   &amp;#85 &#85   &amp;#86 &#86
+   &amp;#87 &#87   &amp;#88 &#88   &amp;#89 &#89   &amp;#90 &#90   &amp;#91 &#91   &amp;#92 &#92   &amp;#93 &#93   &amp;#94 &#94   &amp;#95 &#95   &amp;#96 &#96   &amp;#97 &#97
+   &amp;#98 &#98   &amp;#99 &#99   &amp;#100 &#100   &amp;#101 &#101   &amp;#102 &#102   &amp;#103 &#103   &amp;#104 &#104   &amp;#105 &#105   &amp;#106 &#106   &amp;#107 &#107   &amp;#108 &#108
+   &amp;#109 &#109   &amp;#110 &#110   &amp;#111 &#111   &amp;#112 &#112   &amp;#113 &#113   &amp;#114 &#114   &amp;#115 &#115   &amp;#116 &#116   &amp;#117 &#117   &amp;#118 &#118   &amp;#119 &#119
+   &amp;#120 &#120   &amp;#121 &#121   &amp;#122 &#122   &amp;#123 &#123   &amp;#124 &#124   &amp;#125 &#125   &amp;#126 &#126   &amp;#161 &#161   &amp;#162 &#162   &amp;#163 &#163   &amp;#164 &#164
+   &amp;#165 &#165   &amp;#166 &#166   &amp;#167 &#167   &amp;#168 &#168   &amp;#169 &#169   &amp;#170 &#170   &amp;#171 &#171   &amp;#172 &#172   &amp;#173 &#173   &amp;#174 &#174   &amp;#175 &#175
+   &amp;#176 &#176   &amp;#177 &#177   &amp;#178 &#178   &amp;#179 &#179   &amp;#180 &#180   &amp;#181 &#181   &amp;#182 &#182   &amp;#183 &#183   &amp;#184 &#184   &amp;#185 &#185   &amp;#186 &#186
+   &amp;#187 &#187   &amp;#188 &#188   &amp;#189 &#189   &amp;#190 &#190   &amp;#191 &#191   &amp;#192 &#192   &amp;#193 &#193   &amp;#194 &#194   &amp;#195 &#195   &amp;#196 &#196   &amp;#197 &#197
+   &amp;#198 &#198   &amp;#199 &#199   &amp;#200 &#200   &amp;#201 &#201   &amp;#202 &#202   &amp;#203 &#203   &amp;#204 &#204   &amp;#205 &#205   &amp;#206 &#206   &amp;#207 &#207   &amp;#208 &#208
+   &amp;#209 &#209   &amp;#210 &#210   &amp;#211 &#211   &amp;#212 &#212   &amp;#213 &#213   &amp;#214 &#214   &amp;#215 &#215   &amp;#216 &#216   &amp;#217 &#217   &amp;#218 &#218   &amp;#219 &#219
+   &amp;#220 &#220   &amp;#221 &#221   &amp;#222 &#222   &amp;#223 &#223   &amp;#224 &#224   &amp;#225 &#225   &amp;#226 &#226   &amp;#227 &#227   &amp;#228 &#228   &amp;#229 &#229   &amp;#230 &#230
+   &amp;#231 &#231   &amp;#232 &#232   &amp;#233 &#233   &amp;#234 &#234   &amp;#235 &#235   &amp;#236 &#236   &amp;#237 &#237   &amp;#238 &#238   &amp;#239 &#239   &amp;#240 &#240   &amp;#241 &#241
+   &amp;#242 &#242   &amp;#243 &#243   &amp;#244 &#244   &amp;#245 &#245   &amp;#246 &#246   &amp;#247 &#247   &amp;#248 &#248   &amp;#249 &#249   &amp;#250 &#250   &amp;#251 &#251   &amp;#252 &#252
+   &amp;#253 &#253   &amp;#254 &#254
+
+</pre>
+<a name=lists>
+<h2>Construction de listes</h2>
+</a>
+htmlView contient 5 types de construction de liste :
+<dl>
+<b><dt>ul</b><dd>Unordered lists 
+<b><dt>ol</b><dd>Ordered lists 
+<b><dt>dl</b><dd>definition lists (like this)
+<b><dt>menu</b><dd>menu lists
+<b><dt>dir</b><dd>directory lists
+</dl><p>
+<a name=exlists>
+<h2> Exemples de listes</h2></a></p>
+Voici une &eacute;numeration de liste
+<ul>
+<li>C'est une liste non ordonn&eacute;e
+<li>chaque &eacute;l&eacute;ment dune liste non ordonn&eacute;e est 
+pr&eacute;c&eacute;d&eacute; par une symbole, ou un marker qui d&eacute;pend 
+du niveau de l'&eacute;l&eacute;ment dans la liste.
+<ul>
+	<li>
+	<li>Une liste dans la liste...
+	<li>Un second niveau,
+	<li>encore un niveau...
+</ul>
+<li>retour dans la liste pr&eacute;c&eacute;dente
+<li>Encore un niveau, c'est si beau !
+</ul>
+<p>
+Pas de panique il existe aussi des listes ordonn&eacute;es
+<ol>
+<li>item 1
+<li>item 2
+<li>Eh oui ! Les listes ordonn&eacute;es sont index&eacute;es !
+<ol>
+	<li>Une sous liste ordonn&eacute;e
+	<li>Et les indices de chaque liste ne se m&eacute;lange m&ecirc;me 
+	pas ! Yahoo !
+</ol>
+<li>Fin de la liste ordonn&eacute;e
+</ol><p>
+Encore un exemple de Liste :
+<dl>
+<dt>Terme &agrave d&eacute;finir
+    <dd>D&eacute;finition du terme
+    <dd>Une autre d&eacute;finition du terme
+<dt>Nouveau terme &agrave d&eacute;finir
+    <dd> D&eacute;f 1
+    <dd> D&eacute;f 2
+    <dd> D&eacute;f 3
+<dt>Encore un terme &agrave d&eacute;finition
+</dl>
+<p>
+<a name=mellistes>
+<h2>M&eacute;lange des listes !</h2></a>
+</p>
+<ul>
+<li>Voici une liste non ordonn&&eacute;e qui d&eacute;bute
+<li>Individual list items can have phrase markup, such as
+<b>bold</b> or <i>italic</i>
+<ol>
+	<li>This is an ordered list
+	<li>The list items are numbered.  Inside this ordered list we could
+have a <b>block quote</b> which is a nested paragraph. Notice that
+blockquotes, in addition to rendering in <i>italic</i>, indent the
+right margin.
+	<li>From Moby Dick:
+<blockquote>
+Call me Ishmael.  Some years ago--never mind how
+long precisely --having little or no money in my purse, and nothing particular
+to interest me on shore, I thought I would sail about a little and see the
+watery part of the world.  It is a way I have of driving off the spleen, and
+regulating the circulation.
+</blockquote>
+	<li>Back to the list
+	<ol>
+		<li>Lists can be nested arbitrarily deep
+		<li>Nesting levels more than about 5 or 6 probably won't do
+what you expect, however.
+		<li>Within nested list elements, you can include
+preformatted objects, such as <i>tables</i> that observe the current
+list indent setting, such as<pre>
+
+<b>item		quantity		price
+----		--------		-----</b>
+  A		  27		  $4.36
+  B		  19		  $2.84
+  C		  11		  $22.34
+</pre>
+Tabs within preformatted objects each take up half of an indent level.
+You can also use line breaks inside lists.
+<br>- like this -</br>
+or even start new paragraphs.
+<p>This is a new paragraph started inside a list element.
+In general, except where explicitly prohibited (or indicated
+otherwise), you may nest any tag within any other tag.
+	</ol>
+	<li>We can also nest definition lists, like this:
+	<dl>
+		<dt>This is the defining term
+		<dd>And this is its definition
+		<dt>term 1<dt>term2
+		<dd>More than one term can have the same definition
+	</dl>
+	<li>Currently, markup can't be used inside a definition term
+of a definition list (although one can use markup out-side of it).
+</ol>
+<li> Bla bla bla
+<ul><br>
+<li> bla bla bla
+<ul> Rebla bla bla
+<li> bla bla bla
+<li>bla bla bla
+</ul>
+<li> bla bla...
+</ul>
+<li> Back in list
+</ul>
+
+<hr>
+<a name=images>
+<h2>Images</h2>
+</a><p>
+Il est possible d'afficher des images &agrave; l'int&eacute;rieur 
+d'un texte. Par exemple :
+<pre>
+<img src=images/green_ball.gif> This is a good point
+<img src=images/green_ball.gif> This is a good point too
+<img src=images/red_ball.gif> This is a <b>bad</b> point
+<img src=images/red_ball.gif> so is this
+<img src=images/green_ball.gif> another good one
+</pre>
+<p>
+Sometimes images are used for, well images.
+<img src=images/serviette.gif ALIGN=bottom>
+<cite>The view out the window...</cite>
+<hr>
+<center>
+<a name=other>
+<h2>Pour finir :</h2></a>
+<h3>Par contre on ne peut centrer une image :</h3>
+<img src=images/green_ball.gif>
+<img src=images/green_ball.gif>
+<img src=images/red_ball.gif>
+<img src=images/green_ball.gif>
+<img src=images/green_ball.gif>
+<pre>
+Mais le texte suivant sera centr&eacute; :
+-
+---
+-----
+--------
+</pre>
+</center>
+<hr>
+
+<a name=#pointeurs>
+<h2> Des exemples de pointeurs </h2></a>
+<hr>
+<a href=#pointeurs>pointeurs</a>,
+<a href=#headings>headings</a>,
+<a href=#caracspec>les caracteres speciaux</a>,
+<a href=#lists>les listes</a>,
+<a href=#exlists>exemples de listes</a>,
+<a href=#mellistes>m&eacute;lange des listes</a>,
+<a href=#images>images</a>,
+<a href=#other>pour finir</a>.
+<hr>
+</BODY >

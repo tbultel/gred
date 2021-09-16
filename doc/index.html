@@ -1,0 +1,408 @@
+<HTML>
+
+<HEAD>
+<TITLE>GRED Home Page</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="white" TEXT="black">
+
+
+<!--------------------------------------------------------------------->
+<!--------------------------------------------------------------------->
+<!--------------------------------------------------------------------->
+<H2>GRED Editeur de Grafcet écrit en TCL/TK</H2>
+
+<b>
+Télécharger la dernière version de
+     <A href="http://www.ensta.fr/~diam/gred/distrib/">
+     <A href="distrib/">
+     <B>dernière version de Gred</B></A> 
+     voir
+     <a href="#hist">
+        historique  version gred-0.25a   
+     </a>
+</b>
+
+
+
+
+
+<font color="red"> 
+<h3>AVERTISSEMENT !</h3>
+</font>
+
+<font color="red">
+    Le projet GRED est (en principe :-) arrété depuis plusieurs années
+    (changement profond d'activités professionnelles)
+    <br>
+    Ce qui suit n'est donc plus maintenu, cependant, tant qu'il n'y a
+    pas à ma connaissance un outil GNU aux possiblilités strictement 
+    supérieures (undo multiple, manipulation de sélection, copié-collé...) 
+    Je laisse ce projet --en l'état-- accessible depuis ma page.
+    
+    <p>
+    Cependant, si vous l'utiliser, merci de m'envoyer un petit mail
+    (<A HREF="http://www.ensta.fr/~diam">http://www.ensta.fr/~diam</A>)
+    Cela peut m'encourager à le maintenir. 
+    
+</font>
+<p>
+Quelques liens externes sur le Grafcet :
+<ul>
+<li> 
+    <a href="http://fr.wikipedia.org/wiki/Grafcet"
+        >Wikipedia:Grafcet</a>
+<li> 
+    <a href="http://pagesperso-orange.fr/yves.foussard"
+        >Page de Yves Foussard</a>
+    Quelques informations complémentaires sur le Grafcet.
+
+<li> 
+    <a href="http://www.unice.fr/L-EEA/gaffe/outils_grafcet.html"
+        >Page de Daniel Gaffé</a> qui propose quelques outils pour le Grafcet
+</ul>
+
+
+<hr size="4" noshade >
+<H3>Qu'est-ce que GRED ?</H3>
+
+GRED est un éditeur de 
+<A HREF="http://www.lurpa.ens-cachan.fr/grafcet/grafcet_fr.html">
+grafcets</A> multiplateforme
+(voir aussi un lien de Yves Foussard sur sa 
+<a href="http://pagesperso-orange.fr/yves.foussard/Formgft.htm"
+    >formalisation</a>),
+qui <font color="red">était</font> en cours de 
+projet à l'École Nationale Supérieure de Techniques 
+Avancées <A HREF="http://www.ensta.fr">(http://www.ensta.fr)</A>.  
+
+
+
+<p>
+Les principaux objectifs de l'éditeur sont les suivants :
+
+<UL> 
+
+<LI><STRONG>souplesse d'utilisation</STRONG> : convention 
+<STRONG>Macintosh</STRONG> pour les menus, souris, raccourcis clavier, aide 
+en ligne, ...
+
+<LI><STRONG>puissance</STRONG> : gestion de la sélection, 
+génération d'EPSF pour l'impression ou la PAO ; export dans 
+différents formats,
+
+<LI><STRONG>configurable</STRONG> : outre la personnalisation (graphique) 
+des préférences de l'éditeur, les 
+fonctionnalités peuvent être adaptées à un utilisateur 
+donné ou à un site particulier.
+
+</UL>
+
+<H3>Caractéristiques de GRED</H3>
+
+
+<OL>
+
+<LI><STRONG>Utilisation gratuite</STRONG><BR>
+
+Page de référence : 
+<A HREF="http://www.ensta.fr/~diam/gred/">
+    http://www.ensta.fr/~diam/gred/
+</A>
+
+
+<LI><STRONG>Entièrement interprété</STRONG><BR>
+
+GRED est écrit en langage
+<A HREF="http://www.ensta.fr/~diam/tcl/">TCL</A>.  L'installation de gred 
+nécessite donc la présence de l'interpréteur wish 
+(WIndowing SHell), version 8.0 ou ultérieure.
+
+
+
+<LI><STRONG>Multiplateforme</STRONG><BR> 
+
+GRED fonctionne non seulement sur tout type de station UNIX (SUN4, Solaris, 
+HP-UX, etc...)  mais aussi sous windows95, windows3.1 
+(tests à établir...) et sur Macintosh.
+
+
+
+<LI><STRONG>Convivial</STRONG><BR>
+
+<UL TYPE=disc>
+    <LI>utilisation de la souris,
+    <LI>raccourcis claviers,
+    <LI>convention de type Macintosh pour les menus (File, Edit, ...)
+        et les raccourcis clavier (open, save,...),
+    <LI>menus contextuels (bouton3 sur station, bouton1 + raccourcis sous
+        MacOS, ...),
+    <LI>(et bientôt...) menus d'aide en ligne.
+</UL>
+
+<LI><STRONG>Gestion de la sélection</STRONG><BR>
+La sélection permet de manipuler globalement un groupe d'objet. Les 
+opérations suivantes sont possibles :
+
+<UL TYPE=disc>
+<LI>coupé - copié - collé,
+<LI>déplacement, suppression, ..
+<LI>sauvegarde (à faire)...
+</UL>
+
+<LI> <STRONG>Facile à installer</STRONG><BR>
+     GRED est conçu pour etre installé avec le minimun 
+     d'intervention possible, tout en permettant une personnalisation sur site 
+     (pour plus de détails voir section
+     <A href="#install"> installation</A>).
+
+<P>
+
+</OL>
+
+<a name="install"></a>
+<H3>Téléchargement et installation</H3>
+
+<h4>    Pour les gens pressés</h4>
+
+Pour utiliser Gred, vous devez:
+<OL>
+<LI> Télécharger et installer Tcl/Tk 8.3.x, au site de la société
+     <A HREF="http://tcl.activestate.com/">
+      ActiveState
+      </A>
+      (http://tcl.activestate.com/)
+      
+
+<LI> Télécharger la dernière version de
+     <A href="http://www.ensta.fr/~diam/gred/distrib/gred-last.tar.gz">
+     <B>gred-last.tar.gz</B></A> sur le 
+     site de l'ENSTA.
+     
+<LI> Décompresser et "dé-tarer" l'archive téléchargée, et vous obtenez un
+     repertoire de la forme "gred-0.23a-20020208/" depuis lequel vous
+     pouvez lancer :
+     <br>&nbsp;-&nbsp;
+     
+<li> Placer vous dans le répertoire et tester l'éditeur par 
+     <CODE>./bin/gred</CODE> 
+
+<li>
+     Vous pouvez placer le répertoire principal où vous voulez, le
+     renommer comme bon vous semble, et accéder à l'exécutable soit par
+     un alias ou en mettant son répertoire (.../bin/") dans votre PATH : 
+     cela devrait fonctionner tout seul.
+</OL>
+
+<h4>    Détails d'installation</h4>
+
+L'installation est conçue pour etre reduite au minimum sous UNIX (recherche 
+automatique du répertoire d'installation avec suivi récursive 
+des liens, ...), localisation automatique de la librairie PIST, ...  <p>
+
+<STRONG> 
+Sous UNIX, aucune modification de fichier n'est nécessaire 
+si les conditions suivantes sont respectées : 
+</STRONG>
+
+<OL>
+ 
+  <LI>l'interpréteur appelé par défaut est 
+  "wish8.3"<BR> Si vous utiliser un autre nom, modifier la troisième 
+  ligne des exécutables du sous-répertoire /gred-vxx/bin/gred 
+  (cette manip sera simplifiée ultérieurement),<p>
+    
+  <LI>le script principal (/bin/gred par défaut) peut etre 
+  renommé à volonté, mais il doit rester dans son 
+  sous-répertoire d'origine (/bin/),<p>
+    
+  <LI>l'arborescence interne au répertoire d'installation 
+  (gred-v0.14a/ par exemple) ne doit pas etre modifiée.  Mais ce 
+  répertoire peut etre renommé à volonté (par exemple 
+  en /gred-alpha-0.1.old/).
+    
+</OL><P>
+
+Une installation classique consiste à créer un lien "gred" 
+qui pointe vers le script physique.  Ce lien peut etre situé 
+n'importe ou dans votre PATH.<p>
+
+Personnellement, j'utilise une double indirection par le jeu de liens 
+suivants en vue de faciliter les mise à jour de version de version 
+:<p>
+
+Distribution de gred en cours d'utilisation :
+/usr/ensta/pack/gred-v0.13/
+<p>
+
+Lien dans /usr/ensta/bin : <p>
+<pre>
+    /usr/ensta/bin/gred*   --&gt;  ../lib/gred/bin/gred*
+</pre>
+Lien dans /usr/local/lei/lib : 
+<pre>
+    /usr/ensta/pack/gred/      --&gt; ./gred-v0.14/<BR>
+    /usr/ensta/pack/gred_old/  --&gt; ./gred-v0.13/<BR>
+    /usr/ensta/pack/gred_new/  --&gt; ./gred-v0.15/
+</pre>
+
+
+<H4>    Complément sous Windows</H4>
+
+      Vous devez renommer le fichier "gred" en "gred.tcl"
+
+<h3> Exécution de gred</h3>
+La commande permettant de lancer gred est :<BR>
+<CODE><PRE>
+    gred   ?-g  &lt;geometry&gt;?  &lt;fichier.gra&gt; 
+</PRE></CODE>
+<P>
+
+Gred prend en parametre :
+<OL>
+<LI>des options interprétées directement par wish (-g ou -geometry, ...)
+    (taper wish pour en obtenir la liste complète)
+    Cette possibilité (génante si on veut avoir la maitrise complete 
+    des options) est annulée par une en-tête de la forme (avec "--") :
+<PRE>
+   #!/bin/sh
+   # the next line restarts using wish \\
+   exec wish "$0" -- ${1+"$@"}
+</PRE>
+
+<LI>des options interprétées par le script gred lui-même,
+
+<LI>des fichiers à ouvrir au lancement (i.e des grafcet)
+</OL>
+<P>
+
+Une première option "--" indique à wish qu'il n'a plus d'option à 
+interpréter.<BR>
+
+Une seconde option  "--" indique à gred que ce qui suit n'est plus une
+option de gred, mais un grafcet à ouvrir (he oui, vous pouvez appeler
+votre grafcet "-g") !<BR>
+
+Pour l'instant, les seules options reconnues sont :
+
+<UL>
+<LI><CODE>-g &lt;geometry&gt; </CODE>: interprétée par wish
+<LI><CODE>-name &lt;nom_fenetre&gt; </CODE>: interprétée par wish
+<LI><CODE>-mode &lt;string&gt; </CODE>: bidon pour essayer
+</UL>
+
+
+<a name="hist"></a>
+<H3> Historique et évolution de GRED</H3>
+
+<ul>
+
+<li>
+    <b>23/09/2009</b> (MD) =&gt; version gred-0.25a
+    correction d'un bug empêchant l'édition des Transitions (par double-clique)<br/>
+    (Merci à Claudia Pérez-Levesque)
+
+<li>
+    <b>10/03/2009</b> (MD) =&gt; version gred-0.24a
+    recherche par défaut l'interpréteur wish sans version particulière
+    (fonctionne avec wish-8.5)
+
+<li>
+    <b>8/02/2002</b> (MD) =&gt; version gred-0.23a
+    <br>&nbsp;-&nbsp;
+        rajout préférences pour la taille du document
+    <br>&nbsp;-&nbsp;
+        modif menu config (format A4.. A2, Save Prefs...)
+    <br>&nbsp;-&nbsp;
+        quelques modif internes
+    <br>&nbsp;-&nbsp;
+        nettoyage des exemples et rajout d'un exemple réel (au format A2v)
+        (merci à <b>Andrea Collamati</b> et <b>Stefano Moretti</b> 
+        de 
+        <a href="http://www.temasinergie.it">www.temasinergie.it</a>)
+    <br>&nbsp;-&nbsp;
+        Modif du menu d'aide (rajout des deux exemples)
+    <br>&nbsp;-&nbsp;
+        nettoyage de la documentation
+     
+    
+<li> 
+    <b>18/05/2002</b> (MD) renommage de quelques "packages" utilitaires de pist
+    pour éviter les conflits avec les "packages" des versions récentes de tcl
+    (getopt, smtp) 
+
+<li>
+    <b>21/05/2001</b> (MD) rajout rubrique pour Windows 
+    (Merci à <b>Nicolas Lambert</b> :-) 
+<li> 
+    <b>15/05/2001</b> (MD) rajout d'un pointeur sur un éditeur grafcet en C++
+    
+<li> 
+    <b>13/09/2000</b> (MD) distribution de GRED rendue de nouveau accessible.
+</ul>
+
+
+<a name="copy"></a>
+<H3> Copyright et Cie...</H3>
+
+Ceci est une version provisoire du copyright, mais l'idée principale 
+y est :<p>
+
+Copyright (&copy;) 1996 ENSTA, Inc.   All Rights Reserved.
+
+<OL>
+
+<LI>Vous pouvez utiliser gratuitement et modifier cette application comme 
+vous le souhaitez...
+
+<LI>Mais cela <em>peut tout vous cracher et il ne faudra pas venir pleurer</em>...
+
+<LI>En cas de redistribution (gratuite) de cette distribution 
+(modifiée ou non) vous devez conserver le copyright ci-dessus, et 
+fournir au destinataire de votre distribution un moyen de se procurer la 
+version originale.
+
+</OL>
+
+Les personnes suivantes ont participé à la conception de Gred :
+<p>
+<UL>
+<LI>Maurice DIAMANTINI 
+    <A HREF="http://www.ensta.fr/~diam">(http://www.ensta.fr/~diam)</A>
+    (encadrement, maintenance, suivi et contacts)
+<LI>Jean-Luc COMMEAU   (début du projet)
+<LI>David CARQUEIJAL 
+    (le plus gros morceau de gred, mais n'est plus à l'ENSTA)
+</UL>
+
+Par ailleurs, je tiens à remercier les personnes suivantes :
+
+<UL> 
+
+<LI>Philippe LE PARC 
+    pour les concepts son l'éditeur de Grafcet "edge" 
+
+<LI>Michel Lecat 
+    pour la validation du principe d'un éditeur en TCL 
+    pur au cours d'un stage ENSTA (début 1995) 
+
+<LI>Daniel Gaffeé
+    et Laurent Pastorelli pour le 
+    premier éditeur de grafcet en tcl opérationnel.
+
+<LI>l'ensemble de la communauté TCL, et en particulier les groupes 
+    de nouvelles :<BR> 
+   
+    <a href="http://groups.google.fr/group/fr.comp.lang.tcl/topics?hl=fr%2F">
+        fr.comp.lang.tcl
+    </a>
+    et
+    <a href="http://groups.google.fr/group/comp.lang.tcl/topics?hl=fr%2F">
+        comp.lang.tcl
+    </a>
+
+</UL>
+
+
+</BODY>
+</HTML>

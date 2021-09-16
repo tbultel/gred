@@ -1,0 +1,2 @@
+array set CacheInfo {./test.html 1}
+set slot(cacheIdx) 1

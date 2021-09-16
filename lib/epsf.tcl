@@ -15,8 +15,6 @@
 proc Epsf_Box {c} {
 global gred tmp
 
-  set name [gred:getGrafcetName $c]
-
   set toplevel [toplevel .print[gred:getGrafcetName $c]]
   wm transient $toplevel .[gred:getGrafcetName $c]
   wm protocol $toplevel WM_DELETE_WINDOW \
@@ -68,9 +66,6 @@ global gred tmp
   
   switch -- $tmp(zone) {
     All {
-
-#      puts "Will print all"
-	
       set grille_state [Grid_State $c]
       if {$tmp(printGrid) == 0 } {
         Grid_Hide $c
@@ -80,11 +75,9 @@ global gred tmp
       set canvasHeight [lindex $scrollRegion 3]
       set canvasWidth [winfo pixels $c $canvasWidth]
       set canvasHeight [winfo pixels $c $canvasHeight]
-#      puts "canvasWidth $canvasWidth canvasHeight $canvasHeight"
       set items [getItemFromGrafcet [gred:getGrafcetName $c] All]
       set tmp(canvasToPrint) $c
       set bbox [eval {$c bbox} $items]
-#      puts "bbox $bbox"
       set x1 [lindex $bbox 0]
       set y1 [lindex $bbox 1]
       set x2 [lindex $bbox 2]
@@ -148,73 +141,45 @@ global gred tmp
     }
   }
 
-#  puts "THIERRY:will print a zone $tmp(width) $tmp(height)"  
-
   # Dans la mesure où une imprimante ne peut imprimer sur une page entière
   # On réduit la taille d'une page A4...
-
-  set A4h	297
-  set A4w	210
-  
-  set topMargin		20
-  set bottomMargin	20
-  set leftMargin	20
-  set rightMargin	20
-  
-  set height [expr $A4h-($topMargin+$bottomMargin)]
-  set width  [expr $A4w-($leftMargin+$rightMargin)]
-
-  set heightm ""
-  set widthm  ""
-  
-  append heightm $height "m"
-  append widthm  $width  "m"
-  
-  set A4height [winfo pixels $c $heightm]
-  set A4width  [winfo pixels $c $widthm]
-  
-  set fit ""
-  set pagepos ""
-
-  set topMarginm    ""
-  set leftMarginm   ""
-  set A4hm	     ""
-  
-  append topMarginm    $topMargin    "m"
-  append leftMarginm   $leftMargin   "m"
-  append A4hm 		$A4h	      "m"
-  
-  if {$tmp(orient)} {
-#      puts "Landscape"
-      if {$tmp(height) > $A4width} {
-          set fit "$fit -pagewidth $A4height"
-      } 
-      if {$tmp(width) > $A4height} {      
-          set fit "$fit -pageheight $A4width"
-      }
-      set pagepos "-pagex $leftMarginm -pagey $topMarginm -pageanchor nw"
-  } else {
-#      puts "Portrait"
-      if {$tmp(height) > $A4height} {
-          set fit "$fit -pageheight $A4height"
-      } 
-      if {$tmp(width) > $A4width} {      
-          set fit "$fit -pagewidth $A4width"
-      }
-      set pagepos "-pagex $leftMarginm -pagey $A4hm -pageanchor nw"
+  set A4height [winfo pixels $c 283.0m]
+  set A4width [winfo pixels $c 196.0m]
+#   set A4height 283.0m
+#   set A4width  196.0m
+  if {$tmp(height) > $A4width} {
   }
-  
- 
-  
+  if {$tmp(orient)} {
+      puts "Landscape"
+      if {$tmp(height) > $A4width} {
+          # On doit réduire la taille de la page en largeur pour que la figure
+          # rentre sur la page
+          set fit "-pageheight 196.0m"
+      } else {
+#           set height $A4width
+#           set width  $A4height
+          set fit "-pageheight $A4width -pagewidth $A4height"
+      }
+      set pagepos "-pagex 5m -pagey 5m -pageanchor nw"
+  } else {
+      puts "Portrait"
+      if {$tmp(height) > $A4height} {
+          # On doit réduire la taille de la page en largeur pour que la figure
+          # rentre sur la page
+          set fit "-pageheight 283.0m"
+      } else {
+#           set height $A4height
+#           set width  $A4width
+          set fit "-pageheight $A4height -pagewidth $A4width"
+      }
+      set pagepos "-pagex 3.2m -pagey 292.0m -pageanchor nw"
+  }
   # Doit-on faire un fit sur la page (ici A4 ?)
   if {$tmp(fit) == 0} {
- #     puts "No fit. default options"
       set fit ""
       set pagepos ""
   }
-
-#  puts "fit==$fit pagepos=$pagepos"
-  
+  puts "fit==$fit"
   # création du postscript
   set result [eval {$tmp(canvasToPrint) postscript \
       -rotate $tmp(orient) \
@@ -239,14 +204,10 @@ global gred tmp
   }
   return $result
 }
-
-
-
 # getItemFromGrafcet -- Retourne la liste des items a imprimer dans le canvas...
 # Retourne la liste des items a imprimer dans le canvas, dépends de
 # l'implémentation de la séléction.
 # C cette procédure qui empêche que le package soit globale et inclus dans pist.
-
 proc getItemFromGrafcet {grafcet zone} {
     set c [gred:windowToCanvas .$grafcet]
     
@@ -383,8 +344,6 @@ proc drawRadiobuttons {grafcetName} {
           -width 20 -anchor w    
   pack $w -side left -fill x
   set w $f.fit.value1
-
- 
   radiobutton $w \
             -text "Yes" \
             -value 1 \

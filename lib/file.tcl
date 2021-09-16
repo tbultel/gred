@@ -135,82 +135,6 @@ proc gred:file:load {c fileName} {
    $c config -cursor tcross
 }
 
-
-
-#######################################################################
-# gred:file:commandSort
-#
-#
-
-proc gred:file:commandSort {commands} {
-   
-    set buf ""
-    set transitions {}
-    set links	{}
-    set etapes	{}
-    
-    set sbuf [split $commands \n]
-   
-    foreach line $sbuf	{
-	if {[string first "Trans:create" $line] == 0}  {
-	    set tokens [split $line]
-	    set name [lindex $tokens 8]
-	    set name [lindex $name 0]
-	    set transitions [linsert $transitions end [list $name $line]]
-        } elseif {[string first "Link:create" $line] == 0}  {
-	    # support with and without -detail option
-	    set source_index 2
-	    set dest_index 4
-	    if {[llength $tokens] > 5} {
-		set source_index 4
-		set dest_index 6
-	    }
-	    set tokens [split $line]
-	    set name [lindex $tokens $source_index]
-	    set name [lindex $name 0]
-	    set links [linsert $links end [list $name $line]]
-	} elseif {[string first "Etape:create" $line] == 0}  {
-	    # etapes	    
-	    set tokens [split $line]
-	    set name [lindex $tokens 11]
-	    set name [lindex $name 0]
-	    set etapes [linsert $etapes end [list $name $line]]
-	}	    
-    }
-      
-
-    set setapes [lsort -ascii $etapes]
-#   puts stdout $setapes
-    
-    set stransitions [lsort -ascii $transitions]
-#    puts stdout $stransitions
-
-    set slinks [lsort -ascii $links]
-#    puts stdout $slinks
-
-    foreach {t} $setapes {
-	set tr [lindex $t 1]
-#	puts stdout $tr
-	set buf [format "%s\n%s" $buf $tr]
-    }
-
-    foreach {t} $stransitions {
-	set tr [lindex $t 1]
-#	puts stdout $tr
-	set buf [format "%s\n%s" $buf $tr]
-    }
-
-    foreach {t} $slinks {
-	set tr [lindex $t 1]
-#	puts stdout $tr
-	set buf [format "%s\n%s" $buf $tr]
-    }
-
-
-    return $buf
-    
-}
-
 ########################################################################
 # gred:file:save --
 # Sauvegarde le fichier de la fenetre contenant le canvas <I>c</I>.
@@ -238,10 +162,7 @@ proc gred:file:save {c} {
       set clock [clock format [clock seconds] \
                  -format {%d/%m/%y à %T}]
       puts $fid "# Sauvegarde du : $clock"
-
-      set sortedCommands [gred:file:commandSort $commands]
-      
-      puts $fid $sortedCommands
+      puts $fid $commands
       close $fid
       
       gred:markClean .[gred:getGrafcetName $c]

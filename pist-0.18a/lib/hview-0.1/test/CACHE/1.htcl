@@ -1,0 +1,702 @@
+proc updateTextWidget  {widget1 widget2 imageDir} {
+global tkhtml_priv tkhtml_entity
+$widget1 delete 1.0 end
+$widget2 delete 1.0 end
+$widget1 configure -bg #d9d9d9
+$widget2 configure -bg #d9d9d9
+$widget1 tag config hr -relief sunken -borderwidth 1  -font -*-*-*-*-*-*-4-*-*-*-*-*-*-*
+$widget1 tag configure HEADER  -font -*-times-medium-r-normal-*-*-160-*-*-*-*-iso8859-*  -foreground black -lmargin1 0m -lmargin2 0m -justify left
+$widget1 tag bind HREF <Enter> "enter_href %W href %x %y"
+$widget1 tag bind HREF <Leave> "leave_href %W href "
+$widget1 tag bind HREF <1> "click_href %W href %x %y"
+$widget1 tag bind HREF <Motion> "update_href %W href %x %y"
+$widget2 tag bind HEADER <Enter> "enter_href %W header %x %y"
+$widget2 tag bind HEADER <Leave> "leave_href %W header "
+$widget2 tag bind HEADER <1> "click_href %W header %x %y"
+$widget2 tag bind HEADER <Motion> "update_href %W header %x %y"
+$widget1 insert end {Overview of TKLMITOOL
+
+This package is the last release of a set of programs used to solve Linear Matrix Inequalities:
+
+LMITOOL is a user-friendly Matlab package for solving Linear Matrix Inequality problems, developed by Laurent El Ghaoui, Ramine Nikoukhah, Francois Delebecque.
+SP was developped by Lieven Vandenberghe and Stephen Boyd in 1994.
+TKLMITOOL is a graphical user interface for LMITOOL that was developed by Laurent El Ghaoui, Jean-Luc Commeau and Michel Chorier. Copyright 1997.
+
+This package is the last release of a set of programs used to solve Linear Matrix Inequalities:
+
+aaa}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { LMITOOL is a user-friendly Matlab package for solving Linear Matrix Inequality problems, developed by Laurent El Ghaoui, Ramine Nikoukhah, Francois Delebecque.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { SP was developped by Lieven Vandenberghe and Stephen Boyd in 1994.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { TKLMITOOL is a graphical user interface for LMITOOL that was developed by Laurent El Ghaoui, Jean-Luc Commeau and Michel Chorier. Copyright 1997.
+
+Tklmitool can be used on a lot of differents Operating Systems : several UNIX, Windows 3.1 and Mac OS. This package acts as an interface for the Semidefinite Programming package SP, developed by Lieven Vandenberghe and Stephen Boyd.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Purpose of TKLMITOOL
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { How to use it ?
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Using TKLMITOOL : an example
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { How it works?
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { How to get it ?
+
+For more details and examples, see LMITOOL user's guide. If you have questions, comments, send mail to lmitool@ensta.fr.
+For more references and information on LMI problems and engineering applications, see the quick reference guide Semidefinite Programming and Applications.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Purpose of TKLMITOOL
+
+TKLMITOOL solves problems such as
+
+
+		minimize     f(X1,...,XM,D1,...,DN) 
+		subject to   Gi(X1,...,XM,D1,...,DN)  = 0, i=1,...,p 
+            		     Hj(X1,...,XM,D1,...,DN) >= 0, j=1,...,q 
+
+where: 
+
+
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { D1,...,DN are given real matrix variables, referred to as the data matrices.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { X1,...,XM are real matrix variables, referred to as the unknown matrices.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { f is a real scalar function of the entries of X1,...,XM and D1,...,DN, linear in the X's, referred to as the objective function (The problem is called a feasibility problem if there is no objective function specified).
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Gi's are matrix functions of the entries of X1,...,XM and D1,...,DN, affine in the X's and taking real values, referred to as the ``Linear Matrix Equalities'' (LME) functions.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Hj's are matrix functions of the entries of X1,...,XM and D1,...,DN, affine in the X's and taking real values, referred to as the ``Linear Matrix Inequalities'' (LMI) functions. (Here, V >= 0 means that the matrix V is symmetric and positive semidefinite, unless specified otherwise).
+
+The main purpose of TKLMITOOL is to help write a Matlab .m function which admits the data matrices D1,...,DN as inputs, and has the unknown matrices X1,...,XM as outputs.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { How to use TKLMITOOL ?
+
+To use TKLMITOOL, the user must issue the Matlab command tklmitool.
+Then he can see a window with :
+
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { A menu bar with six items :
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { File :
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { New : reset all the fields to null.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Load : load a file precedally saved.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Save : save the current session.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Print : print the main window of the application.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Export : not soon supported.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Quit : finish the session and quit the application.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Edit :
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Undo : undo the last command done.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Redo : redo the last command done.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Cut : delete the selectionned characters and copy them in a buffer.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Copy : copy the selectionned characters in a buffer.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Paste : paste the precedally selectionned characters at the current cursor position.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Build :
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Build Matlab files : generate the eval file and the function file of the current optimization problem.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Change building directory : change the current directory where the Matlab files are created.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { See eval file : show the eval file if it exists.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { See function file : show the function file if it exists.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Options :
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Change optimisation parameters : show a popup window where to modify somme advanced options.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Show/Hide preliminary computation : a radio button to chose to show or to hide the Preliminary computation field. Off by default.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Config :
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Refresh colors : to refresh the colors when you have change some of them with the preference menu.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Edit preference : to change the key bindings or the colors and structures of the different composants of the windows.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Help :
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Overview...
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The top of the window...
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Preliminary computation...
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Initial Guess...
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { LMEs...
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { LMIs...
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Objectives...
+
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The top of the window : 3 entries are used to specify a problem name (say foo), as well as the names given to the data matrices and unknown matrices.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The bottom of the window : this part contains several fields, which should be completed by the user. Each field has its own help window accessible in the Help menu.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The parameter field is used for setting up various optimization parameters.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The preliminary computation field is useful to set up various sizes and other quantities needed in other fields.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The Initial guess field is used to set up correct sizes for the matrix variables.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The LME field is used to set up the LME functions of the problem.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The LMI field is used to set up the LMI functions of the problem.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The Objective field is used to set up the Objective functions of the problem.
+
+The fields above are specified using the standard Matlab syntax.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { A help zone : show a few lines of informations about the field where is the mouse cursor.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { A state bar : show a line of general information about the state of the application.
+
+Once all fields have been completed, the user may selection Build file in the Build menu.
+
+The user is then ready to use the matlab function created by TKLMITOOL, with the syntax
+		[X1,...,XM,infostr] = foo(D1,...,DN) 
+
+where infostr is a string containing convergence information. The returned matrices X1,...XM are empty if the problem is infeasible.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { An example : the stabilization problem
+
+The following problem serves as a simple example for illustrating the use of TKLMITOOL.
+
+Consider the linear, time-invariant, continuous-time system in state-space form :
+
+		dx/dt = Ax + Bu, 
+
+where x is the state, and A is n x n and B is n x nu; both matrices are constant.
+
+We seek a constant, state-feedback control law u = Kx such that the closed-loop system is asymptotically stable, that is, all eigenvalues of A+BK have negative real part. In addition, we require that for every initial condition x(0) with ||x(0)|| = 0, where umax is a given number.
+
+As shown in Boyd & al (1994), the above problem has a solution if and only if the following conditions hold for some matrix unknowns X, U :
+
+
+		[X U'; U umax^2*I] < 0,
+		A*X+X*A+B*U+U'*B'  < 0, X = X'
+
+The above is a simple feasibility LMI problem in variables X, U. If it has a solution, then an appropriate control law is u = Kx, where K = U*X^{-1}.
+
+TKLMITOOL helps writing a matlab function, which we choose to call sf_sat, with syntax
+
+
+		 [X,U,infostr] = sf_sat(A,B,umax)  
+
+
+where infostr is a string containing convergence information. We can solve this problem as follows :
+
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The top of the window contains 3 fields that have to be completed by the user :
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Problem Name : sf_sat
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Variable List : X,U
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Data List : A,B,umax
+
+These inputs will ask lmitool to write a Matlab function with syntax
+
+
+		 [X,U,infostr] = sf_sat(A,B,umax) 
+
+that solves the problem specified by the user in the bottom part of the window (in the above, infostr is a string containing convergence information).
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { The bottom of the window contains several fields, which should too be completed by the user :
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { LMI Sover Options.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Preliminary computation : [n,nu] = size(B);
+as the sizes of the problem (n,nu) are needed in the other fields.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Initial guess :
+  		Xinit = eye(n,n); 
+		Uinit = zeros(n,nu); 
+
+specifies correct sizes for Xinit and Uinit.
+Otherwise, the actual value of these matrices is arbitrary.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { LME : LME = X-X';
+says that the variable X is symmetric.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { LMI :
+ 		lmi_lyap = - (A*Q+Q*A'+B*Y+Y'*B'); 
+		lmi_sat = [Q Y' ; Y (umax^2)*eye(nu)] ; 
+		lmi_x0 = Q - eye(n) ; 
+		LMI = stack (lmi_lyap, lmi_sat, lmi_x0) ; 
+		  
+
+says that the variables X and U satisfy three inequality constraints.
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Objective : [] ;
+
+Once all fields have been completed, the user may selection Build file in the Build menu.
+
+The function sf_sat is ready to use : within Matlab, assuming that A,B,umax of appropriate size exist in the workspace, the command
+
+ 		[X,U,infostr] = sf_sat(A,B,umax) 
+
+returns X = [], U = [] if the problem is infeasible, and a solution to the problem otherwise (infostr is a string containing convergence information, such as'optimal').
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { How it works?
+
+TKLMITOOL invokes the Matlab function tklmitool.m.
+tklmitool generates two Matlab functions:
+
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { A solver function that invokes a Matlab function, lmisolver.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { An evaluation function.
+
+The solver and evaluation functions are created by tklmitool from the fields of the main window filled by the user.
+
+lmisolver calls a matlab function, lmiformat, which puts the optimization problem into the standard optimization problem. Then, lmisolver calls the optimization code SP.
+
+lmiformat works in three main steps.
+
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Initial guess. A first call to the evaluation file is done, in order to infer the number and size of the matrix variables.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Construction of LME, LMIs and objective. Making repeated calls to the evaluation function, a representation of the problem is constructed, in the form of an optimization problem with linear objective, equality and linear matrix inequality constraints.
+}
+set img [eval .help image_create $imageDir images/green_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { Elimination of equality constraints. Using a singular value decomposition, the equality constraints are eliminated. A canonical representation in the form of a standard optimization problem is constructed.
+
+}
+set img [eval .help image_create $imageDir images/red_ball.gif]
+$widget1 insert end " "
+label $widget1.$img -image $img  -background #FFFFFF
+$widget1 window create end  -window .help.text.t.$img -align center
+$widget1 insert end { How to get it ?
+
+The package is available via anonymous ftp to ftp.ensta.fr under /pub/elghaoui/lmitool/v1.0.
+
+The user should first obtain the SP package. This package can be obtained via anonymous ftp to isl.stanford.edu, under /pub/boyd/semidef_prog.}
+
+$widget2 insert end {I. Overview of TKLMITOOL
+  A.  Purpose of TKLMITOOL
+  B.  How to use TKLMITOOL ?
+  C.  An example : the stabilization problem
+  D.  How it works?
+  E.  How to get it ?}
+
+$widget1 tag configure times2-000blackL -font -adobe-times-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 0m -lmargin2 0m  -justify left
+$widget1 tag configure timesB5-000blackL -font -adobe-times-bold-r-normal-*-*-240-*-*-*-*-iso8859-* -foreground black -lmargin1 0m -lmargin2 0m  -justify left
+$widget1 tag configure times2-10140blackL -font -adobe-times-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 10m -lmargin2 14m  -justify left
+$widget1 tag configure timesB2-10140blackL -font -adobe-times-bold-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 10m -lmargin2 14m  -justify left
+$widget1 tag configure timesU2-10140blueL -font -adobe-times-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground blue -lmargin1 10m -lmargin2 14m  -underline 1 -justify left
+$widget1 tag configure timesB2-000blackL -font -adobe-times-bold-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 0m -lmargin2 0m  -justify left
+$widget1 tag configure timesBU2-10140blueL -font -adobe-times-bold-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground blue -lmargin1 10m -lmargin2 14m  -underline 1 -justify left
+$widget1 tag configure courier2-000blackL -font -adobe-courier-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 0m -lmargin2 0m  -justify left
+$widget1 tag configure timesU2-000blueL -font -adobe-times-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground blue -lmargin1 0m -lmargin2 0m  -underline 1 -justify left
+$widget1 tag configure timesB4-000blackL -font -adobe-times-bold-r-normal-*-*-180-*-*-*-*-iso8859-* -foreground black -lmargin1 0m -lmargin2 0m  -justify left
+$widget1 tag configure times2-20280blackL -font -adobe-times-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 20m -lmargin2 28m  -justify left
+$widget1 tag configure times2-30420blackL -font -adobe-times-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 30m -lmargin2 42m  -justify left
+$widget1 tag configure courier2-10140blackL -font -adobe-courier-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 10m -lmargin2 14m  -justify left
+$widget1 tag configure timesU2-20280blueL -font -adobe-times-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground blue -lmargin1 20m -lmargin2 28m  -underline 1 -justify left
+$widget1 tag configure courier2-20280blackL -font -adobe-courier-medium-r-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 20m -lmargin2 28m  -justify left
+$widget1 tag configure times4-000blackL -font -adobe-times-medium-r-normal-*-*-180-*-*-*-*-iso8859-* -foreground black -lmargin1 0m -lmargin2 0m  -justify left
+$widget1 tag configure timesI2-10140blackL -font -adobe-times-medium-i-normal-*-*-120-*-*-*-*-iso8859-* -foreground black -lmargin1 10m -lmargin2 14m  -justify left
+array set tkhtml_priv {href10 {PrelHelp.html blue} href11 {InitHelp.html blue} href12 {LMEHelp.html blue} href13 {LMIHelp.html blue} href14 {OBJHelp.html blue} href15 {firstdialog.html blue} href16 {Options.html blue} href17 {PrelHelp.html blue} href18 {InitHelp.html blue} href20 {LMIHelp.html blue} href19 {LMEHelp.html blue} href21 {OBJHelp.html blue} href22 {standardlmip.html blue} href23 {standardlmip.html blue} href0 {copyright.html blue} href1 {copyright.html blue} href2 {#purpose blue} href3 {#howto blue} href4 {#example blue} href5 {#howdoes blue} href6 {#toget blue} href7 {semidef.html blue} href8 {firstdialog.html blue} href9 {Options.html blue}}
+array set tkhtml_priv {headerTag {} header 0 headerStruct1 h1. headerStruct2 h2. headerStruct3 h3. headerStruct4 h3.h4. headerStruct5 h5. headerStruct6 {} headerText {} header1 {header1 black} headerCount 6 header2 {header2 black} header3 {header3 black} header4 {header4 black} header5 {header5 black} header6 {header6 black}}
+
+$widget1 configure -state disabled
+$widget2 configure -state disabled
+$widget1 configure -bg #FFFFFF
+$widget2 configure -bg #FFFFFF
+set tkhtml_priv(title) "Help for TKLMITOOL v1.0"
+addTag $widget1 sel 
+addTag $widget1 hr 
+addTag $widget1 HREF 7.130 7.139 13.133 13.142 17.3 17.13 17.14 17.23 18.3 18.16 19.3 19.8 19.9 19.18 19.19 19.31 20.3 20.16 21.3 21.18 24.112 24.153 90.7 90.24 93.7 93.22 94.7 94.36 95.7 95.26 96.7 96.16 97.7 97.16 98.7 98.22 139.7 139.24 153.3 153.21 154.3 154.28 156.3 156.18 162.3 162.8 164.3 164.8 172.3 172.14 192.91 192.120 198.163 198.192
+addTag $widget1 times2-000blackL 3.0 3.95 9.0 9.95 15.0 15.177 15.180 15.232 23.0 23.34 23.55 23.102 23.119 23.120 24.0 24.111 24.153 24.154 28.10 28.33 44.0 44.19 44.30 44.170 48.0 48.6 48.16 48.56 48.66 48.67 49.0 49.31 104.0 104.59 104.71 104.77 104.84 104.89 106.0 106.60 106.70 106.87 109.0 109.132 113.0 113.76 113.86 113.87 115.0 115.81 119.0 119.81 121.0 121.246 121.247 121.281 123.0 123.139 129.0 129.149 131.10 131.66 131.73 131.86 137.0 137.100 174.0 174.59 174.60 174.70 174.71 174.77 174.78 174.83 174.84 174.89 176.0 176.12 176.20 176.66 176.76 176.131 180.0 180.7 180.23 180.94 180.102 180.157 180.166 180.168 184.0 184.9 184.10 184.37 184.49 184.50 185.10 185.41 190.0 190.50 190.61 190.115 192.10 192.34 192.44 192.90 192.120 192.127 192.138 192.165 192.166 192.169 194.10 194.36 202.0 202.45 202.59 202.64 202.91 202.92 204.0 204.32 204.33 204.35 204.36 204.94 204.111 204.118 204.141 204.142
+addTag $widget1 timesB5-000blackL 1.0 1.21
+addTag $widget1 header1 1.0 1.21 3.0 3.95
+addTag $widget1 times2-10140blackL 5.8 5.159 6.3 6.66 7.10 7.43 7.52 7.129 7.140 7.145 11.0 11.3 11.13 11.164 12.0 12.1 12.6 12.69 13.0 13.1 13.13 13.46 13.55 13.132 13.143 13.148 17.0 17.1 18.0 18.1 18.17 18.18 19.0 19.1 20.0 20.1 21.0 21.1 38.0 38.1 38.3 38.64 38.78 38.79 39.0 39.1 39.3 39.58 39.75 39.76 40.0 40.1 40.3 40.155 40.176 40.221 41.0 41.1 41.3 41.163 41.166 41.178 42.0 42.1 42.3 42.165 42.168 42.287 51.0 51.1 51.3 51.30 90.0 90.1 90.3 90.6 90.25 90.76 90.80 90.152 91.0 91.1 91.3 91.6 91.28 91.167 100.0 100.64 101.0 101.1 101.3 101.92 102.0 102.1 102.3 102.87 139.0 139.1 139.3 139.6 139.25 139.82 145.0 145.21 145.22 145.29 145.30 145.68 150.0 150.150 151.0 151.1 151.3 151.6 151.7 151.27 151.28 151.96 187.0 187.1 187.3 187.4 187.12 187.52 187.62 187.63 188.0 188.1 188.3 188.5 188.17 188.26 196.0 196.1 196.18 196.125 197.0 197.1 197.44 197.254 198.0 198.1 198.40 198.162 198.193 198.208
+addTag $widget1 timesB2-10140blackL 5.0 5.7 6.0 6.2 7.0 7.9 7.44 7.51 11.5 11.12 12.3 12.5 13.3 13.12 13.47 13.54 38.65 38.78 39.59 39.75 40.156 40.175 41.163 41.166 42.165 42.168 91.7 91.27
+addTag $widget1 timesU2-10140blueL 7.130 7.139 13.133 13.142 17.3 17.13 18.3 18.16 19.3 19.8 19.19 19.31 20.3 20.16 21.3 21.18 90.7 90.24 139.7 139.24 198.163 198.192
+addTag $widget1 href:href0 7.130 7.139
+addTag $widget1 href:href1 13.133 13.142
+addTag $widget1 timesB2-000blackL 15.178 15.180 23.35 23.55 28.0 28.9 44.20 44.29 48.7 48.16 104.60 104.70 104.78 104.83 106.61 106.70 113.77 113.86 131.0 131.9
+addTag $widget1 href:href2 17.3 17.13 17.14 17.23
+addTag $widget1 timesBU2-10140blueL 17.14 17.23 19.9 19.18
+addTag $widget1 href:href3 18.3 18.16
+addTag $widget1 href:href4 19.3 19.8 19.9 19.18 19.19 19.31
+addTag $widget1 href:href5 20.3 20.16
+addTag $widget1 href:href6 21.3 21.18
+addTag $widget1 courier2-000blackL 23.103 23.119 30.0 35.7 37.0 38.0 48.57 48.66 107.0 107.39 117.0 118.0 125.0 128.0 131.67 131.73 133.0 134.37 136.0 137.0 176.13 176.19 176.67 176.75 178.0 178.36 180.8 180.22 180.94 180.101 180.157 180.166 184.38 184.49 185.0 185.9 190.51 190.60 192.0 192.9 192.35 192.44 192.128 192.137 194.0 194.9 202.46 202.58 202.65 202.91 204.95 204.111 204.119 204.141
+addTag $widget1 timesU2-000blueL 24.112 24.153 192.91 192.120
+addTag $widget1 href:href7 24.112 24.153
+addTag $widget1 timesB4-000blackL 26.0 26.1 26.3 26.13 26.14 26.23 46.0 46.1 46.3 46.13 46.14 46.23 46.24 46.25 111.0 111.1 111.3 111.41 182.3 182.16 200.3 200.18
+addTag $widget1 header2 26.0 26.1 26.3 26.13 26.14 26.23
+addTag $widget1 purpose 26.3 26.13 26.14 26.23
+addTag $widget1 header3 46.0 46.1 46.3 46.13 46.14 46.23 46.24 46.25 48.0 48.6
+addTag $widget1 howto 46.3 46.13 46.14 46.23
+addTag $widget1 times2-20280blackL 52.0 52.1 52.3 52.9 60.0 60.1 60.3 60.9 67.0 67.1 67.3 67.10 73.0 73.1 73.3 73.12 77.0 77.1 77.3 77.11 81.0 81.1 81.3 81.9 93.0 93.1 93.3 93.6 93.23 93.78 94.0 94.1 94.3 94.6 94.37 94.115 95.0 95.1 95.3 95.6 95.27 95.84 96.0 96.1 96.3 96.6 96.17 96.68 97.0 97.1 97.3 97.6 97.17 97.68 98.0 98.1 98.3 98.6 98.23 98.80 141.0 141.1 141.3 141.17 141.18 141.24 142.0 142.1 142.3 142.18 142.19 142.22 143.0 143.1 143.3 143.14 143.15 143.23 153.0 153.1 154.0 154.1 155.0 155.29 155.33 155.66 156.0 156.1 160.0 160.27 160.34 160.37 160.43 160.44 161.0 161.21 161.22 161.27 161.28 161.59 162.0 162.1 163.0 163.38 164.0 164.1 171.0 171.69 172.0 172.1 172.15 172.19
+addTag $widget1 times2-30420blackL 53.0 53.1 53.3 53.38 54.0 54.1 54.3 54.39 55.0 55.1 55.3 55.35 56.0 56.1 56.3 56.52 57.0 57.1 57.3 57.31 58.0 58.1 58.3 58.54 61.0 61.1 61.3 61.37 62.0 62.1 62.3 62.37 63.0 63.1 63.3 63.70 64.0 64.1 64.3 64.55 65.0 65.1 65.3 65.87 68.0 68.1 68.3 68.105 69.0 69.1 69.3 69.95 70.0 70.1 70.3 70.51 71.0 71.1 71.3 71.59 74.0 74.1 74.3 74.95 75.0 75.1 75.3 75.132 78.0 78.1 78.3 78.101 79.0 79.1 79.3 79.120 82.0 82.1 82.3 82.14 83.0 83.1 83.3 83.27 84.0 84.1 84.3 84.29 85.0 85.1 85.3 85.19 86.0 86.1 86.3 86.10 87.0 87.1 87.3 87.10 88.0 88.1 88.3 88.16
+addTag $widget1 href:href8 90.7 90.24
+addTag $widget1 courier2-10140blackL 90.77 90.80 147.0 149.0 187.53 187.62
+addTag $widget1 timesU2-20280blueL 93.7 93.22 94.7 94.36 95.7 95.26 96.7 96.16 97.7 97.16 98.7 98.22 153.3 153.21 154.3 154.28 156.3 156.18 162.3 162.8 164.3 164.8 172.3 172.14
+addTag $widget1 href:href9 93.7 93.22
+addTag $widget1 href:href10 94.7 94.36
+addTag $widget1 href:href11 95.7 95.26
+addTag $widget1 href:href12 96.7 96.16
+addTag $widget1 href:href13 97.7 97.16
+addTag $widget1 href:href14 98.7 98.22
+addTag $widget1 header4 111.0 111.1 111.3 111.41 113.0 113.76
+addTag $widget1 example 111.3 111.41
+addTag $widget1 href:href15 139.7 139.24
+addTag $widget1 href:href16 153.3 153.21
+addTag $widget1 href:href17 154.3 154.28
+addTag $widget1 courier2-20280blackL 154.29 154.46 155.29 155.33 157.0 158.23 160.28 160.33 160.38 160.43 162.9 162.20 165.0 169.4
+addTag $widget1 href:href18 156.3 156.18
+addTag $widget1 href:href19 162.3 162.8
+addTag $widget1 href:href20 164.3 164.8
+addTag $widget1 href:href21 172.3 172.14
+addTag $widget1 times4-000blackL 182.0 182.1 200.0 200.1
+addTag $widget1 header5 182.0 182.1 182.3 182.16
+addTag $widget1 howdoes 182.3 182.16
+addTag $widget1 timesI2-10140blackL 187.5 187.11 188.6 188.16 196.3 196.17 197.3 197.43 198.3 198.39
+addTag $widget1 href:href22 192.91 192.120
+addTag $widget1 href:href23 198.163 198.192
+addTag $widget1 header6 200.0 200.1 200.3 200.18 202.0 202.45
+addTag $widget1 toget 200.3 200.18
+addTag $widget2 sel 
+addTag $widget2 HEADER 1.0 1.24 2.0 2.26 3.0 3.28 4.0 4.44 5.0 5.19 6.0 6.21
+addTag $widget2 header:header1 1.0 1.24
+addTag $widget2 header:header2 2.0 2.26
+addTag $widget2 header:header3 3.0 3.28
+addTag $widget2 header:header4 4.0 4.44
+addTag $widget2 header:header5 5.0 5.19
+addTag $widget2 header:header6 6.0 6.21
+} ; # endproc updateTextWidget
+

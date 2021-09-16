@@ -728,11 +728,6 @@ proc Mouse:B1Double {c x y} {
       # l'objet source gred(oidSource)
       $Type:changeParams $c $gred(oidSource) all
     }
-    Link {
-      # appel de la procedure de modification des parametres de 
-      # l'objet source gred(oidSource)
-      $Type:changeParams $c $gred(oidSource) all
-    }
   }
 }
 

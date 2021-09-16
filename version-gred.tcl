@@ -3,5 +3,5 @@
 # etre analyser par l'application
 # 
 
-set version-gred gred-0.23alpha
+set version-gred gred-0.24alpha
 

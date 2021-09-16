@@ -1,0 +1,202 @@
+<HTML>
+<!-- $ Last Modified: $Date: 1997/09/22 15:44:19 $: -->
+
+<HEAD>
+<TITLE>
+Historique des modifications de GRED
+</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="white" TEXT="black">
+<!--------------------------------------------------------------------->
+<!--------------------------------------------------------------------->
+<!--------------------------------------------------------------------->
+
+<H2>Historique des ANCIENNES modifications de GRED (fichier plus maintenu)</H2>
+
+
+<!--------------------------------------------------------------------->
+<HR SIZE=2>
+<H3> gred-0.20alpha (20/08/97) </H3>
+<UL> 
+<LI> réorganisation du système de gestion des versions.
+<LI> Modification du package prompt pour simuler le "wm transient".
+<LI> Modification du menu popup. On n'utilise plus le package Menu de pist.
+     On évite le chargement du package "menu" de pist.
+<LI> Une taille sympa pour la grille, c'est une largeur de grille égale à
+     la largeur d'une étape...
+<LI> Amélioration du temps de sauvegarde d'un grafcet.<BR>
+     Chaque objet contient un champs <B>command</B> qui contient sa 
+     decription...<BR>
+     Idée utile pour:
+     <UL>
+      <LI> Utile pour la sauvegarde,
+      <LI> Utile pour un refresh ou l'utilisation de "postcommand" 
+           des préférences (non implanté).
+     </UL>
+<LI> Modification des procédures de création d'Etape et de Transition, pour
+     permettre une gestion des noms cohérente.
+<LI> Modification de la procédure de création de liaisons "add:link", 
+     désormais la procédure léve des erreurs claires. A voir: La gestion des
+     lignes ???
+<LI> <B>Politique de gestion des noms</B> :
+     <UL>
+      <LI> Une préférence permet de spécifier un nom. Ensuite tous les noms des
+           étapes seront formés à partir de ce nom. Si par exemple vous spécifié
+           "X3n" dans les préférences, tous les noms seront de la forme:<BR>
+           "X3n", "X4n", "X5n", etc...
+      <LI> idem pour les transitions...
+      <LI> Si un lien est crée entre des étapes ou des transitions inexistantes
+           gred léve des erreurs pour guider l'utilisateur.
+      <LI> Pour modifier le nom d'une étape, il suffit de double cliquer sur
+           7 derniere pour en changer les paramètres... C LOURD CA !
+     </UL>
+<LI> Amélioration de la création automatique des liens:
+    <UL>
+     <LI>partie horizontale plus proche de l'objet aval,
+     <LI>ajouter +/- dy a l'ordonnée de la partie horizontale
+         (évite ù un croisement horizontal de se superposer.
+    </UL>
+<LI> Refonte <B>COMPLETE</B> de la fenêtre de saisie des valeurs concernant
+     les étapes. On n'utilise plus le package <I>Prompt.tcl</I> de <I>pist</I>.
+     Il s'agit d'une procédure adaptée aux besoins. On peut saisir plusieurs
+     actions pour une étapes.
+<LI> Refonte <B>COMPLETE</B><I>:-)</I> de l'affichage d'une étape. On peut
+     désormais afficher plusieurs action, plusieurs référence et plusieurs
+     symbole.
+</UL>
+
+<!--------------------------------------------------------------------->
+<HR SIZE=2>
+<H3> gred-0.19a (28/04/97) </H3>
+<UL> 
+
+<LI> Correction d'un <B>BUG</B> empechant l'autochargement des librairies 
+     de TK (un probleme de balance de crochet fermant manquant :
+     STEAD est bien pratique :-)
+<LI> <B>Transitions</B>: affichage de la réceptivité à droite de la transition
+     (==&gt; les grafcets de <I>gred</I> sont donc "plus réglementaires"...)
+<LI> Modification de la présentation de la fenêtre de modification des
+     paramétres.
+<LI> Modification du package <I>prompt</I>: dédormais on peut spécifier le 
+     nombre de colonnes sur lequelles seront affichées les radiobuttons.
+<LI> Modification de la notion de type d'étape ==&gt; une étape se définit par:
+     <OL>
+        <LI> Un <I>type</I> (comme Initiale, Macrodebut,...)
+        <LI> Un <I>nom</I> (comme "Etape initiale", "Début de Macro étape",...")
+        <LI> Un <I>procédure de dessin</I> de cette étape.
+     </OL>
+<LI> Désormais la touche &lt;Escape&gt; supprime la sélection en cours.
+<LI> Elimination RAPIDE du bug de la grille ==&gt; à refaire !
+<LI> Menu <B>Imprimer</B>: Gére le swap de la grille ==&gt; les impressions 
+     sont plus rapides...
+<LI> <B>Etape</B>: Si une étape est active ==&gt; un point est ajouté dans son 
+     dessin.
+<LI> <B>Transition</B>: Création d'une nouvelle préférence permettant 
+     d'afficher ou non le nom d'une transition. On affiche par défaut la
+     le nom des transitions.
+<LI> Désormais la sélection est exportable vers X11. On exporte
+     du texte.
+<LI> Pour permettre de savoir si une commande a été prise en compte par
+     <I>gred</I>, désormais le pointeur de la souris se change en <I>watch</I> 
+     pendant l'exécution de procédures du fichier </I>grcmd.tcl<I>.
+<LI> Menu <B>Administrator</B>: Ajout d'une fonction de recherche de procédures.
+     On sélectionne la procédure et on exécute la nouvelle commande du menu.
+<LI> Création de 2 nouvelles variables contenant:
+     <OL>
+        <LI> la version de pist: <I>gred(pistversion)</I>
+        <LI> la version de gred: <I>gred(version)</I>
+     </OL>
+<LI> Création d'une nouvelle procédure <I>showVersion</I> dans le 
+     fichier <I>grcmd.tcl</I>. Cette procédure affiche dynamiquement le chemin
+     d'accés du fichier exécutable <I>gred</I>, le répertoire contenant 
+     <I>gred</I>, le répertoire contenant <I>pist</I> et les versions
+     respectives de <I>pist</I> et de <I>gred</I>.
+<LI> Gestion de l'autoscrolling du canvas avec le bouton 1...
+<LI> Ajout de 8 nouveaux bindings sur le canvas. Ces bindings sont compatibles
+     avec les bindings de souris, par exemple on peut sélectionner des
+     objets tout en déplacant la vue à l'aide de ces 8 nouvelles touches:
+     <OL>
+        <LI><B>&lt;Left&gt;</B>: Permet de déplacer la sélection vers la
+            gauche ou déplace la fenêtre sur le canvas vers la gauche.
+        <LI><B>&lt;Right&gt;</B>: Permet de déplacer la sélection vers la
+            droite ou déplace la fenêtre sur le canvas vers la droite.
+        <LI><B>&lt;Up&gt;</B>: Permet de déplacer la sélection vers le
+            haut ou déplace la fenêtre sur le canvas vers le haut.
+        <LI><B>&lt;Down&gt;</B>: Permet de déplacer la sélection vers le
+            bas ou déplace la fenêtre sur le canvas vers le bas.
+        <LI><B>&lt;Home&gt;</B>: Déplace la fenêtre tout en haut du canvas.
+        <LI><B>&lt;End&gt;</B>: Déplace la fenêtre tout en bas du canvas.
+        <LI><B>&lt;Meta-Left&gt;</B>: Déplace la fenêtre sur le canvas 
+            complétement vers la gauche.
+        <LI><B>&lt;Meta-Right&gt;</B>: Déplace la fenêtre sur le canvas 
+            complétement vers la droite.
+     </OL>
+</UL>
+
+<!--------------------------------------------------------------------->
+<HR SIZE=2>
+<H3> gred-0.18a (11/04/97) </H3>
+<UL> 
+<LI> rajout d'un petit exemple "sample/GRED_EXEMPLE_SIMPLE.gra
+<LI> Fleches sur les liaisons montantes
+<LI> Nouveau type d'étapes (Macro début et Macro Fin)
+<LI> Refonte des menu contextuel <B3> pour creer de nouveau objets
+<LI> Ajout de 2 nouveaux types d'étape: Etape de début de macro et
+     étape de fin de macro...
+<LI> Meilleur gestion de l'état de sauvegarde du fichier. Il fonctionne
+     en parfait accord avec la notion de réference incluse dans le package
+     <I>undo</I>.
+</UL>
+
+<!--------------------------------------------------------------------->
+<HR SIZE=2>
+<H3> gred-0.15a (diam : en cours) </H3>
+
+<UL>
+
+<LI> Modif des fichiers d'aide en ligne :
+   <UL>
+   <LI> changements.html (renomm&eacute; en  historique.html)
+   <LI> copyright.html
+   <LI> modif modu admin et modif mineur de hview
+   <LI> intégration du nouveua package smtp dans pist
+   </UL>
+   
+<LI> Refonte des menus et du popup 
+</UL>
+
+<H3> gred-0.14a (carqueij : 25/03/97) </H3>
+
+<UL>
+
+<LI> Ajout le menu "Buffer".
+
+<LI> Ajout de l'aide.  Pr&eacute;voir de mettre des fichiers utiles (:-p) 
+dans cette aide...
+
+<LI> Cr&eacute;ation de la toplevel g&eacute;n&eacute;rant des fichiers 
+postscripts encapsul&eacute;s.
+
+<LI> Ajout de bindings dans la fenêtre d'aide.<BR> Comme par exemple 
+&lt;ESC&gt;, &lt;Ctrl+C&gt;, etc...
+
+<LI> Modifications profondes du trio "Copy", "Paste" et "Cut"...
+
+<LI> Ajout un menu "Load" et adaptation d'un menu "Open".
+</UL>
+
+<!-- <P>
+
+<!--------------------------------------------------------------------->
+<HR SIZE=2>
+<H3> Autres pointeurs </H3>
+<UL>
+<LI><A HREF="a_faire.html">Modifications de gred &agrave; faire...</A>
+
+<LI><A HREF="index.html">About gred</A>
+
+<LI><A HREF="copyright.html">Copyright</A>
+</UL>
+
+

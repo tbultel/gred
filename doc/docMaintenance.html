@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (X11; I; SunOS 4.1.4 sun4m) [Netscape]">
+</HEAD>
+<BODY>
+
+<P>Le but de ce document est de pr&eacute;senter les diff&eacute;rents
+choix eff&eacute;ctu&eacute;s pendant le d&eacute;veloppement de l'application
+<B>GRED</B>.Nous pr&eacute;senterons successivement les variables globales
+du syst&egrave;me, les choix en mati&eacute;res d'algorithmique et de 
+repr&eacute;sentation des donn&eacute;es.</P>
+
+<H1>Les variables Globales</H1>
+
+<H2>Le tableau globale <I>gred</I></H2>
+
+<P>En premier lieu, le tableau <I>gred </I>contient des informations 
+g&eacute;n&eacute;rales &agrave; tout l'&eacute;diteur de grafcet.</P>
+
+<OL>
+<LI><I>gred(date)</I> Variable contenant la date inutilisé dans la suite !
+<LI><I>gred(exe)</I> Exécutable <I>gred</I>.
+<LI><I>gred(setup,localfilerc)</I> contient le fichier de ressource de
+    <I>gred</I>.
+<LI><I>gred(setup,userfilerc)</I> contient le fichier de ressource utilisateur      de <I>gred</I>.
+<LI><I>gred(setup)</I> contient le repértoire de librairie de <I>gred</I>
+<LI><I>gred(setup,userlibs)</I> contient le repértoire de librairie de
+    l'utilisateur.
+<LI><I>gred(grafcets)</I> Liste des grafcets en cours d'édition.
+<LI><I>gred(grafcetUID)</I> Identificateur unique de grafcet/window.
+<LI><I>gred(uid)</I> Identification unique utilisable pour la creation des 
+    widgets.
+<LI><I>gred(initialised)</I> Vaut 1 quand l'initialisation de gred est terminé.
+<LI><I>gred(grafcetCourant)</I> Gafcet en cours d'édition.
+<LI><I>gred(untitled)</I> Nom de fichier par défaut.
+<LI><I>gred(etape,nameIndex)</I> Nom à partir duquel le nom des
+    étapes sera détérminé. Si ce champs vaut, par exemple, "T3W", toutes
+    les transirtions auront pour nom: "TxW" ou x est un entier supérieur ou
+    égales à 3.
+<LI><I>gred(transition,nameIndex)</I> Nom à partir duquel le nom des
+    transitions sera détérminé.
+<LI><I>gred(etape,options)</I> Liste des champs associés à une étape.
+<LI><I>gred(etape,type)</I> Liste des type associé à une étape. A valeur dans la
+    liste {<I>Normal</I>, <I>Initial</I>, <I>Hyper</I>, <I>Macro</I>, 
+    <I>MacroDebut</I>, <I>MacroFin</I>}.
+<LI><I>gred(etape,name)</I> Nom associé aux types définies précédement. A valeur
+    dans {<I>"Etape normale"</I>, <I>"Etape initiale"</I>,
+    <I>"Hyper étape"</I>, <I>"Macro étape"</I>, <I>"Début de macro étape"</I>,
+    <I>"Fin de macro étape"</I>}
+<LI><I>gred(etape,state)</I> Liste des état d'une étape. A valeur dans:
+    {<I>active</I>, <I>inactive</I>}.
+<LI><I>gred(transition,options)</I> Liste des champs associés à une transition.
+    A valeur dans  {<I>name</I>, <I>receptivity</I>, <I>comment</I>}.
+</OL>
+Les préférences utilisateurs:
+<OL>
+<LI><I>gred(etape,border)</I>
+<LI><I>gred(userMail)</I> Nom de l'utilisateur.
+<LI><I>gred(grid)</I> Taille de grille.
+<LI><I>gred(admin)</I> Variable positionnée à "Vrai" si l'utilisateur est un
+    administrateur, vaut "faux" sinon.
+<LI><I>gred(fontSize)</I> Taille du texte dans le canvas.
+<LI><I>gred(sequence,yStep)</I> Pas entre étape/transition pour la création
+    de séquence.
+<LI><I>gred(grid,color)</I> Couleur de la grille.
+<LI><I>gred(defaultSourceObjectType)</I> Type d'objet source à créer par
+    défaut.
+<LI><I>gred(etape,height)</I> Largeur d'une étape.
+<LI><I>gred(look,etapeBackground)</I> Couleur du fond d'étape.
+<LI><I>gred(transition,width)</I> Largeur d'une transition.
+<LI><I>gred(transition,showName)</I> Afficher le nom de la transition oui/non.
+<LI><I>gred(transition,height)</I> Hauteur d'une transition.
+<LI><I>gred(transition,link)</I> Longueur mini du lien coté d'une transition.
+<LI><I>gred(doubleLine,height)</I> Distance entre les doubles lignes d'une
+    transition.
+<LI><I>gred(link,width)</I> Epaisseur des liens.
+<LI><I>gred(link,handlesize)</I> Taille des poignées d'édition des liens.
+<LI><I>gred(doubleLine,xOffset)</I> Longueur minimale du déplacement latéral
+    d'une double ligne.
+<LI><I>gred(doubleLine,yOffset)</I> Longueur minimale du segment de droite
+    entre une transiton et sa double ligne.
+<LI><I>gred(look,transitionBackground)</I> Couleur du fond de transition.
+<LI><I>gred(look,canvasBackground)</I> Couleur du fond de la fenêtre
+    principale.
+<LI><I>gred(virtualColor)</I> Couleur des objets virtuels.
+<LI><I>gred(drag,limit)</I> Limite de déclenchement du mode Drag.
+<LI><I>gred(sel,color)</I> Couleur de la sélection.
+<LI><I>gred(selectMode)</I> Mode de capture de la sélection.
+<LI><I>gred(Meta)</I> Définition de la touche Meta.
+<LI><I>gred(shift)</I> Définition de la touche Shift.
+<LI><I>gred(arrowScroll)</I> Mode de déplacement à l'aide des flèches.
+</OL>
+
+
+<H2>Le tableau globale <I>gred.grafcetX</I></H2>
+En second lieu, le tableau <I>gred.grafcetX</I> contient des informations
+relatives à la toplevel <I>.grafcetX</I>. Il contient des informations comme:
+<OL>
+<LI><I>gred.grafcetX(isDirty)</I> vaut:
+    <UL>
+     <LI> 1, si le grafcet en cours d'édition dans la topleveldoit être
+          sauvegardé,
+     <LI> 0 sinon.
+    </UL>
+<LI><I>gred.grafcetX(oidSource)</I> Contient le nom du l'oid source que l'on
+    vient de cliquer.
+<LI><I>gred.grafcetX(oidDesti)</I> Contient le nom du l'oid destination que l'on
+    vient de cliquer.
+<LI><I>gred(mouse,xPress)</I> et <I>gred(mouse,yPress)</I> sont deux variables
+    mémorisant la position du dernier click dans le canvas.
+<LI><I>gred.grafcetX(shiftActif)</I> Vaut 1 si la touche "Shift" est appuyée.
+<LI><I>gred.grafcetX(status)</I> Contient le dernier message d'erreur.
+<LI><I>gred.grafcetX(statusLog)</I> Contient toutes les erreurs levées pendant
+    l'édition du grafcet.
+</OL>
+<B>Remarque:</B> X est un entier qui s'incrémente à chaque nouveau grafcet 
+   (cf variable <I>gred(grafcetUID)</I>)
+
+
+<H2>Le tableau globale <I>grafcet.grafcetX</I></H2>
+<P>Ensuite, le tableau <I>grafcet.grafcetX</I>contient des informations
+relatives à un grafcet.<BR> Ici, X est un entier qui s'incrémente à chaque
+nouveau grafcet (cf variable <I>gred(grafcetUID)</I>).</P>
+Typiquement, dans la mesure où dans la version actuelle une fenêtre ne peut
+éditer qu'un seul grafcet. La fenêtre toplevel <I>.grafcetX</I> contiendra
+le grafcet contenu dans le tableau globale <I>grafcet.grafcetX</I>...
+
+<H3>Informations globales</H3>
+Les informations globales aux grafcets en cours d'edition sont:
+<OL>
+<LI><I>gred.grafcetX(filename)</I> Nom du fichier en cours d'édition dans la
+    fenêtre.
+<LI><I>grafcet.grafcetX(EtapeNameId)</I> Nom à partir duquel le nom des
+    étapes sera détérminé. Si ce champs vaut, par exemple, "T3W", toutes
+    les transirtions auront pour nom: "TxW" ou x est un entier supérieur ou
+    égales à 3. Vaut <I>gred(etape,nameIndex)</I> par défaut.
+<LI><I>grafcet.grafcetX(TransNameId)</I> Nom à partir duquel le nom des
+    transitions sera détérminé. Vaut <I>gred(transition,nameIndex)</I> par
+    défaut.
+</OL>
+
+Ce tableau contient aussi des informations nécessaires pour chaque type 
+d'<I>oid</I> contenu dans un grafcet:
+<UL>
+<LI> les étapes,
+<LI> les transitions,
+<LI> et les liens.
+</UL>
+
+    
+<H3>Informations concernant les étapes</H3>
+On distingue les étapes les unes des autres par l'intermédiaire d'un
+identificateur du type <I>oidEtapeY</I> où Y est un entier qui s'incrémente
+à chaque nouvelle étape. Y prend ses valeurs suivant la variables
+<I>grafcet.grafcetX(EtapeUId)</I>.
+Pour chaque étapes d'oid <I>oidEtapeY</I> du grafcet, on mémorise les champs:
+<OL>
+<LI><I>grafcet.grafcetX(oidEtapeY)</I> qui vaut {} tant que cet objet existe.
+    Cette variable permet de savoir si une étape d'oid <I>oidEtapeY</I>
+    existe dans le grafcet.
+<LI><I>grafcet.grafcetX(oidEtapeY,x)</I> et
+    <I>grafcet.grafcetX(oidEtapeY,y)</I> continennent les coordonnées de
+    l'étape.
+<LI><I>grafcet.grafcetX(oidEtapeY,name)</I> est le nom l'étape.
+<LI><I>grafcet.grafcetX(oidEtapeY,type)</I> prends ses valeurs dans la
+    liste {<I>Normal</I>, <I>Initial</I>, <I>Hyper</I>, <I>Macro</I>, 
+    <I>MacroDebut</I>, <I>MacroFin</I>}. Permet de définir le type de l'étape.
+    On associe en plus au étape de type <I>Macro</I> un champs
+    <I>grafcet.grafcetX(oidEtapeY,file)</I> correspondant au fichier contenant
+    la description de la Macro.
+<LI><I>grafcet.grafcetX(oidEtapeY,file)</I> contient un nom de fichier pour les
+    étape de type macro étape (i.e. de type <I>Macro</I>).
+<LI><I>grafcet.grafcetX(oidEtapeY,state)</I> prend ses valeurs dans le
+    couple {<I>active</I>,<I>inactive</I>}. Permet de préciser si une variable
+    est oui ou non active.
+<LI><I>grafcet.grafcetX(oidEtapeY,comment)</I> contient un commentaire lié
+    à l'etape. Contient une liste constituée des coordonnées du commentaire
+    (relative par rapport à la position de l'etape) et la valeur du commentaire.
+<LI><I>grafcet.grafcetX(oidEtapeY,action)</I> est une liste de listes décrivant
+    les actions associées à l'étape. Par exemple l'action définit par la liste
+    {{A {ACTION 1} B}} correspond à une action de nom "ACTION 1" associé à
+    un symbole A et à une référence B.
+<LI><I>grafcet.grafcetX(oidEtapeY,command)</I> décrit la commande permettant
+    de regénéré l'étape. Ce champs permet de redessiner facilement un grafcet,
+    une sauvegarde rapide du grafcet en cours d'édition.
+</OL>
+
+<H3>Informations concernant les transitions</H3>
+On distingue les transitions les unes des autres par l'intermédiaire d'un
+identificateur du type <I>oidTransY</I> où Y est un entier qui s'incrémente
+à chaque nouvelle transition. Y prend ses valeurs suivant la variables
+<I>grafcet.grafcetX(TransUId)</I>.
+Pour chaque transition d'oid <I>oidTransY</I> du grafcet, on mémorise les
+champs:
+<OL>
+<LI><I>grafcet.grafcetX(oidtransY)</I> qui vaut {} tant que cet objet existe.
+    Cette variable permet de savoir si une transition d'oid <I>oidTransY</I>
+    existe dans le grafcet.
+<LI><I>grafcet.grafcetX(oidTransY,name)</I> est le nom la transition.
+<LI><I>grafcet.grafcetX(oidTransY,x)</I> et <I>grafcet.grafcet1(oidTrans1,y)</I>
+    sont les coordonnées de la transition.
+<LI><I>grafcet.grafcetX(oidTransY,receptivity)</I> mémorise la recéptivité lié
+    à une transition.
+<LI><I>grafcet.grafcetX(oidTransY,comment)</I> est le commentaire associé à une
+    transition. Contient une liste constituée des coordonnées du commentaire
+    (relative par rapport à la position de l'etape) et la valeur du commentaire.
+<LI><I>grafcet.grafcetX(oidTransY,command)</I> décrit la commande permettant
+    de regénéré la transition. Ce champs permet de redessiner facilement un
+    grafcet, une sauvegarde rapide du grafcet en cours d'édition.
+</OL>
+
+<H3>Informations concernant les liaisons</H3>
+On distingue les transitions les unes des autres par l'intermédiaire d'un
+identificateur du type <I>oidLinkXEtapeYTransZ</I> où X est un entier qui
+s'incrémente à chaque nouvelle transition. Y prend ses valeurs suivant la 
+variables <I>grafcet.grafcet1(LinkUId)</I>. L'exemple précédent dénote une
+liaison liant l'étape d'oid oidEtapeY et la transition d'oid oidTransZ.
+
+<H1>Choix de représentation des données</H1>
+Nous allons commencer par présenter le principe de gestion des commentaires.
+<H2>La gestion des commentaires</H2>
+Les commentaires sont traitées de la même façon que ce soit pour les
+étapes que pour les transitions. Un commentaire est une liste de 3 éléments:
+<UL>
+<LI>les 2 premiers réprésentant les coordonnées relatives de la position du
+    commentaire,
+<LI>le dernier élément indiquant le contenue du commentaire.
+</UL>
+Lorsque l'on clique sur un commentaire (d'étape ou de transition), on rentre
+en mode "commentEdit". Ce mode permet de définir les bindings permettant de
+gérer le déplacement du commentaire. En mode "commentEdit", on sélectionne
+un commentaire. Ensuite, on peut le "drag'n dropper" pour le déplacer.
+La gestion est établi par plusieurs procédures:
+<UL>
+<LI><I>CommentEditB1Press</I>: On clique sur le commentaire (déjà selectionné)
+    pour le déplacer. On mémorise la position du click (variable
+    <I>gred(mouse,xPress)</I> et <I>gred(mouse,yPress)</I>), la valeur
+    du commentaire avant déplacement dans la variable 
+    <I>gred(commentFieldBeforeMove)</I>, ainsi que la valeur de l'item
+    (représentant le commentaire) à déplacer (dans <I>gred(commentItem)</I>).
+<LI><I>CommentEditB1Motion</I>: On déplace le commentaire (on n'a pas encore
+    encore relaché le bouton1). On utilise les variables
+    <I>gred(mouse,xMove)</I> et <I>gred(mouse,yMove)</I> pour mémoriser la
+    dernière position de la souris.
+<LI><I>CommentEditB1Release</I>: On relache le bouton1. On update le
+    champs comment de l'oid (étape ou transition). On quitte le mode
+    "commentEdit". On efface la selection (à voir...).
+</UL>
+La procédure <I>LeaveModeCommentEdit</I> permet de quitter le mode
+"commentEdit".
+</BODY>
+</HTML>

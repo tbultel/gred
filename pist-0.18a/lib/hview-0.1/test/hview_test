@@ -1,0 +1,52 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec wish8.0 "$0" -- ${1+"$@"}
+
+# # if {! [set tcl_interactive]} {
+# #     return
+# # }
+
+# wm withdraw .
+
+set HVIEW [file join [file dirname [info script]] ..  hview.tcl]
+source $HVIEW
+
+# Voici un exemple du package hview. On affiche 2 fichiers dans le menu Topics.
+# On peut passer de l'un a l'autre !
+# Il est possible de compiler les 2 fichiers :
+#     compile_html2htcl  -file exemple.html -file canvas.n.html
+# Le script compile_html2htcl utilise le package html2htcl.tcl pour
+# compiler le fichier. Il utilise la procedure html2htcl qui compile les
+# fichiers passes en argument.
+
+set filedir [file dirname [info script]]
+set dirOri [pwd]
+cd $filedir
+
+# file mkdir ne renvoie pas d'erreur si le repertoire existe deja...
+# Si le repertoire existe, il ne fait rien !
+file mkdir TMP
+file mkdir CACHE
+
+set help_topics {
+    test.html exemple.html canvas.n.html 
+}
+# On affiche le premier element !
+set topic [lindex $help_topics 0]
+
+# On cree le widget d'help
+hView_Box .help \
+    -topics $help_topics\
+    -helpdir $filedir\
+    -cacheDir [file join $filedir CACHE]\
+    -tmpFile [file join $filedir TMP]\
+    -feedBar off
+
+# On affiche le topic canvas.n.html
+.help follow_link $topic
+
+# Pour afficher un text HTML...
+# set text \
+#   "<H1>C'est magique...</H1><BR><b> AAA </b><P><I> BBB </I><P><HR SIZE=30>"
+# .help show_text $text
+

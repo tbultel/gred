@@ -299,7 +299,20 @@ proc PromptTypeENTRY {f indice args} {
     }
     if {$argument(-lock)} {
         # Avec l'option -lock ON
-        global $PromptLocal(variableName$indice)
+        # diam (23/09/2009) BUG 
+        #
+        #   bad variable name "tmp(oidTrans1,XYPosition)": 
+        #   upvar won't create a scalar variable that looks like an array element
+        #   bad variable name "tmp(oidTrans1,XYPosition)": 
+        #   upvar won't create a scalar variable that looks like an array element
+        #       while executing
+        #   "global $PromptLocal(variableName$indice)"
+        #       (procedure "PromptTypeENTRY" line 30)
+        #
+
+        # global $PromptLocal(variableName$indice)  ;# CECI PLANTAIT
+
+
         label $f.label_2 \
                 -textvariable $PromptLocal(variableName$indice) \
                 -relief flat -anchor w -justify left \

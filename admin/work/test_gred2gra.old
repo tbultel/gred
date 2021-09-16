@@ -1,0 +1,427 @@
+#!/bin/sh
+# the next line restarts using tclsh \
+exec tclsh8.0 "$0" ${1+"$@"}
+
+########################################################################
+# fichier map : connexion au banc map via le programme kermit.
+# 
+########################################################################
+# 
+# A FAIRE :
+# 
+########################################################################
+
+set map(version) 1.0
+
+########################################################################
+proc map_initGlobals {} {
+global map
+   set map(fileIn) "test_eg7.gra"
+   set map(fileOut) "test_eg7.gred"
+   
+
+} ;# endproc map_initGlobals
+
+########################################################################
+proc map_loadPistLib {} {
+  global map auto_path
+  
+  
+  lappend auto_path ../../pist/lib
+  package require pist
+  Pist_PackageRequireAll
+
+  
+} ;# endproc map_loadPistLib
+
+########################################################################
+proc help:all {} {
+    return "pas d'aide disponible."
+} ;# endproc help:all
+
+########################################################################
+proc map_parseCommandLine {} {
+   global map argv
+  
+  # Initialisation des valeurs d'options par défaut :
+  set map(OPTION_BIDON)  0
+    
+  while {[llength $argv]} {
+     switch -glob -- [lindex $argv 0] {
+     
+         --      {
+            set argv [lreplace $argv 0 0]
+            break
+         }
+                  
+         -e       -
+         -edit   {
+            global env
+            if {![info exists env(PRINTER)]} {
+               set env(PRINTER) "stead"
+            }
+            exec $env(PRINTER) [info script] &
+            exit
+         }
+         
+         -h       -
+         -help   {
+            puts [help:all]
+            exit
+         }
+         
+         -*      { 
+            puts [help:all]
+            puts stdout "#################################"
+            puts stdout "Option inconnue : [lindex $argv 0]"
+            exit 1
+         }
+         
+         default { 
+            break
+         }
+      }
+      # Il ne devrait plus rester d'arguments
+      if {[llength $argv]} {
+         puts [help:all]
+         puts stdout "#################################"
+         puts stdout "Arguments interdits : $argv"
+         exit 1
+      }
+
+  }
+} ;# endproc map_parseCommandLine
+
+          
+########################################################################
+proc main {} {
+
+  global env argv map
+    
+  if {[info tclversion] < 7.6} {
+    puts stderr "\n[info script] nécessite l'utilisation\
+                       de TCL version 7.6 ou ultérieure\n"
+    puts stderr "Info sur la version courante : [help:version]\n"
+    exit
+  }
+
+  # Charge la librairie pist
+  map_initGlobals
+    
+  # Charge la librairie pist
+  map_loadPistLib
+    
+  # Analyse et extraction des options et traitement des options
+  # immédiates du style "-help", ...
+  map_parseCommandLine
+    
+  parray map
+  
+  set graText [read_file $map(fileIn)]
+  set gredText [gred2gra $graText]
+} ;# endproc main
+
+########################################################################
+# graText : chaine au formet gra de eg7
+# 
+# retourne une chaine au format "gred"
+# 
+# Principe :
+# 
+# On expore successivemenet les trois zones etapeZone transZone et
+# declarZone.
+# On contruit un tableau grafcet() contenant toutes les informations
+# pour les trois types d'objets de base (Etape, Trans et Link)
+# ainsi que pour les informations générales (declaration)
+# 
+# 
+# 
+# 
+proc gred2gra {graText} {
+
+  array set grafcet {
+     etapeUID   0
+     transUID   0
+     linkUID    0
+     etapeList {}
+     transList {}
+     linkList  {}
+  }
+  
+  ######################################################################
+  # Construction de quelques patternes régulières :
+  
+  # set t    {[NIMBE]S}       ;# type pattern
+  set et    NS|IS|MS|BS|ES  ;# etape type pattern
+  set w    "\[ \t\]"         ;# white space pattern 
+  set ws   "\[ \t\]+"         ;# white spaces pattern 
+  set i    {[0-9]+}           ;# integer pattern (1234)
+  set r    "${i}(\\\.$i)?"        ;# reel pattern (54 or 54.1234)
+  set etapePat "^($et)${ws}($i)${ws}($r)${ws}($r)${ws}($i)${ws}\$"
+  set transPat "^($i)${ws}($r)${ws}($r)${ws}($i)${ws}\$"
+  set endEtapePat   "^##$w*\$"
+  set endZonePat "^#\?$w*\$"
+  set blankLinePat  "^\[ \t\]*\$"
+  
+  
+  set graLines [split $graText \n]
+  
+  # lineIdx pointe la ligne en court d'examen
+  # et thisLine est le contenu de la ligne courqnte
+  set lineIdx -1
+  set thisLine [lindex $graLines [incr lineIdx]]
+  
+  # zoneState in {etapeZone transZone declarZone }
+  set zoneState "etapeZone"
+  
+  ######################################################################
+  # Examen de la zone décrivant les étapes
+  ######################################################################
+  
+  
+  while {$zoneState == "etapeZone"} {
+
+      # set thisLine [lindex $graLines [incr lineIdx]]
+      report -v  lineIdx thisLine etapePat
+      switch -regexp -- $thisLine \
+        $etapePat  {
+           
+           # La ligne pointée contient une étape à extraire
+        
+           regexp -- $etapePat $thisLine \
+                   line type name x y isAction isActive
+           report -v lineIdx type name x y isAction isActive
+           
+           set thisLine [lindex $graLines [incr lineIdx]]
+           set transAmonts [lreplace $thisLine end end]
+           
+           report -n "Transitions amont : $transAmonts "
+           foreach {trans} $transAmonts {
+               report    "   amont  : $trans"
+           } ;# endforeach
+           
+                      
+           set thisLine [lindex $graLines [incr lineIdx]]
+           set transAvals [lreplace $thisLine end end]
+           
+           report -n "Transitions aval : $transAvals"
+           foreach {trans} $transAvals {
+               report    "   aval   : $trans"
+           } ;# endforeach
+           
+           # Si une action est associée à cette étape, elle est 
+           # décrite par les trois lignes suivantes, 
+           # sinon, on a une marque de fin d'étape "##"
+           
+           set thisLine [lindex $graLines [incr lineIdx]]
+           if {[regexp "^$i$w(.*)\$" $thisLine foo champs1]} {
+              set thisLine [lindex $graLines [incr lineIdx]]
+              regexp "^$i$w(.*)\$" $thisLine foo champs2
+              set thisLine [lindex $graLines [incr lineIdx]]
+              regexp "^$i$w(.*)\$" $thisLine foo champs3
+              set thisLine [lindex $graLines [incr lineIdx]]
+              
+              report  "action : $champs1|$champs2|$champs3"
+           }
+           
+           # On consomme les lignes vide ou ne contenant que des espaces
+           # ainsi que les lignes de marquage de fin d'étape "##" 
+           while {[regexp "^\[ \t\]*|##\$" $thisLine ]} {
+              set thisLine [lindex $graLines [incr lineIdx]]
+              report "ligne ignorée : $thisLine"
+           }
+           continue
+           
+        } \
+        $endEtapePat { 
+           # Fin de description d'étape "##"
+           set thisLine [lindex $graLines [incr lineIdx]]
+           report "ligne de fin d'étape ignorée : $thisLine"
+           continue
+        } \
+        $blankLinePat { 
+           # ligne vide ou avec espaces
+           set thisLine [lindex $graLines [incr lineIdx]]
+           report "ligne blanche ignorée :        $thisLine"
+           continue
+        } \
+        $endZonePat { 
+        
+           # Fin de zone
+        
+           # On ignore les lignes vide ou ne contenant que des espaces 
+           while {[regexp "^\[ \t\]*\$" $thisLine ]} {
+              set thisLine [lindex $graLines [incr lineIdx]]
+           }
+           set zoneState "transZone"
+           break
+           
+        } \
+        other { 
+        
+           # On ignore les autres lignes
+           set msg "Ligne $lineIdx ignorée car incorrecte : "
+           append msg  "\"[lindex graLines $lineIdx]\""
+           report $msg
+           
+           set thisLine [lindex $graLines [incr lineIdx]]
+           continue
+        }
+      
+  } ;# endwhile
+
+  
+  ######################################################################
+  # Examen de la zone décrivant les transitions
+  ######################################################################
+  
+  
+  while {$zoneState == "transZone"} {
+
+      # set thisLine [lindex $graLines [incr lineIdx]]
+      report -v  lineIdx thisLine etapePat
+      switch -regexp -- $thisLine \
+        $transPat  {
+           
+           # La ligne pointée contient une transition à extraire
+        
+           regexp -- $etapePat $thisLine \
+                   line type name x y isAction isActive
+           report -v lineIdx type name x y isAction isActive
+           
+           set thisLine [lindex $graLines [incr lineIdx]]
+           set etapeAmonts [lreplace $thisLine end end]
+           
+           report -n "Etapes amont : $etapeAmonts "
+           foreach {etape} $etapeAmonts {
+               report    "   amont  : $etape"
+           } ;# endforeach
+           
+                      
+           set thisLine [lindex $graLines [incr lineIdx]]
+           set etapeAvals [lreplace $thisLine end end]
+           
+           report -n "Etapes aval : $etapeAvals"
+           foreach {etape} $etapeAvals {
+               report    "   aval   : $etape"
+           } ;# endforeach
+           
+           # Si une action est associée à cette étape, elle est 
+           # décrite par les trois lignes suivantes, 
+           # sinon, on a une marque de fin d'étape "##"
+           
+           set thisLine [lindex $graLines [incr lineIdx]]
+           if {[regexp "^$i$w(.*)\$" $thisLine foo champs1]} {
+              set thisLine [lindex $graLines [incr lineIdx]]
+              regexp "^$i$w(.*)\$" $thisLine foo champs2
+              set thisLine [lindex $graLines [incr lineIdx]]
+              regexp "^$i$w(.*)\$" $thisLine foo champs3
+              set thisLine [lindex $graLines [incr lineIdx]]
+              
+              report  "action : $champs1|$champs2|$champs3"
+           }
+           
+           continue
+           
+        } \
+        $blankLinePat { 
+           # ligne vide ou avec espaces
+           set thisLine [lindex $graLines [incr lineIdx]]
+           report "ligne blanche ignorée :        $thisLine"
+           continue
+        } \
+        $endZonePat { 
+        
+           # Fin de zone
+        
+           # On ignore les lignes vide ou ne contenant que des espaces 
+           while {[regexp "^\[ \t\]*\$" $thisLine ]} {
+              set thisLine [lindex $graLines [incr lineIdx]]
+           }
+           set zoneState "declarZone"
+           break
+           
+        } \
+        other { 
+        
+           # On ignore les autres lignes
+           set msg "Ligne $lineIdx ignorée car incorrecte : "
+           append msg  "\"[lindex graLines $lineIdx]\""
+           report $msg
+           
+           set thisLine [lindex $graLines [incr lineIdx]]
+           continue
+        }
+      
+  } ;# endwhile
+
+
+  ######################################################################
+  # Examen de la zone décrivant les déclarations
+  ######################################################################
+  
+  while {$zoneState == "declarZone"} {
+
+      report " Début de zone déclaration"
+      switch -regexp -- $thisLine \
+        "#Type"  {
+           
+           # On ignore aussi la ligne suivante (nbre de caracteres ?)
+           set thisLine [lindex $graLines [incr lineIdx 2]]
+           
+           # début des infos de déclaration proprement dites
+           set declarText ""
+           
+           while {![regexp "#EndType" $thisLine]} {
+              
+               append declarText "$thisLine\n"
+               set thisLine [lindex $graLines [incr lineIdx]]
+               
+           } ;# endwhile
+           
+           report "DECLARATION :\n$declarText"
+           
+           break
+           
+        } \
+        $blankLinePat { 
+           # ligne vide ou avec espaces
+           set thisLine [lindex $graLines [incr lineIdx]]
+           report "ligne blanche ignorée :        $thisLine"
+           continue
+        }       
+  } ;# endwhile
+
+
+    
+  ######################################################################
+  # construction de la commande au format gred à partir du tableau 
+  # grafcet
+  ######################################################################
+    
+} ;# endproc gred2gra
+
+########################################################################
+# gred2gra_ReadOneEtape -- 
+# 
+# Lit une etape et complete le tableau grafcet en conséquence.
+# Les trois parametres sont passés par variable, mais graLinesName
+# n'est pas modifié.
+# 
+proc gred2gra_ReadOneEtape {grafcetName graLinesName lineIdxName} {
+   upvar $grafcetName  grafcet
+   upvar $graLinesName graLines
+   upvar $lineIdxName  lineIdx
+   
+   set t    {[NIMBE]S}  ;# type pattern
+   set w    "\[ \t\]+"  ;# white space pattern
+   set i    {[0-9]+}    ;# integer pattern
+   set pat "^$t$w$i$w$i$w$i$w$i$w\$"
+   regexp -- $pat [lindex $graLines $lineIdx] \
+            line type name x y isAction isActive
+   
+}
+main
+          
+exit
+

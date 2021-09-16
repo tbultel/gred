@@ -1,13 +1,16 @@
 #!/bin/sh
 # the next line restarts using wish \
 exec wish "$0" -- ${1+"$@"}
+# exec tclkit "$0" -- ${1+"$@"}
 # @exec wish8.0 "$0" -- ${1+"$@"}
 # exec wish8.2b1 "$0" -- ${1+"$@"}
 # exec wish4.2 "$0" -- ${1+"$@"}
-
+package require  Tk
 # $Id: gred,v 1.3 1997/10/14 06:30:58 diam Exp $
 ## Fichier gred
 # mise à jour par diam@ensta.fr
+# 15/07/2007 (diam) modif de l'ancienne file:realName (mis au point en 1996)
+#      en file:normalize de stead car bug lors du lanvement paar wish8.5a6
 # 17/08/99 (diam) correction BUG dans le switch d'option (extra "-")
 # 12/10/97 (diam) correction BUG recherche de PIST (ajout PISTFOUND)
 # 03/04/97 (diam) amélioration de la recherche de la librairie PIST 
@@ -79,13 +82,15 @@ upvar #0 $appliName appli
          -pist      -
          -pistsetup {
              set tmp  [lindex $argv 1]
-             set env(PIST_SETUP) [file:realName $tmp]
+             # set env(PIST_SETUP) [file:realName $tmp]
+             set env(PIST_SETUP) [file:normalName $tmp]
              set argv [lreplace $argv 0 1]
              continue
          }
          -setup    {
              set tmp  [lindex $argv 1]
-             set env($APPLI_SETUP) [file:realName $tmp]
+             # set env($APPLI_SETUP) [file:realName $tmp]
+             set env($APPLI_SETUP) [file:normalName $tmp]
              set argv [lreplace $argv 0 1]
              continue
          }
@@ -107,8 +112,10 @@ upvar #0 $appliName appli
     if {[info exists env($APPLI_SETUP)]} {
         set appli(setup) $env($APPLI_SETUP)
     } else {
+        # set appli(setup) "[file dirname [file dirname \
+        #                        [file:realName [info script]]]]"
         set appli(setup) "[file dirname [file dirname \
-                               [file:realName [info script]]]]"
+                               [file:normalName [info script]]]]"
         set env($APPLI_SETUP) $appli(setup)
     }
     
@@ -133,7 +140,8 @@ upvar #0 $appliName appli
     } else {
         
         # on assainit le nom de l'appli pour éviter :/usr/local/bin/./appli.tcl
-        set appli(exe) [file:realName $appli(exe)]
+        # set appli(exe) [file:realName $appli(exe)]
+        set appli(exe) [file:normalName $appli(exe)]
         # Recherche de la librairie PIST dans le repertoire
         # de l'appli, dans son repertoire parent, puis grand-parent :
         set dirToScan [list   \
@@ -141,7 +149,7 @@ upvar #0 $appliName appli
            [file dir [file dir $appli(exe)]] \
            [file dir [file dir [file dir $appli(exe)]]] \
         ]
-    	
+        
         # foreach dir $dirToScan {
         #    set pistDirs [glob -nocomplain [file join $dir pist]* ]
         #    if {[llength $pistDirs] == 0} {
@@ -158,9 +166,9 @@ upvar #0 $appliName appli
         #  
         #  
         # }
-    	
-    	set PISTFOUND 0
-    	foreach dir $dirToScan {
+        
+        set PISTFOUND 0
+        foreach dir $dirToScan {
            set pistDirs [glob -nocomplain [file join $dir pist]* ]
            if {[llength $pistDirs] == 0} {
                continue
@@ -174,10 +182,10 @@ upvar #0 $appliName appli
               }
            }
            if $PISTFOUND break
-    	}
+        }
 
-    	if ![info exist pistSetup] {
-    	
+        if ![info exist pistSetup] {
+        
            # On n'a pas trouvé de librairie PIST :-((
            
            set msg "J'ai n'ai pas trouvé de librairie PIST\n"
@@ -192,10 +200,11 @@ upvar #0 $appliName appli
                     -title "Probleme d'intallation" \
                     -message $msg
            exit
-    	}
-    	
+        }
+        
         # puts "\n##### pistSetup=$pistSetup\n\n"
-        set appli(pistsetup) [file:realName $pistSetup]
+        # set appli(pistsetup) [file:realName $pistSetup]
+        set appli(pistsetup) [file:normalName $pistSetup]
         set env(PIST_SETUP) $appli(pistsetup)
     }
     # Les variables d'installations  
@@ -222,27 +231,7 @@ upvar #0 $appliName appli
     # ENVISAGER L'UTILISATION DE LA COMMANDE TCL "package require ..."
     setup:insertLib  -require -sourceindex  \
                     [file join  $appli(setup) lib] 
-	    
-# parray appli
-    
-    # set appli(pistversion) "Not found"
-    # set appli(version) "Not found"
-    # 
-    # # On initialise la version de l'application
-    # set versionFile [file join $appli(pistsetup) version-pist]
-    # set channel [open $versionFile]
-    # set txt [read $channel]
-    # close $channel
-    # regexp "version\[\t \]+pist-(\[^$\]*)" $txt match appli(pistversion)
-    # puts "####### PIST VERSION=$appli(pistversion)"
-    # 
-    # # set versionFile [file join $appli(setup) version-gred]
-    # # set channel [open $versionFile]
-    # # set txt [read $channel]
-    # # close $channel
-    # # regexp "version gred-(\[^$\]*)" $txt match appli(version)
-    # puts "####### [string toupper $appliName] VERSION=$appli(version)"
-
+            
 
     # On détermine la version de la librairie PIST et de l'application 
     
@@ -262,111 +251,91 @@ upvar #0 $appliName appli
     source [file join $appli(setup) version-$appliName.tcl]
     set appli(version) [set version-$appliName]
     
-    # puts "####### PIST VERSION=$appli(pistversion)"
-    # puts "####### [string toupper $appliName] VERSION=$appli(version)"
-    
-    # set appli(initialised) 1   ;# la mise a 1 est reportée dans appli:init
     # report -t "proc : appli:setup : FIN ..."
 } ;#endproc appli:setup
 
 
 
 
-# file:realName --
-# 
-# file:realName <fileOrDir>
-#    retourne le nom absolu physique à partir d'un nom relatif
-#    ou absolu, et en suivant les liens éventuels.
-#    "name" peut etre un nom de fichier ou de répertoire QUI DOIT EXISTER
-#    exemple :  file:realName /usr/local/bin/stead
-#    retourne : /usr/vb/amd/lib/STEAD-0.36-alpha/stead
-#
-# A FAIRE :
-#   - traiter differemenet le cas unix des cas windows et Macintosh
-#     pour lesquel c'est plus simple (pas d'automontage)
-#   - envisager constantes global :
-#       file(parent) ("..",  ou "::")
-#       file(...)
-#       global file
-#       if ![info exist file(separator)] {
-#          initialiser les contantes file(..)
-#       }
-#
-# 16/07/96 : refonte complete suppression recursives des liens dans le path
-#            fiable même si automontages car ne suit pas les liens de la
-#            forme : /tmp_mnt/...  ou /auto/...
-#            Le résultat ne contient ni "." ni ".."
-#            On peut donc utiliser [file dirname [file dirname ..]]
-#            sur le résultat de cette procédure.
-#            En principe multiplatteforme (non testé à fond pour l'instant
-# 
-# Remarque : si <name> contient deja /tmp_mnt/ ou /auto/, ces chaines ne 
-# sont pas supprimer dans le resultat !
-# 
-interp alias {} frn {} file:realName
-proc file:realName {name} {
 
-    # # glob make the tilda substitution like "~/bin/appli" :
-    # set name [glob $name] ;# inutile car exploité par "file dirname ~"
+## file:normalName -- retourne le nom nomalisé du fichier
+#
+# @param un nom de fichier ou répertoire, existant ou nom
+# @return un chemin absolu correspondant au nom réel du fichier
+#     sans lien même intermédiaires
+#
+# Si le nom du fichier en parametre n'existe pas, cette procédure
+# s'assure que le parent est un nom normalisé (absolu et sans lien)
+# d'un manière récursive
+#
+# Cette procédure est une version simplifiée de file:realName.
+# car elle fait l'impasse sur le bug d'autodémontage qui est
+# supposé corrigé dans les versions actuelles du systeme sunOS.
+#
+# name: file or directory (doesn't have to exist), absolute or relative,
+#       could contain link.
+# 
+# TODO a refondre en utilisant tk8.4 
+#   - file link, 
+#   - file nativename, 
+#   - file normalize
+#   - file normalize [file link $name]
+# 
+# ATTENTION : EN COURS
+#        Refonte de la procedure file:normalName pour quelle 
+#        fonctionne sous window (évite pb lors de l'ouverture de fichiers 
+#        avec des lien)
+#        => EN TEST CAR NECESSITE TK-8.4 !!
+#        (il y a des problemes pour utiliser stead sous cygwin avec un
+#        wish compilé sous windows) 
+#        
+proc file:normalName {name} {
+
+    # # puts "file:normalName: name=$name"
+
     # If the name is relative: one make it absolute
     if {[file pathtype $name] == "relative"} {
        set name [file join [pwd] $name]
     }
-    # could be /usr/local/bin/../../amd/bin/./te
-    # One follow all possible links in the path
-    set name [file:followLinks $name]
-    # puts name=$name
-    # could be "/usr/local/bin/../../m2b/lei/bin/../lib/./stead_v036a/stead"
 
-    # remove directory nodes like "." or ".." from the path
-    set lpath [file split $name]    ;# full path list {/ usr local ...}
-    set finalPath [lindex $lpath 0] ;# root could be "/" or "MacOS:"
-    set lpath [lreplace $lpath 0 0] ;# rest of lpath {usr local ...}
-    foreach node $lpath {
-        switch -exact -- $node {
-          .  continue
-          .. {
-             set finalPath [file dirname $finalPath]
-             continue
-          }
-          default {
-             set finalPath [file join $finalPath $node]
-          }
+    global tcl_platform
+    switch -exact -- $tcl_platform(platform) {
+      macintosh  -
+      windows {
+          return $name
+      }
+    }
+
+    if {[file exists $name]} {
+        # One follows a possible link (which can be absolute or relative)
+        while {[string match "link" [file type $name] ]} {
+           set followName [file readlink $name]
+           # If the name is relative: one make it absolute
+           if {[file pathtype $followName] == "relative"} {
+              set followName \
+                   [file join [file dirname $name] $followName]
+           }
+           set name $followName
         }
+    } else {
+        # not existing file or directory : normalise the parent
+        set name [file join [file:normalName [file dir $name]] \
+                            [file tail $name]]
+        # Pour utilisation sous windows, mais nécessite tk8.4+
+        catch {set name [file nativename $name] }
+        return $name
     }
-    return $finalPath
 
-} ;# endproc file:realName
 
-# file:followLink --
-# 
-# file:followLink <absoluteName> :
-# Return an absolute name without any link in the path.
-# But could return something like :
-#    "/usr/local/bin/../../m2b/lei/bin/../lib/./stead_v036a/stead"
-# Principe:
-# One follow a possible link (which can be absolute or relative)
-# for the tail node, then recurse for all parents directories.
-# One don't follow links starting with /tmp_mnt/ ou /auto/
-# to avoid problems with auto"un"mount directories under unix NFS
-# 
-proc file:followLinks {name} {
-  while {[string match "link" [file type $name] ]} {
-    set followName [file readlink $name]
-    if {[regexp {^(/tmp_mnt/)|(/auto/)} $followName]} {break}
-    if {[file pathtype $followName] == "relative"} {
-      set followName [file join  [file dirname $name] $followName]
-    }
-    set name $followName
-  }
-  set dir [file dirname $name]
-  if {"x$dir" == "x$name"} {
-     return $name
-  } else {
-     return [file join [file:followLinks $dir] [file tail $name]]
-  }
-} ;# endproc file:followLinks
+    # parent itself could be a link !
+    set pwd_ori [pwd]
+    cd [file dirname $name]
+    set theDir [pwd]
+    set name [file join $theDir [file tail $name]]
+    cd $pwd_ori
+    return $name
 
+} ;# endproc file:normalName
 
 # setup:insertLib --
 # 
@@ -460,3 +429,4 @@ if ![info exists gred(initialised)] {appli:setup gred}
 # debugPath
 
 eval gred:new $argv
+

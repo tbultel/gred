@@ -1,0 +1,395 @@
+<HTML>
+<HEAD>
+<TITLE>Help for TKLMITOOL v1.0</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="white" TEXT="black">
+
+<H1><B> Overview of TKLMITOOL</B></H1>
+This package is the last release of a set of programs used to solve Linear Matrix Inequalities:
+<ul>
+<b>LMITOOL</b> is a user-friendly Matlab package for solving
+Linear Matrix Inequality problems, developed by
+Laurent El Ghaoui, Ramine Nikoukhah, Francois Delebecque. <br>
+<b>SP</b> was developped by Lieven Vandenberghe and Stephen Boyd in 1994. 
+<br>
+<B>TKLMITOOL</B> is a graphical user interface for <b>LMITOOL</b> that 
+was developed by Laurent El Ghaoui, Jean-Luc Commeau and Michel Chorier.  
+<a href="copyright.html">Copyright</a> 1997.<P>
+</ul>
+
+This package is the last release of a set of programs used to solve Linear Matrix Inequalities:
+<ul>
+aaa<img src="images/green_ball.gif"><b>LMITOOL</b> is a user-friendly Matlab package for solving
+Linear Matrix Inequality problems, developed by
+Laurent El Ghaoui, Ramine Nikoukhah, Francois Delebecque.<br><img src="images/green_ball.gif">
+<b>SP</b> was developped by Lieven Vandenberghe and Stephen Boyd in 1994. 
+<br>
+<img src="images/green_ball.gif">
+<B>TKLMITOOL</B> is a graphical user interface for <b>LMITOOL</b> that 
+was developed by Laurent El Ghaoui, Jean-Luc Commeau and Michel Chorier.  
+<a href="copyright.html">Copyright</a> 1997.<P>
+</ul>
+
+Tklmitool can be used on a lot of differents Operating Systems : several UNIX, Windows 3.1
+and Mac OS.
+
+This package acts as an
+interface for the Semidefinite Programming package <b> SP</b>, developed
+by Lieven Vandenberghe and Stephen Boyd.  <P>
+
+<ul>
+<img src="images/red_ball.gif">
+<a href = "#purpose">Purpose of <b>TKLMITOOL</b></a>
+<br>
+<img src="images/red_ball.gif">
+<a href = "#howto">How to use it</a>?
+<br>
+<img src="images/red_ball.gif">
+<a href = "#example">Using <b>TKLMITOOL</b>: an example</a>
+<br>
+<img src="images/red_ball.gif">
+<a href = "#howdoes">How it works?</a>
+<br>
+<img src="images/red_ball.gif">
+<a href = "#toget">How to get it ?</a>
+</ul>
+<p>
+For more details and examples, see <b>LMITOOL user's guide</b>. 
+If you have questions, comments, send mail to
+<tt>lmitool@ensta.fr</tt> .<br>
+
+For more references and information on LMI problems and engineering
+applications, see the quick reference guide
+<a href="semidef.html">Semidefinite Programming and Applications</a>.
+
+<h2><img src="images/red_ball.gif"><a name = "purpose"> Purpose of <b>TKLMITOOL</b></a> </h2>
+<b>TKLMITOOL</b> solves problems such as <P>
+
+<pre>
+		minimize     f(X1,...,XM,D1,...,DN) 
+		subject to   Gi(X1,...,XM,D1,...,DN)  = 0, i=1,...,p 
+            		     Hj(X1,...,XM,D1,...,DN) >= 0, j=1,...,q 
+
+where: <P>
+</pre>
+
+<ul>
+<img src="images/green_ball.gif">
+D1,...,DN are given real matrix variables, referred to as the
+<b> data matrices</b>.
+<br>
+<img src="images/green_ball.gif">
+X1,...,XM are real matrix variables, referred to as the <b>
+unknown matrices</b>.
+<br>
+<img src="images/green_ball.gif">
+f is a real scalar function of the entries of
+X1,...,XM and D1,...,DN, linear in the X's, referred
+to as the objective function (The problem is called a <b>feasibility 
+problem</b> if there is no objective function specified).
+<br>
+<img src="images/green_ball.gif">
+Gi's are matrix functions of the entries of X1,...,XM and
+D1,...,DN, affine in the X's and taking real values, referred
+to as the ``Linear Matrix Equalities'' (<b>LME</b>) functions. 
+<br>
+<img src="images/green_ball.gif">
+Hj's are matrix functions of the entries of X1,...,XM and
+D1,...,DN, affine in the X's and taking real values, referred
+to as the ``Linear Matrix Inequalities'' (<b>LMI</b>) functions.
+(Here, V >= 0 means that the matrix V is symmetric and
+positive semidefinite, unless specified otherwise).
+</ul>
+
+The main purpose of <b>TKLMITOOL</b> is to help write a Matlab .m function
+which admits the data matrices D1,...,DN as inputs, and has the unknown
+matrices X1,...,XM as outputs.<P>
+
+<h2><img src="images/red_ball.gif">
+<a name = "howto"> How to use <b>TKLMITOOL</b></a>?</h2>
+
+To use <b>TKLMITOOL</b>, the user must issue the Matlab command
+<tt>tklmitool</tt>. <br>
+Then he can see a window with :
+<ul>
+<img src="images/green_ball.gif"> A menu bar with six items : <br>
+  <ul>
+  <img src="images/red_ball.gif"> File : <br>
+     <ul>
+     <img src="images/red_ball.gif"> New : reset all the fields to null.<br>
+     <img src="images/red_ball.gif"> Load : load a file precedally saved.<br>
+     <img src="images/red_ball.gif"> Save : save the current session.<br>
+     <img src="images/red_ball.gif"> Print : print the main window of the application.<br>
+     <img src="images/red_ball.gif"> Export : not soon supported.<br>
+     <img src="images/red_ball.gif"> Quit : finish the session and quit the application.<br>
+     </ul>
+  <img src="images/red_ball.gif"> Edit : <br>
+     <ul>
+     <img src="images/red_ball.gif"> Undo : undo the last command done.<br>
+     <img src="images/red_ball.gif"> Redo : redo the last command done. <br>
+     <img src="images/red_ball.gif"> Cut : delete the selectionned characters and copy them in a buffer.<br>
+     <img src="images/red_ball.gif"> Copy : copy the selectionned characters in a buffer.<br>
+     <img src="images/red_ball.gif"> Paste : paste the precedally selectionned characters at the current cursor position.<br>
+     </ul>
+  <img src="images/red_ball.gif"> Build :<br>
+     <ul>
+     <img src="images/red_ball.gif"> Build Matlab files :  generate the eval file and the function file of the current optimization problem.<br>
+     <img src="images/red_ball.gif"> Change building directory : change the current directory where the Matlab files are created.<br>
+     <img src="images/red_ball.gif"> See eval file : show the eval file if it exists.<br>
+     <img src="images/red_ball.gif"> See function file : show the function file if it exists.<br>
+     </ul>
+  <img src="images/red_ball.gif"> Options : <br>
+     <ul>
+     <img src="images/red_ball.gif"> Change optimisation parameters : show a popup window where to modify somme advanced options.<br>
+     <img src="images/red_ball.gif"> Show/Hide preliminary computation : a radio button to chose to show or to hide the Preliminary computation field. Off by default. <br>
+     </ul>
+  <img src="images/red_ball.gif"> Config : <br>
+     <ul>
+     <img src="images/red_ball.gif"> Refresh colors : to refresh the colors when you have change some of them with the preference menu.<br>
+     <img src="images/red_ball.gif"> Edit preference : to change the key bindings or the colors and structures of the different composants of the windows.<br>
+     </ul>
+  <img src="images/red_ball.gif"> Help : <br>
+     <ul>
+     <img src="images/red_ball.gif"> Overview... <br>
+     <img src="images/red_ball.gif"> The top of the window... <br>
+     <img src="images/red_ball.gif"> Preliminary computation... <br>
+     <img src="images/red_ball.gif"> Initial Guess... <br>
+     <img src="images/red_ball.gif"> LMEs... <br>
+     <img src="images/red_ball.gif"> LMIs... <br>
+     <img src="images/red_ball.gif"> Objectives... <br>
+     </ul>
+  </ul>
+<img src="images/green_ball.gif"> 
+The <a href="firstdialog.html">top of the window</a> : 3 entries are used to 
+specify a problem name (say <tt>foo</tt>), as well as the names given to the
+ data matrices and unknown matrices.
+<br>
+<img src="images/green_ball.gif">
+The <b>bottom of the window</b> :  this part contains several fields, which
+should be completed by the user. Each field has its own help window accessible in the Help menu.
+<P>
+<ul>
+<img src="images/red_ball.gif">
+The <a href="Options.html">parameter field</a> is used for setting
+up various optimization parameters.
+<br>
+<img src="images/red_ball.gif">
+The <a href="PrelHelp.html">preliminary computation field</a> is useful
+to set up various sizes and other quantities needed in other fields.
+<br> 
+<img src="images/red_ball.gif">
+The <a href = "InitHelp.html">Initial guess field</a> is used
+to set up correct sizes for the matrix variables.
+<br>
+<img src="images/red_ball.gif">
+The <a href = "LMEHelp.html">LME field</a> 
+is used to set up the LME functions of the problem.
+<br>
+<img src="images/red_ball.gif">
+The <a href = "LMIHelp.html">LMI field</a> 
+is used to set up the LMI functions of the problem.
+<br>
+<img src="images/red_ball.gif">
+The <a href = "OBJHelp.html">Objective field</a> 
+is used to set up the Objective functions of the problem.
+</ul>
+
+<p>
+The fields above are specified using the standard Matlab syntax.
+<br>
+
+<img src="images/green_ball.gif"> A help zone : show a few lines of informations about the field where is the mouse cursor.<br>
+<img src="images/green_ball.gif"> A state bar : show a line of general information about the state of the application.<br>
+</ul>
+
+Once all fields have been completed, the user may selection <b>Build file</b>  in the <b>Build</b> menu.  <P>
+
+The user is then ready to use the matlab function created
+by <b>TKLMITOOL</b>, with the syntax 
+
+<pre><code>		[X1,...,XM,infostr] = foo(D1,...,DN)</code> </pre><P>
+
+where infostr is a string containing convergence information.
+The returned matrices X1,...XM are empty if the problem is infeasible.
+
+<h2><img src="images/red_ball.gif">
+<a name = "example"> An example : the stabilization problem</a> 
+</h2>
+The following problem serves as a simple example for illustrating the use of
+<b>TKLMITOOL</b>. <P>
+
+Consider the linear, time-invariant, continuous-time system in
+state-space form : <P>
+
+<pre>		dx/dt = Ax + Bu, 
+</pre> <P>
+
+where x is the state, and A is n x n and B is n x nu; both matrices
+are constant. <P>
+
+We seek a constant, state-feedback
+control law u = Kx such that the closed-loop system is asymptotically
+stable, that is, all eigenvalues of A+BK have negative real part. In addition,
+we require that for every initial condition x(0) with ||x(0)|| <= 1, the 
+resulting command input satisfies ||u(t)|| < umax for every t >= 0,
+where umax is a given number. <P>
+
+As shown in Boyd & al (1994), the above problem has a solution if
+and only if the following conditions hold for some matrix unknowns
+X, U : <P>
+<pre>
+		[X U'; U umax^2*I] &lt; 0,
+		A*X+X*A+B*U+U'*B'  &lt; 0, X = X'
+</pre>
+<P>
+
+The above is a simple feasibility LMI problem in variables X, U.  If it 
+has a solution, then an appropriate control law is u = Kx, where K = 
+U*X^{-1}. <P>
+
+<b>TKLMITOOL</b> helps writing a matlab function, which we choose to call <tt>sf_sat</b></tt>, with syntax <P>
+
+<pre>
+		<tt> [X,U,infostr] = sf_sat(A,B,umax) </tt> <P>
+</pre>
+
+where infostr is a string containing convergence information.
+
+We can solve this problem as follows :  
+<ul>
+<img src="images/green_ball.gif">
+The <a href="firstdialog.html">top of the window</a> contains 3 fields that have to be completed by the user :
+
+<p>
+<ul>
+<img src="images/red_ball.gif">
+Problem Name : <b> sf_sat</b> 
+<br>
+<img src="images/red_ball.gif">
+Variable List : <b> X,U </b> 
+<br>
+<img src="images/red_ball.gif">
+Data List : <b> A,B,umax </b> 
+<br>
+</ul>
+
+<p>
+These inputs will ask <b>lmitool</b> to write a Matlab function with syntax
+<P>
+
+<pre>
+		<tt> [X,U,infostr] = sf_sat(A,B,umax) </tt>
+</pre>
+
+that solves the problem specified by the user in
+the bottom part of the window (in the above, infostr is a string 
+containing convergence information). 
+<br>
+<img src="images/green_ball.gif">
+The <b>bottom of the window</b> contains several fields, which
+should too be completed by the user :
+<p>
+<ul>
+<img src="images/red_ball.gif">
+<a href="Options.html">LMI Sover Options.</a>
+<br> 
+<img src="images/red_ball.gif">
+<a href="PrelHelp.html">Preliminary computation :</a><tt><b> [n,nu] = size(B); </b></tt>
+<br> 
+as the sizes of the problem (<tt>n,nu</tt>) are needed in the other
+fields.
+<br> 
+<img src="images/red_ball.gif">
+<a href="InitHelp.html">Initial guess :</a>
+<pre> <b> 		Xinit = eye(n,n); 
+		Uinit = zeros(n,nu);</b> </pre>
+specifies correct sizes for <tt>Xinit</tt> and <tt>Uinit</tt>. <br>
+Otherwise, the actual <b>value</b> of these matrices is arbitrary.
+<br>
+<img src="images/red_ball.gif">
+<a href="LMEHelp.html">LME :</a> 
+<code> <b>
+LME = X-X'; </b> 
+</code>
+<br>
+says that the variable X is symmetric.
+<br>
+<img src="images/red_ball.gif">
+<a href="LMIHelp.html">LMI : </a>
+<pre><code> <b>		lmi_lyap = - (A*Q+Q*A'+B*Y+Y'*B'); 
+		lmi_sat = [Q Y' ; Y (umax^2)*eye(nu)] ; 
+		lmi_x0 = Q - eye(n) ; 
+		LMI = stack (lmi_lyap, lmi_sat, lmi_x0) ; 
+		</b> </code> </pre>
+says that the variables X and U satisfy three inequality constraints.
+<br>
+<img src="images/red_ball.gif">
+<a href="OBJHelp.html">Objective :</a><b> [] ;</b>
+</ul>
+</ul>
+Once all fields have been completed, the user may selection <b>Build file</b> 
+in the <b>Build</b> menu.  <P>
+
+The function <tt>sf_sat</tt> is ready to use : within Matlab,
+assuming that <tt>A,B,umax</tt> of appropriate size 
+exist in the workspace, the command <P>
+
+<pre> <code>		[X,U,infostr] = sf_sat(A,B,umax)</code> </pre>
+
+returns <tt>X = [], U = []</tt> if the problem is infeasible, and
+a solution to the problem otherwise (<tt>infostr</tt> is a string
+containing convergence information, such as <tt>'optimal'</tt>).
+
+<h2><img src="images/red_ball.gif"><a name = "howdoes"> How it works?</a> </h2>
+<b>TKLMITOOL</b> invokes the Matlab function <tt>tklmitool.m</tt>. 
+<br>
+<tt>tklmitool</tt> generates two Matlab functions:
+<ul>
+<img src="images/green_ball.gif">
+A <em>solver</em> function that invokes a Matlab function, 
+<tt>lmisolver</tt>.
+<br> 
+<img src="images/green_ball.gif">
+An <em>evaluation</em> function. 
+</ul>
+The solver and evaluation functions are created by <tt>tklmitool</tt>
+from the fields of the main window filled by the user. <P> 
+
+<tt>lmisolver</tt> calls a matlab function, <tt>lmiformat</tt>,
+which puts the optimization problem into the 
+<a href="standardlmip.html">standard optimization problem</a>. Then, 
+<tt>lmisolver</tt> calls the optimization code <b>SP</b>.  <P>
+
+<tt>lmiformat</tt> works
+in three main steps. <P>
+<ul>
+<img src="images/green_ball.gif">
+<em>Initial guess.</em>  A first call to the evaluation file is done,
+in order to infer the number and size of the matrix
+variables. 
+<br>
+<img src="images/green_ball.gif">
+<em>Construction of LME, LMIs and objective.</em>  Making repeated calls
+to the evaluation function, a representation of the problem 
+is constructed, in the form of an optimization problem with linear 
+objective, equality and linear matrix inequality constraints.
+<br>
+<img src="images/green_ball.gif">
+<em>Elimination of equality constraints.</em>
+Using a singular value decomposition, the equality constraints are
+eliminated.  A canonical representation in the form 
+of a <a href="standardlmip.html">standard optimization problem</a>
+is constructed.
+</ul>
+
+<h2><img src="images/red_ball.gif"><a name = "toget"> How to get it ?</a> </h2>
+The package is available via anonymous ftp to <tt>ftp.ensta.fr</tt>
+under <tt>/pub/elghaoui/lmitool/v1.0</tt>.  <P>
+
+The user should first obtain the <b>SP</b> package.
+This package can be obtained via
+anonymous ftp to 
+<tt>isl.stanford.edu</tt>, under <tt>/pub/boyd/semidef_prog</tt>. 
+</BODY> 
+</HTML>

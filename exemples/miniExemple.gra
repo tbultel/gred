@@ -1,0 +1,83 @@
+# Fichier sauvegardé par Gred, l'éditeur de Grafcet développé à l'Ensta
+# Votre contact à l'Ensta : diam@ensta.fr
+# Sauvegarde du : 08/02/02 Ã  10:24:03
+
+Etape:create  -coord   {75 150} -name    {1} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {525 350} -name    {10} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {75 250} -name    {M2} -state   inactive -type    Macro -action  {} -file    {/tmp_mnt/auto/m2/lei/mos4/diam_work/gred/samples} -comment {24 -17 {}}
+Etape:create  -coord   {75 350} -name    {3} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {75 50} -name    {X4} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {575 500} -name    {FIN2} -state   inactive -type    Normal -action  {} -file    {BIDON} -comment {24 -17 {}}
+Etape:create  -coord   {225 500} -name    {X6} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {375 650} -name    {X7} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {375 500} -name    {X8} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {300 25} -name    {M2e} -state   inactive -type    Initial -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {225 650} -name    {X9} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {300 750} -name    {FIN} -state   inactive -type    Normal -action  {} -file    {BIDON} -comment {24 -17 {}}
+Etape:create  -coord   {550 150} -name    {X1} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {625 325} -name    {X2} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {225 125} -name    {5} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {375 125} -name    {6} -state   inactive -type    Normal -action  {{{} Action1 {}} {F {F:g2 {2 5 6}} {}}} -file    {BIDON} -comment {24 -17 {}}
+Etape:create  -coord   {225.0 225.0} -name    {7} -state   inactive -type    Normal -action  {} -file    {BIDON} -comment {11.0 26.0 MonBeauCommentaire}
+Etape:create  -coord   {425 250} -name    {8} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Etape:create  -coord   {300 350} -name    {M2s} -state   inactive -type    Normal -action  {} -file    {} -comment {24 -17 {}}
+Trans:create  -coord   {75 200} -name {1} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {550 200} -name {T1} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {300 75} -name {T4} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {175 275} -name {T5} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {75 100} -name {T6} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {525 425} -name {T7} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {275 575} -name {T8} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {325 575} -name {T9} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {300 425} -name {T10} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {350 700} -name {T11} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {625 425} -name {T2} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {250 700} -name {T12} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {75 300} -name {2} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {75 400} -name {3} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {300 75} -name {4} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {225 175} -name {5} -receptivity {A + B} -comment {-3.0 -4 {}}
+Trans:create  -coord   {425 200} -name {6} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {300 300} -name {7} -receptivity {} -comment {-3.0 -4 {}}
+Trans:create  -coord   {525 300} -name {9} -receptivity {} -comment {-3.0 -4 {}}
+Link:create -source E8 -desti T7
+Link:create -source E8 -desti T9
+Link:create -source EX1 -desti TT1
+Link:create -source TT1 -desti EX2
+Link:create -source EX2 -desti TT2
+Link:create -source T6 -desti E8
+Link:create -source E1 -desti T1
+Link:create -source T3 -desti E1
+Link:create -source T7 -desti EM2s
+Link:create -source E10 -desti T6
+Link:create -source E3 -desti T3
+Link:create -source T9 -desti E10
+Link:create -source EM2 -desti T2
+Link:create -source T1 -desti EM2
+Link:create -source EM2s -desti TT4
+Link:create -source E7 -desti TT5
+Link:create -source TT5 -desti EX4
+Link:create -source EX4 -desti TT6
+Link:create -source TT6 -desti E1
+Link:create -source E10 -desti TT7
+Link:create -source TT2 -desti EFIN2
+Link:create -source T2 -desti E3
+Link:create -source TT7 -desti EFIN2
+Link:create -source EX6 -desti TT8
+Link:create -source TT8 -desti EX7
+Link:create -source EX8 -desti TT9
+Link:create -source TT9 -desti EX9
+Link:create -source TT10 -desti EX6
+Link:create -source TT10 -desti EX8
+Link:create -source E3 -desti TT10
+Link:create -source EX9 -desti TT11
+Link:create -source EM2e -desti T4
+Link:create -source EX7 -desti TT12
+Link:create -source TT12 -desti EFIN
+Link:create -source TT11 -desti EFIN
+Link:create -source E5 -desti T5
+Link:create -source T4 -desti E5
+Link:create -source E6 -desti T6
+Link:create -source T4 -desti E6
+Link:create -source E7 -desti T7
+Link:create -source T5 -desti E7
