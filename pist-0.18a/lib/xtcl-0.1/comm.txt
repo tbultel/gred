@@ -1,0 +1,461 @@
+
+
+
+comm(n)                 package Comm 2.3                  comm(n)
+
+
+
+NAME
+     comm.tcl - A remote communications facility for Tcl 7.5  and
+     later
+
+SYNOPSIS
+     package require Comm 2.3
+
+     chan send ?-async? id cmd ?arg arg ...?
+
+     chan interps
+
+     chan self
+
+     chan connect ?id?
+
+     chan new chan ?-port port ?-local 0|1?
+
+     chan init chan ?-port port ?-local 0|1?
+
+     chan channels
+
+     chan shutdown id
+
+     chan abort
+
+     chan destroy
+
+     chan remoteid
+
+     chan hook event ?+??script?
+
+     The package initializes comm as the default chan.
+
+INTRODUCTION
+     The comm command provides an inter-interpreter remote execu-
+     tion  facility  much  like Tk's send(n), except that it uses
+     sockets rather than the X server for the communication path.
+     As a result, comm works with multiple interpreters, works on
+     Windows and Macintosh systems,  and  provides  more  control
+     over the remote execution path.
+
+     These commands work just like send and winfo interps:
+          comm send ?-async? id cmd ?arg arg ...?
+          comm interps
+     This is all that is really needed to know in  order  to  use
+     comm.
+
+DESCRIPTION
+     comm names communication endpoints with an id unique to each
+     machine.   Before sending commands, the id of another inter-
+     preter is needed.  Unlike Tk's send, comm doesn't implicitly
+     know the id's of all the interpreters on the system.
+
+
+
+Comm                    Last change: 2.3                        1
+
+
+
+
+
+
+comm(n)                 package Comm 2.3                  comm(n)
+
+
+
+     comm send ?-async? id cmd ?arg arg ...?
+          This invokes the given command in the interpreter named
+          by  id.   The  command  waits for the result and remote
+          errors are returned unless the -async option is given.
+
+     comm self
+          Returns the id for this channel.
+
+     comm interps
+          Returns a list of all the remote  id's  to  which  this
+          channel is connected.  comm learns a new remote id when
+          a command is first issued it, or when a remote id first
+          issues a command to this comm channel.
+
+     comm connect ?id?
+          Whereas comm send will  automatically  connect  to  the
+          given  id,  this  forces  a  connection  to a remote id
+          without sending a command.  After this, the  remote  id
+          will appear in comm interps.
+
+     These four methods make up the basic comm interface.
+
+SEMANTICS
+     The semantics of comm send are intended to match  Tk's  send
+     exactly.  If you find that comm send doesn't work for a par-
+     ticular command, try the same thing with Tk's send  and  see
+     if the result is different.  If so, let me know.
+
+     For instance, I had one report that this command produced an
+     error.   Note  that the equivalent command produces the same
+     error.
+          % comm send id llength {a b c}
+          wrong # args: should be "llength list"
+          % send name llength {a b c}
+          wrong # args: should be "llength list"
+
+MULTIPLE LISTENERS
+     More than one comm channel (or listener) can be  created  in
+     each Tcl interpeter.  This allows flexibility to create full
+     and restricted channels.
+
+     comm new chan ?-port port ?-local 0|1?
+          This creates a new channel and  Tcl  command  with  the
+          given  channel  name.   This  new  command controls the
+          channel, and takes all the same arguments as comm.
+
+     comm channels
+          This lists all the channels allocated  in  this  inter-
+          preter.
+
+     comm init chan ?-port port ?-local 0|1?
+          This allows changes in the parameters  of  an  existing
+
+
+
+Comm                    Last change: 2.3                        2
+
+
+
+
+
+
+comm(n)                 package Comm 2.3                  comm(n)
+
+
+
+          channel.  Note that it does this by closing and reopen-
+          ing the socket.  Hence, the channel's  id  will  change
+          when it is used.
+
+ID/PORT ASSIGNMENTS
+     Note that it is possible to place a comm channel in a  slave
+     interpreter,  thus  providing  a protected remote evaluation
+     environment.
+
+     comm uses a TCP port for endpoint id.   The  interps  method
+     merely  lists all the TCP ports to which the channel is con-
+     nected.  By default, each channel's id  is  a  high-numbered
+     TCP  port  (>10000)  which  comm listens on for connections.
+     Alternately, a specific TCP port number may be provided  for
+     a  given  channel.   Using a value of 0 requests that the OS
+     pick a low-numbered (>1024) TCP port.  Note that  a  channel
+     won't  be  created  and initialized unless the specific port
+     can be allocated.
+
+REMOTE INTERPRETERS
+     By default, each channel is restricted to accepting  connec-
+     tions from the local system.  This can be overriden by using
+     the -local 0 option to comm new  or  comm  init.   For  such
+     channels, the id parameter takes the form {id host}
+
+     WARNING: The host must always be specified in the same  form
+     (e.g.,  as either a fully qualified domain name, plain host-
+     name or an IP address).
+
+CLOSING CONNECTIONS
+     These methods give control over closing connections:
+
+     comm shutdown id
+          This closes the connection to  id,  aborting  all  out-
+          standing  commands  in  progress.   Note  that  nothing
+          prevents the connection from being immediately reopened
+          by another incoming or outgoing command.
+
+     comm abort
+          This invokes shutdown on all open connections  in  this
+          comm channel.
+
+     comm destroy
+          This aborts all connections and then destroys the  this
+          comm  channel  itself,  including closing the listening
+          socket.  Special code allows the default  comm  channel
+          to  be closed such that the comm command it is not des-
+          troyed.  Doing so closes the listening socket, prevent-
+          ing both incoming and outgoing commands on the channel.
+          This sequence reinitializes the default channel:
+          comm destroy; comm new comm
+
+
+
+
+Comm                    Last change: 2.3                        3
+
+
+
+
+
+
+comm(n)                 package Comm 2.3                  comm(n)
+
+
+
+Dead Peer Detection:
+     When a remote connection is lost, comm can invoke an  appli-
+     cation  callback.  This can be used to cleanup or restart an
+     ancillary process, for  instance.   See  the  lost  callback
+     below.
+
+CALLBACKS
+     This is a mechanism for setting hooks for particular events:
+          comm hook event ?+??script?
+
+     NOTE: those listed as  UNIMPLEMENTED  are  unimplemented  at
+     this time.
+
+     When an event occurs, script is evaluated  with  the  listed
+     variables in scope and available.
+
+     In a syntax similar to Tk's bind command,  prefixing  script
+     with  a  +  causes  the  new script to be appended.  Without
+     this, a new script will replace the an existing  one.   When
+     invoked  without a script, no change is made.  In all cases,
+     the new hook script is returned by the command.
+
+     Common variables include:
+
+
+          chan the name of the comm channel (and command)
+
+          id   the id of the remote in question
+
+          fid  the file id for the socket of the connection
+9
+     These are the defined events:
+
+     connecting                              UNIMPLEMENTED
+          Variables: chan id
+          Hook invoked before making a  remote  connection.   Use
+          return  to  allow the connection, or error to abort the
+          connection attempt with an error.
+
+     connected                               UNIMPLEMENTED
+          Variables: chan id fid
+          Hook invoked after making a remote connection, allowing
+          arbitrary  authentication  over the socket.  Use return
+          to allow the connection, or error to close the  connec-
+          tion with an error.
+
+     incoming                                UNIMPLEMENTED
+          Variables: chan id fid remport addr
+          Hook invoked when  receiving  an  incoming  connection,
+          allowing arbitrary authentication over fid.  Use return
+          to allow the connection, or error to close the  connec-
+          tion with an error.
+
+
+
+Comm                    Last change: 2.3                        4
+
+
+9
+
+
+comm(n)                 package Comm 2.3                  comm(n)
+
+
+
+     eval                                    UNIMPLEMENTED
+          Variables: chan id cmd done
+          Hook invoked after collecting a complete  command  from
+          the  remote  but  before evalutating it.  Use return to
+          allow the command to be  executed.   Use  return  -code
+          break  to  indicate that the command has been Use error
+          to indicate that the command was refused.  Set done  to
+          1  to  indicate  that the command has been executed and
+          give the return value with return or error.
+
+     lost
+          Variables: chan id reason
+          Hook invoked when connection to id  was  lost.   Return
+          value  is  ignored.   reason  is  an explanatory string
+          indicating why the connection was lost.  Sample use:
+
+          comm hook lost {
+              global myvar
+              if {$myvar(id) == $id} {
+                  myfunc
+                  return
+              }
+          }
+
+UNSUPPORTED
+     These interfaces  may  change  or  go  away  in  subsequence
+     releases.
+
+     comm remoteid
+          Returns the id of the last remote command  executed  on
+          the channel.  If used by a proc being invoked remotely,
+          it must be called  before  any  events  are  processed.
+          Otherwise,  another  command may get invoked and change
+          the value.
+
+     Invoking the procedure comm_send will  substitute  send  and
+     winfo interps commands with these equivalents that use comm.
+
+          proc send {args} {
+              eval comm send $args
+          }
+          rename winfo tk_winfo
+          proc winfo {cmd args} {
+              if ![string match in* $cmd] {return [eval [list tk_winfo $cmd] $args]}
+              return [comm interps]
+          }
+
+SECURITY
+     Something here soon.
+
+COMPATIBILITY
+
+
+
+
+Comm                    Last change: 2.3                        5
+
+
+
+
+
+
+comm(n)                 package Comm 2.3                  comm(n)
+
+
+
+     The major version of comm describes the overall  compatibil-
+     ity of the API and protocol.  Currently, this is at 2.
+
+     The minor version will change when minor API changes happen.
+     Recent changes, other than bug fixes, include:
+
+     2.3  comm ids was renamed to comm channels . General support
+          for  comm hook was fully implemented, but only the lost
+          hook exists, and it was changed to follow  the  general
+          hook API.  commLostHook and commLost were removed.
+
+     2.2  The died hook was  renamed  lost,  to  be  accessed  by
+          commLostHook  and  an early implementation of comm lost
+          hook.  As such, commDied is now commLost.
+
+     2.1  Unsupported method comm remoteid was added.
+
+     2.0  comm was rewritten from scratch.
+
+SEE ALSO
+     send(n)
+
+AUTHOR
+     John@LoVerso.Southborough.MA.US
+
+COPYRIGHT
+     %%_OSF_COPYRIGHT_%%
+
+BUGS
+     These are mostly outstanding todo items.   Most  are  easily
+     done with existing hooks, but I want to make them easier:
+
+     o Implement documented hooks.
+
+     o Allow use of a slave interp for actual  command  execution
+       (especially when operating in "not local" mode).
+
+     o Add host list (xhost-like) or "magic cookie"  (xauth-like)
+       authentication to initial handshake.
+
+     o Add an interp discovery and name->port  mapping.   (likely
+       to be in a separate, optional nameserver).
+
+     o Fix the {id host} form so as  not  to  be  dependent  upon
+       canonical  hostnames.   This  requires  fixes  to  Tcl  to
+       resolve hostnames!
+
+     o Complete the shutdown, abort,  and  destroy  methods.   In
+       particular,  they may do bad things when you are connected
+       to yourself.
+
+
+
+
+
+Comm                    Last change: 2.3                        6
+
+
+
+
+
+
+comm(n)                 package Comm 2.3                  comm(n)
+
+
+
+     This man page is bigger than the source file.
+
+WARNINGS
+     Tcl7.5 under Windows contains a bug that causes  the  inter-
+     preter  to hang when EOF is reached on non-blocking sockets.
+     This can be triggered with a command such as this:
+          comm send $other exit
+     Always  make  sure   the   channel   is   quiescent   before
+     closing/exiting.   It is recommended you use at least Tcl7.6
+     under Windows.
+
+     Tcl7.6 on the Mac contains several bugs.  It is  recommended
+     you use at least Tcl7.6p1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Comm                    Last change: 2.3                        7
+
+
+

@@ -1,0 +1,143 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec wish8.0 "$0" ${1+"$@"}
+
+
+########################################################################
+# 
+# fichier pistSetupMicroAppli
+#
+# $Id: pistSetupMicroAppli,v 1.1 1997/06/05 05:57:50 diam Exp $
+# 
+# Ce script est un template pour crŽer une nouvelle appli monofichier
+# necessitant la librairie PIST
+# Pas de suivi de lien pour déterminer les librairie
+# (contrairement à miniTkPistAppli).
+# 
+# NECESSITE TK (à modifier pour tcl seul)
+# 
+# v1.0 - (29/05/97 diam) : création
+
+proc app:usage {} {
+global app env
+
+   set    msg "Ce programme \"[file tail [info script]]\" ne sert que "
+   append msg "de template pour rechercher et utiliser la librairie PIST\n"
+   append msg "SANS recherche de liens"
+   append msg \n\n
+   append msg "La doc viendra un jour ... :-)\n\n"
+   append msg "Vous pouvez toujours lire les commentaires de ce fichier\n"
+   append msg "dans :\n\n"
+   
+   append msg "La librairie PIST utilisee est :\n\n"
+   append msg "app(pistsetup)=$app(pistsetup) :\n"
+
+   return $msg
+}
+
+proc main {} {
+global app
+
+  parray app
+  
+  
+  set button [tk_messageBox \
+            -title miniPistAppli \
+            -message [app:usage]]
+  
+  exit
+
+}
+
+
+# Pist_SetupMicroAppli -- installe la librairie pist 
+# 
+# argument : 
+# 
+#  - appli : nom du tableau a initialiser (i.e gred, stead, ...)
+# 
+# 
+# sortie : 
+# 
+#  positionnement des variables suivantes :
+#   - appli(exe) : nom absolu de cet exÈcutable (en vue de le re-sourcer)
+#   - appli(pistsetup) et env(PIST_SETUP) : installation de PIST
+#   - appli(setup) et env(PIST_SETUP) (NON) : installation de PIST
+#   - auto_path : insertion de appli(setup) et appli(pistsetup)/lib
+# 
+# description :
+# 
+#  Le fonction principale de cette procedure est de le repertoire 
+#  d'installation de la librairie PIST utilisée.
+#  Cette application est du type mono fichier, et PIST est la seule 
+#  librairie utilisee
+# 
+#  Version simplifiée de "miniappli:setup" :
+#  - ne suivant pas les liens,
+#  - ne gère pas les options.
+# 
+# 
+proc Pist_SetupMicroAppli appliName {
+
+global env auto_path argc argv tcl_platform
+upvar #0 $appliName appli
+   
+   cd [file dirname [info script]]
+   set appli(setup) [pwd]
+   
+   # On mémorise le nom absolu de cette application
+   set appli(exe) [info script]
+   if {[file pathtype $appli(exe)] == "relative"} {
+      set appli(exe) [file join [pwd] $appli(exe)]
+   }
+   
+   # Recherche de la librairie PIST
+   if {[info exists env(PIST_SETUP)]} {
+       set appli(pistsetup) $env(PIST_SETUP)
+   } else {
+       
+       set dirToScan [list   \
+          $appli(setup) \
+          [file dir $appli(setup)] \
+          [file dir [file dir $appli(setup)]] \
+          [file dir [file dir [file dir $appli(setup)]]] \
+          [file dir [file dir [file dir [file dir $appli(setup)]]]] \
+       ]
+       foreach dir $dirToScan {
+          
+          set pistDirs [glob -nocomplain [file join $dir pist]* ]
+          if {[llength $pistDirs] == 0} {
+              continue
+          } 
+          
+          foreach name [lsort -decreasing  $pistDirs] {
+             if [file isdir [file join $name lib]] {
+                set pistSetup $name
+                break
+             }
+          }
+
+          if [info exists pistSetup] break
+        }
+       
+        if ![info exists pistSetup] {
+          error "Librairie PIST introuvable à partir de $appli(pistsetup) "
+          exit
+        }
+       
+        set appli(pistsetup) $pistSetup
+        # set env(PIST_SETUP) $appli(pistsetup)
+   }
+   set auto_path [linsert $auto_path 0  \
+             $appli(pistsetup)  [file join $appli(pistsetup) lib]]
+   package require pist
+   Pist_PackageRequireAll
+   
+   parray appli
+
+}
+
+
+Pist_SetupMicroAppli app
+main
+

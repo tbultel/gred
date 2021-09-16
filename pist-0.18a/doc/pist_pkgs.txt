@@ -1,0 +1,548 @@
+Liste des packages de pist
+Maj 02/01/96 par diam
+
+Procedure utile (lignes a executer directement depuis stead)
+
+   exec grep "Package" /usr/lei/mos4/work/gred/pist-1.0/pist_pkgs.txt
+   
+Commandes UNIX utile (a copier coller depuis stead)
+
+   egrep "^proc [a-zA-Z0-9_]+_" *.tcl
+   egrep "^proc [a-zA-Z0-9_]+" *.tcl
+   renamew  -info -nc -p1 '\.tk$'  -p2 '.tcl' *
+   renamew        -nc -p1 '\.tk$'  -p2 '.tcl' *
+      
+Pour mettre à jour l'ensemble des packages de pist :
+
+
+A FAIRE : un script pour mettre a jour ce fichier.
+
+
+
+
+########################################################################
+########################################################################
+########################################################################
+Liste des repertoires de pist
+
+diam:citron0:/tmp_mnt/auto/m2/lei/mos4/work/pist-0.1/lib                        tcsh# ll
+total 17
+drwxr-xr-x  17 diam     lei           512 Jan  7 16:06 .
+drwxr-xr-x   5 diam     lei           512 Jan  7 17:16 ..
+drwxr-xr-x   2 diam     lei           512 Jan  7 16:49 box-0.1
+   package provide box 0.1
+   
+drwxr-xr-x   2 diam     lei           512 Jan  7 14:25 canvas-0.1
+drwxr-xr-x   2 diam     lei           512 Jan  7 14:25 cmdline-0.1
+drwxr-xr-x   2 diam     lei           512 Feb  6 09:01 epsf-0.1
+   package provide epsf 0.1
+
+drwxr-xr-x   2 diam     lei           512 Jan  3 14:22 file-0.1
+drwxr-xr-x   5 diam     lei           512 Jan  3 14:22 hview-0.1
+drwxr-xr-x   2 diam     lei          1024 Dec 18 11:49 images
+drwxr-xr-x   2 diam     lei           512 Feb  6 12:20 menu-0.1
+drwxr-xr-x   2 diam     lei           512 Jan  7 16:49 pref-0.1
+drwxr-xr-x   2 diam     lei           512 Jan  7 11:59 prompt-0.1
+drwxr-xr-x   2 diam     lei           512 Feb  3 16:00 shell-0.1
+drwxr-xr-x   2 diam     lei           512 Jan  7 14:25 stead 5PAS PACKAGE)
+drwxr-xr-x   2 diam     lei           512 Jan  7 13:44 tclx-0.1
+drwxr-xr-x   3 diam     lei           512 Jan  7 14:25 text
+drwxr-xr-x   2 diam     lei          1024 Jan  7 16:49 unused
+drwxr-xr-x   2 diam     lei           512 Jan  7 16:49 util
+drwxr-xr-x   2 diam     lei           512 Jan  9 09:14 xtcl-0.1
+
+
+
+########################################################################
+########################################################################
+########################################################################
+
+
+Liste des packages de pist
+
+########################################################################
+########################################################################
+########################################################################
+Package box version 0.1 
+
+fichiers  
+--------
+-rwxr-xr-x   1 diam     lei           750 Feb  6 08:57 alert.tcl
+
+procédures
+----------
+alert.tcl:proc ask {title msg {OK OK} {Cancel Cancel} } {
+alert.tcl:proc alert {msg {Alert Alert}} { 
+alert.tcl:proc help {args} {
+alert.tcl:proc confirmQuit {} {
+alert.tcl:proc watch name {
+
+########################################################################
+########################################################################
+########################################################################
+package provide fileselect 0.1 
+
+fichiers  (dans repertire util-0.1/ )
+--------
+-rwxr-xr-x   1 diam     lei          8792 Jan  7 14:13 fileselect.tcl
+
+procédures
+----------
+proc fileselectResources {} {
+proc fileselect {{why "File Selection"} {default {}} {mustExist 1} } {
+proc fileselectBindings { t e lb ok can } {
+proc fileselectList { dir {files {}} } {
+proc fileselectOK {} {
+proc fileselectCancel {} {
+proc fileselectClick { lb y } {
+proc fileselectTake { lb } {
+proc fileselectComplete {} {
+
+########################################################################
+########################################################################
+########################################################################
+package provide menu 0.1 
+
+fichiers  
+--------
+-rwxr-xr-x   1 diam     lei          4756 Jan  7 14:00 menuPackage.tcl
+
+procédures
+----------
+proc Menu { label {side left}} {
+proc MenuBind { what sequence menuName label } {
+proc MenuCascade { menuName label } {
+proc MenuCascadeEditGlob {menuName pattern} {
+proc MenuCheck { menuName label var { command  {} } } {
+proc MenuCommand { menuName label command args} {
+proc MenuEntryConfigure { menuName label args } {
+proc MenuRadio { menuName label var {value {}} { command  {} } } {
+proc MenuSampler {} {
+proc MenuSeparator { menuName } {
+proc MenuSetup { {frame .menubar} } {
+
+
+########################################################################
+########################################################################
+########################################################################
+Package menu version 0.1 
+
+fichiers  
+--------
+-rwxr-xr-x   1 diam     lei          4756 Jan  7 14:00 menuPackage.tk
+
+procédures
+----------
+proc MenuSetup { {frame .menubar} } {
+proc Menu { label {side left}} {
+proc MenuCommand { menuName label command args} {
+proc MenuCheck { menuName label var { command  {} } } {
+proc MenuRadio { menuName label var {value {}} { command  {} } } {
+proc MenuSeparator { menuName } {
+proc MenuCascade { menuName label } {
+proc MenuBind { what sequence menuName label } {
+proc MenuEntryConfigure { menuName label args } {
+proc MenuCascadeEditGlob {menuName pattern} {
+proc MenuSampler {} {
+
+########################################################################
+########################################################################
+########################################################################
+Package cmdline version 0.1 
+
+fichiers  
+--------
+-rw-r--r--   1 diam     lei          3668 Jan  7 13:24 cmdline.tcl
+
+procédures
+----------
+cmdline.tcl:proc tk_CmdLineInit {} {
+cmdline.tcl:proc tk_CmdSetResultProc {{procName ""}} {
+cmdline.tcl:proc tk_CmdLine {{parent .cmd}} {
+cmdline.tcl:proc tk_CmdInvoque {} {
+
+########################################################################
+########################################################################
+########################################################################
+package provide Comm 2.3
+
+# Copyright (C) 1996 Open Software Foundation
+#  or http://www.osf.org/www/dist_client/caubweb/COPYRIGHT.html)
+
+fichiers  
+--------
+-rw-r--r--   1 diam     lei         13428 Feb  6 12:25 comm.tcl
+-rw-r--r--   1 diam     lei         12909 Feb  6 12:27 comm.txt
+
+procédures
+----------
+comm.tcl:proc comm {cmd args} {
+comm.tcl:proc commAbort {} {
+comm.tcl:proc commCollect {chan fid} {
+comm.tcl:proc commConnect {id} {
+comm.tcl:proc commDebug arg {global comm; if $comm(debug) {uplevel 1 $arg}}
+comm.tcl:proc commDestroy {} {
+comm.tcl:proc commExec {chan fid buf} {
+comm.tcl:proc commHook {hook {script +}} {
+comm.tcl:proc commIncoming {chan fid addr remport} {
+comm.tcl:proc commInit {args} {
+comm.tcl:proc commLostConn {fid {reason "target application died or connection lost"}} {
+comm.tcl:proc commLostHook script {
+comm.tcl:proc commNew {ch args} {
+comm.tcl:proc commNewConn {id fid} {
+comm.tcl:proc commSend {args} {
+comm.tcl:proc commShutdown {id} {
+comm.tcl:proc comm_send {} {
+
+########################################################################
+########################################################################
+########################################################################
+package require prompt
+package provide epsf 0.1
+
+fichiers  
+--------
+-rw-r--r--   1 diam     lei          3542 Feb  6 08:54 epsf.tcl
+-rw-r--r--   1 diam     lei          1189 Jan  7 15:28 epsfText.bad
+
+procédures
+----------
+proc Epsf_Box {} {
+
+########################################################################
+########################################################################
+########################################################################
+package provide prompt 0.1
+
+fichiers  
+--------
+-rwxr--r--    16827 Dec 18 11:49 prompt.exemple
+-rw-r--r--    42838 Feb 06 10:06 prompt.tcl
+-rwxr--r--    27224 Dec 18 11:49 prompt.test
+-rw-r--r--    16776 Dec 18 11:49 prompt.txt
+
+procédures
+----------
+prompt.tcl:proc Prompt_Box {args} {
+
+prompt.tcl:proc PromptGetMaxWidthLabel Prompt {
+prompt.tcl:proc PromptGetType oneEntry {
+prompt.tcl:proc PromptInit {} {
+prompt.tcl:proc PromptInvokeButton {but} {
+prompt.tcl:proc PromptIsLock oneEntry {
+prompt.tcl:proc PromptMakeButtons {f line} {
+prompt.tcl:proc PromptResetValues {f} {
+prompt.tcl:proc PromptResetValuesBOOLEAN {f indice options} {
+prompt.tcl:proc PromptResetValuesCOLOR {f indice options} {
+prompt.tcl:proc PromptResetValuesENTRY {f indice options} {
+prompt.tcl:proc PromptResetValuesSEPARATOR {f indice options} {
+prompt.tcl:proc PromptResetValuesWINDOW {f indice options} {
+prompt.tcl:proc PromptReturnValues {f} {
+prompt.tcl:proc PromptTypeBOOLEAN {f indice args} { 
+prompt.tcl:proc PromptTypeCOLOR {f indice args} { 
+prompt.tcl:proc PromptTypeENTRY {f indice args} { 
+prompt.tcl:proc PromptTypeFILE { f indice args} { 
+prompt.tcl:proc PromptTypePOPUP { f indice args} { 
+prompt.tcl:proc PromptTypeRADIOBUTTON { f indice args} { 
+prompt.tcl:proc PromptTypeSEPARATOR {f indice args} { 
+prompt.tcl:proc PromptTypeWINDOW {f indice args} { 
+prompt.tcl:proc tclParseSpec {w niveau specs argList} {
+
+########################################################################
+########################################################################
+########################################################################
+package provide xtcl version 0.1 - procedure de base tcl pur (listes...)
+
+fichiers  
+--------
+-rwxr-xr-x   1 diam     lei           675 Jan  7 13:40 confirme.tcl
+-rwxr-xr-x   1 diam     lei          9228 Jan  7 13:33 list.tcl
+-rw-r--r--   1 diam     lei          1827 Jan  7 13:32 llsort.tcl.doc
+-rw-r--r--   1 diam     lei           845 Jan  7 16:49 pkgIndex.tcl
+-rwxr-xr-x   1 diam     lei          5601 Jan  7 14:18 poparg.tcl
+-rw-rw-rw-   1 diam     lei          2303 Jan  9 09:13 proc.tcl
+-rwxr-xr-x   1 diam     lei          6042 Jan  7 13:36 random.tcl
+-rwxr-xr-x   1 diam     lei          6630 Jan  7 14:24 report.tcl
+-rwxr-xr-x   1 diam     lei           184 Jan  7 13:35 str.tcl
+
+-rwxr-xr-x   1 diam     lei           675 Jan  7 13:40 confirme.tcl
+-rwxr-xr-x   1 diam     lei          9228 Jan  7 13:33 list.tcl
+-rw-r--r--   1 diam     lei          1827 Jan  7 13:32 llsort.tcl.doc
+-rwxr-xr-x   1 diam     lei          6042 Jan  7 13:36 random.tcl
+-rwxr-xr-x   1 diam     lei           184 Jan  7 13:35 str.tcl
+
+procédures
+----------
+confirme.tcl:proc confirm {msg} {
+list.tcl:proc laddleft {list str} {
+list.tcl:proc lcutleft {list N} {
+list.tcl:proc lexclude {args} {
+list.tcl:proc lfound args {
+list.tcl:proc llongest list {
+list.tcl:proc lmatch {args} {
+list.tcl:proc lreverse {l} {
+list.tcl:proc lunique {args} {
+poparg.tcl:proc popargl {arglist opt args} {
+poparg.tcl:proc popargs {opt args} {
+poparg.tcl:proc popargv {opt args} {
+poparg.tcl:proc upvar:elements {level elems} {
+proc.tcl:proc proc_alias {oldproc newproc} {
+proc.tcl:proc proc_body_append {proc body} {
+proc.tcl:proc proc_body_new {proc body} {
+proc.tcl:proc proc_body_prepend {proc body} {
+proc.tcl:proc proc_clone {oldproc newproc} {
+proc.tcl:proc proc_counts {} {
+proc.tcl:proc proc_info_args {proc} {
+random.tcl:proc random {args} {
+random.tcl:proc random {} {
+random.tcl:proc random::rand16 {a m} {
+random.tcl:proc random::srand16 {seed} {
+random.tcl:proc random_seed {seed} {
+report.tcl:proc report {args} {
+str.tcl:proc Str_Dup {txt {N 2}} {
+
+########################################################################
+########################################################################
+########################################################################
+package provide tclx 0.1 - emulation de l'extension C tclx)
+
+fichiers  
+--------
+-rwxr-xr-x   1 diam     lei          1039 Dec 27 16:34 forfile.tcl
+-rwxr-xr-x   1 diam     lei          4240 Dec 27 16:35 globrecur.tcl
+-rwxr-xr-x   1 diam     lei          1612 Dec 27 16:34 pushd.tcl
+-rwxr-xr-x   1 diam     lei          6095 Jan  7 13:44 setfuncs.tcl
+-rwxr-xr-x   1 diam     lei          2072 Dec 27 16:23 stringfile.tcl
+-rwxr-xr-x   1 diam     lei          4250 Dec 27 16:21 tclx.tcl
+-rw-r--r--   1 diam     lei          1013 Dec 27 16:37 xtcl_keygetset.tcl
+
+procédures
+----------
+forfile.tcl:proc for_file {var filename code} {
+globrecur.tcl:proc recursive_glob {dirlist globlist} {
+globrecur.tcl:proc for_recursive_glob {var dirlist globlist code {depth 1}} {
+pushd.tcl:proc pushd {args} {
+pushd.tcl:proc popd {} {
+pushd.tcl:proc dirs {} { 
+setfuncs.tcl:proc union {lista listb} {
+setfuncs.tcl:proc lrmdups list {
+setfuncs.tcl:proc intersect3 {list1 list2} {
+setfuncs.tcl:proc intersect {list1 list2} {
+stringfile.tcl:proc read_file {fileName args} {
+stringfile.tcl:proc write_file {fileName args} {
+tclx.tcl:proc lassign {list args} {
+tclx.tcl:proc lvarpop {listName args} {
+tclx.tcl:proc lvarpush {listName str args} {
+tclx.tcl:proc lempty {  l  } {
+tclx.tcl:proc lvarcat {listName args} {
+tclx.tcl:proc min {x args} {
+tclx.tcl:proc max {x args} {
+tclx.tcl:proc avg {args} {
+tclx.tcl:proc abs {args} {
+xtcl_keygetset.tcl:proc keylget { lvar key {rvar 0} } {
+xtcl_keygetset.tcl:proc keylset { lvar key val } {
+
+########################################################################
+########################################################################
+########################################################################
+Package canvas version 0.1 
+
+fichiers  
+--------
+-rw-r--r--   1 diam lei 1829 Dec 18 11:49 tkcanvasScolledCanvas.tcl
+-rwxr-xr-x   1 diam lei 1099 Dec 18 11:49 tkcanvasfind.tcl
+
+
+procédures
+----------
+tkcanvasScolledCanvas.tcl:12:proc tkCanvasScrolledCanvas {{parent .draw} args} {
+tkcanvasfind.tcl:17:proc tkCanvasFind {c how tag1 tag2} {
+
+########################################################################
+########################################################################
+########################################################################
+package provide pref 0.1
+
+fichiers  
+--------
+-rwxr-xr-x   1 diam     lei          5566 Dec 18 11:49 pref.tcl
+-rwxr-xr-x   1 diam     lei         24168 Dec 18 11:49 pref2.tcl
+
+procédures
+----------
+pref.tcl:proc Pref_Init {appPrefsDefault userPrefsDefault args} {
+pref.tcl:proc Pref_Add { prefSpecif } {
+pref2.tcl:proc Pref_Dialog {args} {
+pref2.tcl:proc Pref_Save {} {
+pref2.tcl:proc Pref_Reset {} {
+pref2.tcl:proc read_file {fileName args} {
+pref2.tcl:proc write_file {fileName args} {
+
+
+########################################################################
+########################################################################
+########################################################################
+package provide shell 0.1
+
+fichiers
+--------
+-rwxr-xr-x   1 diam     lei         12100 Feb  6 12:10 console.tcl
+-rw-r--r--   1 diam     lei          2108 Dec 27 16:24 dump.tcl
+-rw-r--r--   1 diam     lei           513 Dec 27 16:36 grep.tcl
+-rw-r--r--   1 diam     lei           550 Jan  7 09:28 more.tcl
+-rwxr-xr-x   1 diam     lei          1516 Dec 27 16:27 showproc.tcl
+-rw-r--r--   1 diam     lei          8067 Jan  3 11:45 utilshell.tcl
+
+procédures
+----------
+dump.tcl:proc dumpvar args {
+dump.tcl:proc dumpproc args {
+grep.tcl:proc Grep {pat args} {
+showproc.tcl:proc showproc args {
+utilshell.tcl:proc alias {{newcmd {}} args} {
+utilshell.tcl:proc unalias {cmd} {
+utilshell.tcl:proc which cmd {
+utilshell.tcl:proc mkindex args {
+utilshell.tcl:proc File_IsMoreRecent {fileRef {patterns {. *}} {dir .}} {
+
+
+########################################################################
+########################################################################
+########################################################################
+package provide file 0.1
+
+fichiers
+--------
+
+-rw-r--r--   1 diam     lei          3362 Dec 27 16:16 filerealname.tcl
+-rw-r--r--   1 diam     lei          2129 Dec 27 16:16 filetmp.tcl
+
+procédures
+----------
+
+filerealname.tcl:31:proc file:realName {name} {
+filerealname.tcl:74:proc file:followLinks {name} {
+filetmp.tcl:26:proc file:tmpFileName { args } {
+
+########################################################################
+########################################################################
+########################################################################
+Package hview version 0.1
+
+documentation
+-------------
+
+voir fichier hviewTkhtml.txt
+
+Fichiers principaux
+-------------------
+-rw-r--r--   1 diam     lei         27582 Jan  2 08:57 hview.tcl
+-rw-r--r--   1 diam     lei         10528 Dec 18 11:49 html2htcl.tcl
+
+Dépendance des fichiers
+-----------------------
+    
+ hviewObject.tcl  hviewTkhtml.tcl
+         \          |    \
+          \         |     \
+           \       /       \
+            \     /         \
+            hview.tcl    html2htcl.tcl
+               |                  \
+               |                   |
+         hview.exemple.tcl   compile_html2htcl
+
+Tous fichiers
+-------------
+
+drwxr-xr-x   2 diam     lei           512 Dec 18 11:49 CACHE
+drwxr-xr-x   2 diam     lei           512 Dec 18 11:49 TMP
+-rw-r--r--   1 diam     lei          4096 Dec 18 11:49 TMP1.htcl
+-rw-r--r--   1 diam     lei             0 Dec 18 11:49 TMP1bis.htcl
+-rw-r--r--   1 diam     lei             0 Dec 18 11:49 TMP2.htcl
+-rw-r--r--   1 diam     lei             0 Dec 18 11:49 TMP3.htcl
+-rw-r--r--   1 diam     lei        157538 Dec 18 11:49 canvas.n.htcl
+-rw-r--r--   1 diam     lei         91728 Dec 18 11:49 canvas.n.html
+-rwxr-xr-x   1 diam     lei           167 Dec 18 11:49 compile_html2htcl
+-rw-r--r--   1 diam     lei           935 Dec 18 11:49 essai.html
+-rw-r--r--   1 diam     lei         12765 Dec 18 11:49 exemple.html
+-rw-r--r--   1 diam     lei         10528 Dec 18 11:49 html2htcl.tcl
+-rwxr-xr-x   1 diam     lei          1185 Dec 18 11:49 hview.exemple.tcl
+-rw-r--r--   1 diam     lei         27582 Jan  2 08:57 hview.tcl
+-rw-r--r--   1 diam     lei          8095 Dec 18 11:49 hviewObject.tcl
+-rw-r--r--   1 diam     lei         50252 Dec 18 11:49 hviewTkhtml.tcl
+-rw-r--r--   1 diam     lei          9643 Dec 18 11:49 hviewTkhtml.txt
+drwxr-xr-x   2 diam     lei           512 Dec 18 11:49 images
+
+
+procédure exportée
+------------------
+
+########################################################################
+# hView_Box Box --
+# 
+# Cree une fenetre permettant de visualiser du HTML, cela permet en autre
+# d'afficher une (jolie !) aide.
+# UTILISATION : 
+#     htmlView_Box2 .help -topics $help_topics \
+#         -helpdir $filedir \
+#         -cacheDir /usr/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/TMP/ \
+#         -tmpFile /usr/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/TMP/temp
+# PARAMETRES D'ENTREES :
+#     -helpdir <helpdir> : repertoire contenant le fichier html
+#     -cacheDir <cacheDir> : repertoire ou doit se trouver le cache (pour
+#       lire et ecrire des fichiers de cache
+#     -tmpFile <tmpFile> : Prefixe des fichiers temporaire necessaire
+#       la gestion des caches
+#     -width <width> et -height <height> taille de la fenetre affichant 
+#       le HTML
+
+########################################################################
+# html2htcl --
+# 
+# Genere un fichier ou plusieurs fichier htcl en fonction des parametres
+# specifies dans la ligne de commande args.
+# PARAMETRES : 
+#     ENTREE :
+#        - args : option -file <file> pour specifier le nom d'un fichier
+#                 a compiler
+#                 option -directory <dir> pour specifier une arborescence
+#                 a compiler
+
+
+procédures secondaires exportées
+--------------------------------
+
+hviewTkhtml.tcl:37:proc tkhtml_render {w w2 html} {
+hviewTkhtml.tcl:178:proc tkhtml_defaults {} {
+hviewTkhtml.tcl:197:proc tkhtml_set_font {font size} {
+hviewTkhtml.tcl:208:proc tkhtml_setup {w w2} {
+hviewTkhtml.tcl:447:proc tkhtml_define_font {name foundry family weight slant registry} {
+hviewTkhtml.tcl:454:proc tkhtml_define_entity {name body} {
+hviewTkhtml.tcl:460:proc tkhtml_do {cmd {argv {}}} {
+hviewTkhtml.tcl:465:proc tkhtml_append_text {text} {
+hviewTkhtml.tcl:503:proc tkhtml_set_tag {} {
+hviewTkhtml.tcl:599:proc tkhtml_reconfig_tags {w} {
+hviewTkhtml.tcl:633:proc tkhtml_push {stack value} {
+hviewTkhtml.tcl:638:proc tkhtml_pop {stack} {
+hviewTkhtml.tcl:650:proc tkhtml_peek {stack} {
+hviewTkhtml.tcl:655:proc tkhtml_parse_fields {array_var string} {
+hviewTkhtml.tcl:668:proc tkhtml_title {} {
+hviewTkhtml.tcl:676:proc tkhtml_set_render_hook {hook} {
+hviewTkhtml.tcl:681:proc tkhtml_set_image_hook {hook} {
+hviewTkhtml.tcl:686:proc tkhtml_set_tmpFile {tmpFile} {
+hviewTkhtml.tcl:691:proc tkhtml_set_command_href {cmd} {
+hviewTkhtml.tcl:696:proc tkhtml_set_command_header {cmd} {
+hviewTkhtml.tcl:701:proc tkhtml_set_imagePath {path} {
+hviewTkhtml.tcl:706:proc tkhtml_href_click {cmd href} {
+hviewTkhtml.tcl:709:proc tkhtml_header_click {cmd header} {
+hviewTkhtml.tcl:901:proc tkhtml_header {level} {
+hviewTkhtml.tcl:917:proc tkhtml_/header {level} {
+hviewTkhtml.tcl:1100:proc tkhtml_number {type count} {
+hviewTkhtml.tcl:1296:proc tkhtml_map_esc {text} {
+hviewTkhtml.tcl:1306:proc tkhtml_do_map {text {unknown ?}} {
+
+########################################################################
+########################################################################
+########################################################################
+

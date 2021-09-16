@@ -1,0 +1,135 @@
+<! pistMkDoc.tcl>
+
+
+<H1>Utilisation</H1>
+Le programme <I>pistMkDoc.tcl</I> permet de parser un ou plusieurs fichiers 
+TCL en vue de générer automatiquement une documentation HTML sur 
+ces fichiers.<P>
+
+Utilisation de la procédure :
+<OL>
+<LI><B>Arguments :</B><BR>
+<OL TYPE=a>
+<LI><U>-files <I>"Liste de fichier"</I></U> : 
+  Permet de specifier une liste de fichier+un pattern<BR>
+  <B>Exemple :</B> "-files ./*.tcl ./*.tk"
+<LI><U>-f</U> : force l'effacement des fichiers
+<LI><U>-out <I>FileName</I></U> : Nom du fichier HTML de sortie, si cette 
+option n'est pas spécifiée le nom du fichier de sortie est <I>a.html</I>.
+<LI><U>-tmp <I>Directory</I></U> : Emplacement des fichiers temporaires
+  Si cette option n'est pas précisée, les fichiers temporaires seront
+  placés dans les répertoire courant, ou bien dans le même répertoire
+  que le fichier HTML de sortie si l'option -out est précisée.
+<LI><U>-h</U> : Affiche l'aide concernant l'utilisation de pistMkDoc
+</OL>
+<LI><B>Exemples :</B><BR>
+Pour générer une documentation à partir de fichiers Tcl situés dans le 
+répertoire <I>Lib/Canvas/</I>, il faut utiliser la ligne de commande
+suivante :<BR>
+<CODE>pistMkDoc.tcl -f -files "Lib/Canvas/*.tcl REPERTOIRE/TOTO/*.tk" -out ../../DocAuto/Canvas.html</CODE><BR>
+Si le fichier <I>../../DocAuto/Canvas.html</I> existe, il sera alors écrasé 
+dans la mesure où l'option <B>-f</B> a été spécifiée. 
+Les fichiers temporaires utiles pendant l'exécution du programme seront 
+placés dans le répertoire <I>../../DocAuto/</I>. Si l'option 
+<B>-tmp <I>Dir</I></B> est spécifiée, le répertoire <I>Dir</I> est utilisée
+pour les fichiers temporaires.
+</OL>
+
+<H1>Exemple de Commentaire</H1>
+Le commentaire suivant :<P>
+<CODE>
+########################################################################<BR>
+# recursive_glob -- Retourne une liste récursive d'éléments d'un répertoire<BR>
+# Retourne une liste récursive de fichiers ou répertoires<BR>
+# sous la forme &lt;i&gt;dir&lt;/i&gt;/&lt;i&gt;relativeFilePath&lt;/i&gt;.<BR>
+# Attention la liste optenue peut contenir des répertoires ou des <BR>
+# doublons (de la meme façon que la commande UNIX "ls * *)"&lt;p&gt;<BR>
+# <BR>
+# Arguments:<BR>
+#  dirlist - Commentaire rapide sur le paramètre<BR>
+#   Ceci est un commentaire plus long sur le paramètre &lt;I&gt;dirlist&lt;/I&gt; de<BR>
+#   de la procédure. <BR>
+#  globlist - Pattern permettant de selectionner les fichiers<BR> 
+# Exemple:<BR>
+#  recursive_glob . * <BR>
+#  retourne {./rep1 ./fich1 ./fich2 ./rep1/fic11 ./rep1/fic12 ....}<BR>
+# Remarque:<BR>
+#  Attention si globlist contient ".*" alors les répertoires<BR>
+#  de la forme ".../." et .../.." font partie du résultat !!<BR>
+# Exemple d'utilisation:<BR>
+#  &lt;CODE&gt;set ABS [recursive_glob [pwd] $listOfPatterns]&lt;/CODE&gt; : liste<BR>
+#   de noms absolus&lt;br&gt;<BR>
+#  &lt;CODE&gt;set REL [lcutleft $ABS [expr [string length [pwd]] + 1]]&lt;/CODE&gt;<BR>
+#   : liste de noms relatifs<BR>
+# Modif 10/06/96:<BR>
+#  compatibilité Mac et Windows (utilisation de la commande file join...).&lt;BR&gt;<BR>
+#  Problemes potentiels <BR>
+#  avec les fichiers invisibles pour unix (* et .*)<BR>
+########################################################################<P>
+</CODE>
+donnera le résultat suivant :
+<OL>
+    <LI><A NAME="#P2"><H3>recursive_glob</H3></A><p>
+Retourne une liste récursive d'éléments d'un répertoire<p>
+Retourne une liste récursive de fichiers ou répertoires
+sous la forme <i>dir</i>/<i>relativeFilePath</i>.
+Attention la liste optenue peut contenir des répertoires ou des 
+doublons (de la meme façon que la commande UNIX "ls * *)"<p>
+<OL>
+      <LI><B>Arguments</B><br>
+<OL TYPE=a>
+        <LI><I><B>  dirlist </I></B>  Répertoire de base où va s'effectuer la recherche<BR>
+        <LI><I><B>  globlist </I></B>  Pattern permettant de selectionner les fichiers <BR>
+</OL>
+      <LI><B>Exemple</B><br>
+recursive_glob . * 
+retourne {./rep1 ./fich1 ./fich2 ./rep1/fic11 ./rep1/fic12 ....}
+      <LI><B>Remarque</B><br>
+Attention si globlist contient ".*" alors les répertoires
+de la forme ".../." et .../.." font partie du résultat !!
+      <LI><B>Exemple d'utilisation</B><br>
+<CODE>set ABS [recursive_glob [pwd] $listOfPatterns]</CODE> : liste
+de noms absolus<br>
+<CODE>set REL [lcutleft $ABS [expr [string length [pwd]] + 1]]</CODE>
+: liste de noms relatifs
+      <LI><B>Modif 10/06/96</B><br>
+compatibilité Mac et Windows (utilisation de la commande file join...).<BR>
+Problemes potentiels 
+avec les fichiers invisibles pour unix (* et .*)
+</OL>
+<P>
+<HR WIDTH="50%">
+</OL>
+<H1>Principe</H1>
+Le principe est simple, on parse les fichiers spécifiés sur la ligne de 
+commande grâce à l'option <B>-files</B> un par un. Pour chaque fichier,
+on crée 2 fichiers temporaires permettant de stocher les informations
+HTML issues des commentaires du fichier parsé. Puis, une fois que l'on a 
+terminé de parser le fichier, les informations sont recollées dans 2 
+autres fichiers temporaires (ces derniers existent pendant toutes la 
+durée d'exécution du programme pistMkDoc.tcl). Ces fichiers sont :
+<UL>
+<LI><I>$pistMkDoc(tmpDir)/lof.tmp</I> et</LI>
+<LI><I>$pistMkDoc(tmpDir)/ldop.tmp</I></LI>
+</UL>
+<DL>
+Enfin, les 2 fichiers temporaires sont concaténés pour former le fichier
+HTML de sortie spécifié grâce à l'option <B>-out</B>.
+<DL>
+<DT>Description des fichiers temporaires :
+<DD><I>$pistMkDoc(tmpDir)/lof.tmp</I> : Contient la liste des fichiers
+ dont on veut genérer une documentation. Ce channel est mémorisé dans
+ pistMkDoc(lof) (lof comme Liste Of File)
+<DT>La procédure parseTCLFile utilise 2 fichiers temporaires :
+<DD><I>$pistMkDoc(tmpDir)/lop.tmp</I> : Contiendra la liste des
+ procédures dans fichier TCL parsées par parseTCLFile (lop comme 
+ Liste Of Proc)
+<DD><I>$pistMkDoc(tmpDir)/dop.tmp</I> : Contient la description HTML 
+ des procédures du fichier TCL parsées par parseTCLFile 
+ (dop comme Description Of Proc)
+<DT>Enfin un dernier fichier est nécessaire comme accumulateur :
+<DD><I>$pistMkDoc(tmpDir)/ldop.tmp</I> : Contient la description
+ des fichiers TCL déjà parsée par la procédure parseTCLFile. Ce 
+ channel est mémorisé dans pistMkDoc(ldop) (ldop comme Liste and
+ Description Of Proc)
+</DL>

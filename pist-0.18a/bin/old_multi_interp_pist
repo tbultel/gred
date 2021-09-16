@@ -1,0 +1,566 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec wish4.2 "$0" -- ${1+"$@"}
+
+# Fichier pist
+# mise à jour par diam@ensta.fr
+# 15/07/96 : refonte : aspect indépendant de l'application (gred, mud,
+# stead, ...)
+
+proc pist:usage {} {
+    global pist
+    set usage [subst {syntaxe :
+
+        pist  <appli> ?-setup <setup_dir>? ?--? ?<appli_options>? ...
+        <appli> ?<appli_options>? ...
+
+        appli autorisées : $pist(applis)
+
+        options autorisées (independantes de l'application):
+           -setup <PIST_SETUP>
+           -- : fin des options
+
+        exemple :
+               >pist gred <file1>
+               >pist stead -setup ../.. -mode tcl <file1> <file2> ...
+               >stead -setup ../.. -mode tcl <file1> <file2> ...
+
+    } ]
+    set answer [eval [list tk_dialog .pist "Lancement de PIST" $usage "" 0] \
+        $pist(applis) exit]
+    
+    if {$answer < [llength $pist(applis)]} {
+       set appli [lindex $pist(applis) $answer)]
+       set argv $appli
+       source $pist(exe)
+    } else {
+       puts stderr $usage
+       exit
+    }
+}
+proc pist:setup {} {
+global pist env auto_path argc argv tcl_platform
+
+# report -t "proc : pist:setup : DEBUT ..."
+puts "proc : pist:setup : DEBUT ..."
+
+    # Au cas ou cette procédure est lancee depuis la cmd "interp eval"
+    if {![info exist argv]} {set argv {}; set argc 0}
+
+    # création d'un tableau qui contiendra toutes les préférences de pist
+    set pist(version) "v0.01-alpha"
+    set pist(applis) {gred stead mud console}
+
+    # On mémorise le nom de cette application (en principe : .../.../pist)
+    set pist(exe) [info script]
+    if {[file pathtype $pist(exe)] == "relative"} {
+       set pist(exe) [file join [pwd] $pist(exe)]
+    }
+
+    # appli sert seulement a savoir si on s'appelle pist, gred, mud ou stead
+    set appli [file tail [info script]]
+    if {"$appli"=="pist"} {
+        set appli [lindex $argv 0]
+        set argv [lrange $argv 1 end]
+    }
+    # si le nom de l'appli est inconnu : on impose gred.
+    if {[lsearch -exact $pist(applis) $appli] == -1} {
+       puts "unknown appli : $appli"
+       # pist:usage
+       puts "asserting appli is gred"
+       set appli gred
+       # exit
+    }
+
+    # On extrait (seulement si nécessaire grace a if...) les arguments 
+    # reservés à "pist" : en fait, pour l'instant
+    # seulement le passage du repertoire d'installation "PIST_SETUP"
+    if {[lsearch -glob $argv -?*] != -1} {
+      puts stderr "On a trouver une option -setup qu'on va extraire..."
+      set i 0
+      while {$i < $argc} {
+          # lecture du premier argument õà examiner
+          set arg [lindex $argv $i]
+
+          # examen de tous les cas possibles pour cet argument
+          # "--" permettra de traiter un argument du style "--setup" sans
+          # qu'il soit considéré comme une option.
+          switch -glob -- $arg {
+             --  {set argv [lreplace $argv $i $i]
+                   break  ;# no more options}
+             -setup    {
+                 set argv [lreplace $argv $i $i] ;# i becom the next element
+                 set tmp  [lindex $argv $i]
+                 set env(PIST_SETUP) [file:realName $tmp]
+                 set argv [lreplace $argv $i $i]
+                 continue
+             }
+             default  {break  ;# no more options}
+          }
+      }
+    }
+
+    # On cherche le chemin physique de cet exécutable ainsi que celui de sa
+    # librairie (en suivant éventuellement les liens).
+    # Si une variable d'environnement PIST_SETUP existe, alors c'est elle
+    # qui sera utilisée pour déterminer les librairies.
+    # Sinon, la variable d'environnement PIST_SETUP sera créée.
+
+    if {[info exists env(PIST_SETUP)]} {
+        set pist(setup) $env(PIST_SETUP)
+    } else {
+        set pist(setup) "[file dirname [file dirname \
+                               [file:realName [info script]]]]"
+        set env(PIST_SETUP) $pist(setup)
+    }
+    
+    # on n'utilise pas la fenetre root de l'interpréteur maitre :
+    wm withdraw .
+
+
+    # exécutables et autre utilitaires autonomes :
+    set pist(setup,bindir)      [file join $pist(setup) bin]
+
+
+    # On prédéfinit les librairies contenant les procédures õ autocharger
+
+    set pist(setup,xtcl)         [file join $pist(setup) libs xtcl]
+    set pist(setup,xtk)          [file join $pist(setup) libs xtk]
+    set pist(setup,packages)     [file join $pist(setup) libs packages]
+    set pist(setup,canvas)       [file join $pist(setup) libs canvas]
+    set pist(setup,text)         [file join $pist(setup) libs text]
+    set pist(setup,console)      [file join $pist(setup) libs console]
+    set pist(setup,pistlib)      [file join $pist(setup) libs pist]
+
+    set pist(setup,locallib)     [file join $pist(setup) libs local]
+
+
+    # On définit la liste des librairies auto chargeable :
+    # La derniere librairie inserée dans la liste sera prioritaire.
+    # (cela permet de rajouter un répertoire dynamiquement)
+    # ENVISAGER L'UTILISATION DE LA COMMANDE TCL "package require ..."
+    setup:insertLib  -require -sourceindex \
+	    $pist(setup,xtcl)     \
+	    $pist(setup,xtk)      \
+	    $pist(setup,packages) \
+	    $pist(setup,canvas)   \
+	    $pist(setup,text)     \
+	    $pist(setup,console)
+
+    # On définit quelques autres répertoires systèmes:
+    set pist(setup,libexamples) [file join $pist(setup) examples]
+    set pist(setup,libhelp)     [file join $pist(setup) libs help]
+    set pist(setup,libhtml)     [file join $pist(setup) libs html]
+    set pist(setup,bitmaps)     [file join $pist(setup) libs images]
+    set pist(setup,images)      [file join $pist(setup) libs images]
+
+    set pist(setup,localfilerc)  \
+                [file join $pist(setup,locallib) local${appli}rc]
+
+    # On ajoute éventuellement la librairie local au site, par exemple
+    # définissant les outils vhdl utilisés pour la compilation....
+    set auto_path   [linsert $auto_path 0 $pist(setup,locallib)]
+
+
+    # On définit le répertoire utilisateur 
+    # pist(setup,userlibs) est de la forme ~/pist/ ; chaque appli
+    # (gred,...) créra son propre sous-répertoire ~/pist/gred/...
+    switch $tcl_platform(platform) {
+        macintosh  { set pref_root_folder $env(PREF_FOLDER)] }
+        windows    { set pref_root_folder $env(WINDIR)      }
+        default    { set pref_root_folder $env(HOME)         }
+    }
+    set pist(setup,userlibs) [file join $pref_root_folder pist]
+    # On rajoute les exécutables de pist/bin au début du PATH :
+    if {![info exist env(PATH)]} {set env(PATH) ""}
+    set env(PATH) "$pist(setup,bindir):$env(PATH)"
+
+    set pist(interp,slaves)  {}
+    # # set pist(interp,slaveId) 0
+
+    # appel de l'appli poprement dite avec les arguments non exploités :
+    report -v pist(setup) pist(setup,userlibs)
+    report "eval pist:new $appli $argv"
+    eval pist:new $appli $argv
+
+report -t "proc : pist:setup : FIN ..."
+} ;#endproc pist:setup
+
+########################################################################
+# pist:new --
+# 
+# Cree un nouvelle interpréteur,
+# initialise quelques procedures et variables dans le nouveau contexte
+# et lance l'application proprement dite dans l'interpreteur esclave
+# avec les parametres originaux
+# (par gred:start, ou mud:start, ...)
+
+proc pist:new {appli args} {
+global pist $appli auto_path env auto_index
+
+    # La création d'alias (voir man TCL "interp" est plus efficaces que 
+    # la redéfinitions d'une procédure, mais n'est pas possible pour 
+    # tous les cas :
+    # les deux variables suivantes séparent les procedures deja connue de pist
+    # en deux listes.
+
+    # Liste des proc esclaves devant etre exécutées dans le contexte
+    # esclave (pour ne pas interférer avec les globales de l'appli 
+    # maitre "pist" : elles seront redéfinies dans l'esclave
+    set pist(slaveprocs) {setup:insertLib}
+    
+    # Liste des proc esclaves pouvant ou devant etre exécutées dans 
+    # le contexte maitre 
+    # - soit parcqu'elle DOIVENT acceder au globales de pist
+    # - soit parcqu'elle n'utilisent pas de globales (dont pas d'effet 
+    #   de bord
+    set pist(slavealias) {
+       file:realName pist:new pist:eval pist:slaves
+    }
+    
+report -t "Debut proc : pist:new $appli $args ..."
+    set ntp [pist:newInterp $appli]
+
+    report "#################################################"
+    report "Debut de proc $appli:new $args"
+    report "### Nouvel interpréteur ntp = $ntp"
+    report "### tk appname : [$ntp eval {tk appnam}] (\$ntp eval {tk appname})"
+    $ntp eval [list set ${appli}(exe) $pist(exe)]
+    $ntp eval [list set auto_path $auto_path]
+    $ntp eval {list puts "auto_path=$auto_path"}
+
+    $ntp eval [list set ${appli}(name) $ntp]
+    # On recopie les variables du style pist(setup...) dans le tableau de 
+    # l'appli ${appli}(setup..)
+    $ntp eval [list array set $appli [array get pist setup*]]
+    $ntp eval [list array set auto_index [array get auto_index]]
+    
+    # les proc suivantes sont redéfinie dans l'interp. esclave car elle
+    # ne doivent pas etre executer dans le contexte du maitre 
+    # (i.e les globale ne doivent pas etre partagees : auto_path, ...)
+    foreach proc $pist(slaveprocs) {
+       $ntp eval [dumpproc $proc]
+    }
+
+    # On rajoute la librairie privée de l'appli (eg. : ../pist/libs/gred/)
+    set appLibName   ${appli}(setup,${appli}lib)
+    set appLib       [file join $pist(setup) libs $appli]
+    $ntp eval [list set $appLibName $appLib]
+    $ntp eval [list setup:insertLib -require $appLib]
+
+    # On rajoute la librairie utilisateur pour l'appli (~/pist/gred/)
+    $ntp eval [list set ${appli}(setup,userlib) \
+                [file join $pist(setup,userlibs) $appli]]
+                      	    
+    $ntp eval [list set ${appli}(setup,userfilerc) \
+                [file join $pist(setup,userlibs) $appli ${appli}rc]]
+
+    
+    # les proc suivantes doivent etre evaluées par les esclaves dans le 
+    # contexte de l'interp maitre (sauf  file:realName  qui n'est pas 
+    # auto_chargeable depuis une librairie)
+    # A GENERALISER POUR LES PROC SANS EFFET DE BORD (n'utilisant pas de
+    # variables globales)
+    foreach proc $pist(slavealias) {
+       interp alias $ntp $proc {} $proc
+    }
+    # Création pour la nouvelle appli esclave d'alias permettant de 
+    # créer, détruire , ...d'autres esclaves
+    foreach app $pist(applis) {
+       interp alias $ntp $app:new {} pist:new $app
+       interp alias $ntp $app:newProcess {} pist:newProcess $app
+       interp alias $ntp $app:delete {} pist:delete $ntp
+    }
+    interp alias $ntp slaves {} pist:newInterp ""
+    
+report -t "pist:new\
+         (avant appel de interp eval $ntp \"$appli:start $args)\""
+    $ntp eval "$appli:start $args"
+report -t "pist:new\
+         (apres appel de interp eval $ntp \"$appli:start $args)\""
+
+    ####################################################################
+    ####################################################################
+report -t "Fin de : pist:new"
+} ;#endproc pist:new
+
+# pist:delete --
+# 
+# Detruit les interpreteurs dont la liste de noms est passée en parametre
+# et met a jour la liste d'esclaves.
+# Si pas de parametre, tous les esclaves et l'appli pist sont detruits.
+# Si un interpreteur de la liste n'existe pas : il est ignoré.
+# Si le dernier esclave est a detruire : quitte ausi l'interpreteur 
+# maitre (i.e quitte pist)
+# Ne verifie pas l'etat modified de chaque appli esclave : c'est aux 
+# applications esclaves de s'en charger.
+# 
+proc pist:delete {args} {
+global pist auto_path env
+upvar #0 pist(interp,slaves) slaves
+
+    if ![string length $args] {
+        set args  [pist:slaves] 
+    }
+    foreach name $args {
+      set slaveIx [lsearch -exact $slaves $name]
+      if {$slaveIx != -1} {
+         set slaves [lreplace $slaves $slaveIx $slaveIx]
+         interp delete $name
+         if ![llength $slaves] exit
+      }
+    } ;# endforeach
+    
+
+} ;#endproc stead:delete
+
+
+# pist:newProcess --
+# 
+# 
+proc pist:newProcess {appli args} {
+global pist $appli auto_path env
+   if ![lsearch -exact $appli $pist(applis)] {
+       set msg "unknow application name : allowed application :\
+                \      $pist(applis)"
+       error $msg
+   }
+   exec $pist(exe) $appli &
+}
+
+# pist:newInterp --
+# 
+# Cree un nouvell interpreteur de nom de base $appli (e.g. gred2)
+# Enregistre ce nouvel esclave, 
+# Precharge l'extension Tk dans cet interpreteur
+# Donne un nom d'application a cette nouvelle appli 
+#    (ce nom pourra etre utilise par send)
+# 
+proc pist:newInterp {{appli pist}} {
+    global pist
+    # Initialisation d'un identificateur unique pour l'appli $appli
+    if {![info exist pist(interp,${appli}Id)]} {
+       set pist(interp,${appli}Id) 0
+    }
+    # création de l'interpréteur sous un nom unique (gred3, gred4, ...)
+    set ntp [interp create $appli[incr pist(interp,${appli}Id)]]
+    # Enregistrement dans la liste des des esclaves
+    lappend pist(interp,slaves) $ntp
+    # Chargement de tk dans cet interpréteur
+    load {} Tk $ntp
+    $ntp eval [list tk appname $ntp]
+    return $ntp
+} ;# endproc pist:newInterp
+
+# pist:slaves --
+# 
+proc pist:slaves {{appli {}}} {
+    global pist
+    if [string match $appli {}] {
+        # on retourne tous les esclaves
+        return $pist(interp,slaves)
+    } else {
+        # on ne retourne que les esclaves concernant l'appli $appli (gred, ...)
+        return [lmatch -glob $pist(interp,slaves) "*$appli*"]
+    }
+} ;# endproc pist:slaves
+
+# pist:eval --
+# 
+proc pist:eval {ntp script} {
+    global pist
+    if [string match "pist" $ntp] {
+        # on evalue dans l'interpreteur principal
+        eval #0 $script
+    } else {
+        # on evalue dans l'interpreteur esclave
+        $ntp eval {#0 $script}
+    }
+} ;# endproc pist:slaves
+
+
+# file:realName --
+# 
+# file:realName <fileOrDir>
+#    retourne le nom absolu physique à partir d'un nom relatif
+#    ou absolu, et en suivant les liens éventuels.
+#    "name" peut etre un nom de fichier ou de répertoire QUI DOIT EXISTER
+#    exemple :  file:realName /usr/local/bin/stead
+#    retourne : /usr/vb/amd/lib/STEAD-0.36-alpha/stead
+#
+# A FAIRE :
+#   - traiter differemenet le cas unix des cas windows et Macintosh
+#     pour lesquel c'est plus simple (pas d'automontage)
+#   - envisager constantes global :
+#       file(parent) ("..",  ou "::")
+#       file(...)
+#       global file
+#       if ![info exist file(separator)] {
+#          initialiser les contantes file(..)
+#       }
+#
+# 16/07/96 : refonte complete suppression recursives des liens dans le path
+#            fiable même si automontages car ne suit pas les liens de la
+#            forme : /tmp_mnt/...  ou /auto/...
+#            Le résultat ne contient ni "." ni ".."
+#            On peut donc utiliser [file dirname [file dirname ..]]
+#            sur le résultat de cette procédure.
+#            En principe multiplatteforme (non testé à fond pour l'instant
+# 
+# Remarque : si <name> contient deja /tmp_mnt/ ou /auto/, ces chaines ne 
+# sont pas supprimer dans le resultat !
+# 
+interp alias {} frn {} file:realName
+proc file:realName {name} {
+
+    # # glob make the tilda substitution like "~/bin/appli" :
+    # set name [glob $name] ;# inutile car exploité par "file dirname ~"
+    # If the name is relative: one make it absolute
+    if {[file pathtype $name] == "relative"} {
+       set name [file join [pwd] $name]
+    }
+    # could be /usr/local/bin/../../amd/bin/./te
+    # One follow all possible links in the path
+    set name [file:followLinks $name]
+    # could be "/usr/local/bin/../../m2b/lei/bin/../lib/./stead_v036a/stead"
+
+    # remove directory nodes like "." or ".." from the path
+    set lpath [file split $name]    ;# full path list {/ usr local ...}
+    set finalPath [lindex $lpath 0] ;# root could be "/" or "MacOS:"
+    set lpath [lreplace $lpath 0 0] ;# rest of lpath {usr local ...}
+    foreach node $lpath {
+        switch -exact -- $node {
+          .  continue
+          .. {
+             set finalPath [file dirname $finalPath]
+             continue
+          }
+          default {
+             set finalPath [file join $finalPath $node]
+          }
+        }
+    }
+    return $finalPath
+
+} ;# endproc file:realName
+
+# file:followLink --
+# 
+# file:followLink <absoluteName> :
+# Return an absolute name without any link in the path.
+# But could return something like :
+#    "/usr/local/bin/../../m2b/lei/bin/../lib/./stead_v036a/stead"
+# Principe:
+# One follow a possible link (which can be absolute or relative)
+# for the tail node, then recurse for all parents directories.
+# One don't follow links starting with /tmp_mnt/ ou /auto/
+# to avoid problems with auto"un"mount directories under unix NFS
+# 
+proc file:followLinks {name} {
+  while {[string match "link" [file type $name] ]} {
+    set followName [file readlink $name]
+    if {[regexp {^(/tmp_mnt/)|(/auto/)} $followName]} {break}
+    if {[file pathtype $followName] == "relative"} {
+      set followName [file join  [file dirname $name] $followName]
+    }
+    set name $followName
+  }
+  set dir [file dirname $name]
+  if {"x$dir" == "x$name"} {
+     return $name
+  } else {
+     return [file join [file:followLinks $dir] [file tail $name]]
+  }
+} ;# endproc file:followLinks
+
+
+# setup:insertLib --
+# 
+# setup:insertLib ?-require? <dir> <dir> ...
+# 
+# Met a jour la variable auto_path 
+# La derniere librairie de dirList est prioritaire car elle sera insérée
+# en premier dans la variable auto_path
+# 
+# option :
+#   -require : verifie l'existance des fichiers d'index (tclIndex) 
+#       dans chaque répertoire <dir>.
+#   -sourceindex : source le(s) fichier tclIndex : permet d'initialiser 
+#       le table auto_index(...).
+# 
+# 29/06/96 (diam) : plantait si tclIndex n'existait pas car file:fullName
+# necessitait un nom existant !
+# 
+proc setup:insertLib {args} {
+global auto_path auto_index
+
+  set REQUIRE 0
+  set SOURCEINDEX 0
+  
+  while {[string length $args]} {
+      switch -glob -- [lindex $args 0] {
+         --           { set args [lreplace $args 0 0] ; break}
+         -require*    { set REQUIRE 1
+                        set args [lreplace $args 0 0]
+                        continue}
+         -source*     { set SOURCEINDEX 1
+                        set args [lreplace $args 0 0]
+                        continue}
+         -*           { error "unknow option $arg"}
+         default      { break  ;# no more options}
+      }
+  }
+  # args contains all the list of unread arguments
+  
+  
+  foreach dir $args {
+    set tclIndex [file join $dir tclIndex]
+
+    if {[file exists $tclIndex]} {
+      # set  auto_path  "$dir $auto_path"
+      set  auto_path  [linsert $auto_path 0 $dir]
+      if $SOURCEINDEX {source $tclIndex}
+      
+    } elseif $REQUIRE {
+      set     msg "Impossible de trouver une librairie de l'application, "
+      append  msg  "désolé !\n"
+      append  msg "\n   Nom logique de l'exécutable              "
+      append  msg " = \"[info script]\""
+      append  msg "\n   Nom physique de l'exécutable             "
+      append  msg " = \"[file:realName [info script]]\""
+      append  msg "\n   Fichier non trouvé                        = "
+      append  msg "\"$tclIndex\""
+      message .m -width 1000 \
+                 -text $msg \
+                 -font -*-courier-bold-r-normal-*-14-*-*-*-*-*-iso8859-*
+      button .b -command {destroy .} -text {Au revoir...} \
+                -font -*-helvetica-bold-r-normal-*-14-*-*-*-*-*-iso8859-*
+      bind . <Return> {destroy .}
+      pack .m  .b
+      wm geometry . +10+300
+      wm deiconify .
+      # focus . ;# voir tk_dialog...
+      # grab .
+      tkwait window .
+      exit
+    }
+  }
+
+}
+
+# Voici les premieres instruction exécutées :
+
+global tcl_platform
+switch $tcl_platform(platform) {
+    macintosh {
+       cd [file dirname [info script]]
+    }
+    windows {
+    }
+    unix -
+    default {
+    }
+}
+
+pist:setup
+

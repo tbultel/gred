@@ -1,0 +1,510 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec wish4.1 "$0" ${1+"$@"}
+########################################################################
+# fichier preftest
+# Test et documenetation du package test.tcl 
+# voir doc, historique et info complémentaire à la fin de ce fichier
+# 
+########################################################################
+########################################################################
+########################################################################
+# Complément au package pref.tcl
+
+
+set pref(doc) {
+########################################################################
+Historique :
+------------
+
+modifié par diam@ensta.fr
+03/10/96 : appel au nouvelle commande system de tk4.2
+           file remove, file mkdir, file rename au lieu des procédures
+           sys:rm, sys:mkdir et sys:mv
+12/06/96 : correction bug de PrefInvokeButton si le bouton invoqué
+           par <Escape> detruit la toplevel (effet enfoncé puis relevé).
+20/05/96 : Pref_Add ne peut prendre QU'UNE seule préférence à la fois.
+17/05/96 : rerefonte (structure de données).
+09/05/96 : refonte (et réduction importante des "A faire"
+16/04/96 : modif de la proc Status en PrefStatus et création d'une 
+           variable pref(status) et pref(reportProc)
+12/04/96 : modif de savePref pour que le fichier généré soit du TCL pur.
+12/04/96 : ajout d'un champs Type pour chaque préférence
+           le premier mot du champs Type définit le type de la preference 
+           (boolean, color, geometry, enum, integer, .., string (defaut))
+           la signification des mots suivants dépend du type (par exemple
+           liste des valeurs possible pour le type "enum")
+           Ce champ permet d'une part de personnaliser l'éditeur de préférence 
+           en fonction de son type, et d'autre part d'effectuer des 
+           controles de valisité.
+
+Bug et modif a faire :
+----------------------
+
+- Pref_Init : intégrer option "-sourcePwd" qui source un fichier utilisateur 
+  du répertoire courant.
+- Refondre la gestion des options : généraliser la methode 
+      Pref_init -opt1 val1 -bool -- <arg1> <arg2> ...
+  ou bien (pour raison d'efficacité) :
+      Pref_Init  -key_i val_i  ...  (que des couples option/valeur)
+- groupMod listbox : (bug) ameliorer les binding (utilisation fiable des 
+  fleches au clavier) voir lib/tcl4.2b1/ browser de fichier
+- Utiliser grid au lieu de pack.
+- creer les autre mode pour -groupmode (buttons, popup, flat, ..)
+- prévoir de rajouter de scrollBar si trop de pref par group (via un
+  widget canvas ou text) 
+- gérer les messages multilingues (creer exemple pour francais / anglais 
+  /espagnol)
+- demander confirmation au moment de faire "Done" (==? Validate) et 
+  proposer la "avec sauvegarde", "sans sauvegarde" , "annuler" (de Done)
+  Pour cela utiliser les procedures de Dialogue
+- Sauvegarde ultérieure possible à gérer par l'application (proposer 
+  un menu "Config/Save prefs" qui lance la proc "Pref_save")
+- prévoir un champ supplémentaire pour les browser chooser : nom d'un procédure 
+  permettant de choisir le type en question.
+  Exemples : {COLOR &colorChooser}
+             {FONT &fontChooser}
+             {FILE {&fileSelect -défaut $eg(var)}}
+- utiliser grid au lieu de pack
+
+Procédures externes utilisées :
+-------------------------------
+
+   Aucune.
+   
+Evolution envisagée :
+---------------------
+
+Orientation objet : 
+Pouvoir gérer dans une même application plusieurs 
+jeux de préférence indépendants.
+Principe création de plusieurs tableaux pref0, pref1, ... propre à 
+une instance particulière.
+Le tableau pref() reste nécessaire ne serait-ce que pour gèrer la 
+liste des module pseudo-objets "jeux de préférences"
+
+########################################################################
+########################################################################
+########################################################################
+BUT DU PACKAGE PREF :
+---------------------
+Le module "pref" propose un jeux de procédures permettant de faciliter
+la gestion complète des préférences d'une application.
+
+Les fonctionnalités suivantes sont proposées :
+----------------------------------------------
+
+    - gestion des fichiers de préférence propre à l'application
+      (i.e. à un site) et du fichier de préférence utilisateur
+      (qui peut être modifié et sauvegarder)
+      
+    - initialisation et gestion des valeurs par défaut des préférences, 
+    
+    - exploitation de la notion de ressource xwindow (qui fonctionne 
+      également sur Macintosh et sur PC).
+      
+    - liberté totale pour l'application dans le choix des variables 
+      déclarés comme préférence ("MUG(export,vhdl_header)", gred(admin)
+      ou tout simplement "FILENAME"). 
+
+    - construction automatique d'une interface graphique permettant 
+      à l'utilisateur de modifier, sauvegarder, ... les préférences.
+      
+    - pollution minimale de l'espace des variable (tout tient dans 
+      un seul tableau "pref"
+    
+
+########################################################################
+########################################################################
+########################################################################
+Principe :
+---------
+    L'utilisation de ce package se fait a 2 niveaux :
+        1) meme des attributs de preferences
+        2) construction du dialogue
+Une préférence est un ensemble d'au maximum sept éléments. Ceux-ci 
+doivent etre declarer lors de la creation des préférences en utilisant la 
+procédure "Pref_Add" :
+   -type : type proprement dit de la variable utilisée comme préférence
+     (BOOLEAN, ENUM, ... STRING + FILE COLOR TEXT ...),
+     La valeur par défaut est STRING qui correspond à une simple entry
+   -typearg : info complémentaires propre à ce type (valeurs possible  
+     d'un type énuméré, hauteur d'un texte, ...)
+   -group : exemples "Général", "Interface Utilisateur", ...)
+     La valeur par défaut est le nom du groupe précédement défini.
+     Si un seul group est défini (ou aucun) : aucun groupe n'est affiché.
+   -var : nom de la variable mémorisant cette préférence
+   -xres : nom de la ressource Xwindows correspondante
+   -default : valeur par défaut de cette préférence
+   -comment : sa description en un ligne
+   -help : info complémentaire (plusieurs lignes possibles)
+
+
+L'utilisation du module "pref" se fait en trois phases :
+
+1 - Initialisation :
+--------------------
+    Pref_Init  {appPrefsDefault userPrefsDefault args} {}
+
+    - Les deux premiers parametres (obligatoires) sont des noms de 
+      fichier TCL qui initialisent les préférences de l'application
+      (userPrefsDefault sera utilisé pour la sauvegarde des
+      préférences) 
+    - les options suivantes (args) sont par exemple :
+        -reportProc <procName> (defaut : "PrefStatus")
+        permet de définir une procédure pour l'émission de messages par 
+        le package,
+        -groupmode <mode> 
+
+2 - Initialisation des préférences :
+------------------------------------
+    Pref_Add {<prefSpecification>}
+
+    prend en parametre une spécification de préférences qui est UNE 
+    une liste de couple "-option valeur".
+
+    Pref_Add {
+      -type COLOR             -group "User Interface"
+      -var gred(etapeColor)   -xres etapeColor   -default black
+      -comment "Couleur d'une etape"
+      -help "La couleur d'une étape peut etre modifier en ..."
+    }
+   
+3 - lancement éventuel de la fenetre de dialogue par l'utilisateur
+------------------------------------------------------------------
+    Pref_Dialog
+
+########################################################################
+Conventions de programmation :
+------------------------------
+
+(Voir fichier /doc/methodologie.doc pour les généralités)
+Les variables statiques du package pref sont entièrement contenues 
+dans le tableau "pref()".
+Il permet de manipuler d'autres "objets" internes qui sont les "groupes" 
+contenant eux même des "prefs" qui ont leurs propres données.
+
+
+Procédure publiques disponibles :
+---------------------------------
+
+Pref_Init appPrefsDefault userPrefsDefault args
+    -reportProc (default: PrefStatus)
+        nom d'une procédure appéler pour afficher les messages utilisateur 
+    -groupmode listbox
+
+Pref_Add SpecOfPref 
+
+Pref_Dialog {args}
+   -group <groupName>
+       Nom du groupe à afficher (l'utilisateur pourra changer en fonction
+       de l'opt
+   -groupmode <mode>   
+       indique la manière dont les groupes doivent etre proposés.
+       valeurs possibles : 
+           - listbox : 
+           - popup :
+           - buttons :
+           - auto (default) : 
+        
+Pref_Save 
+
+   Sauvegarde ultérieur possible si l'utilisateur a  sélectionné
+   "Done" au lieu de "Save" :
+
+Pref_Reset
+
+   Remise des préférences à leur valeur par défaut
+    - RAZ des valeurs a leur valeur / default (option -default)
+    - lecture des fichiers de preference.
+
+########################################################################
+
+Variable globales utilisées :
+-----------------------------
+pref(Meta) :   touche modificateur "Meta" par défaut
+pref(modified) : initialisé à 0 puis mise à 1 quand on quitte sans 
+              avoir sauvegardé les préférences.(A exploiter par l'appli 
+              principale pour quitter). Il est possible de faire
+              confirmer la sauvegarde lorsque l'on quitte la fenetre preference.
+pref(done) : initialisé à 0 puis mise à 1 quand on quitte le panel 
+             des préférences (voir utilisation dans la proc Pref_Test)
+    
+pref(msg,...) :  messages  à afficher à l'utilisateur (dépend de la langue)
+
+pref(reportProc) : nom d'une procédure à utiliser pour l'affichage 
+             de l'aide (la proc par défaut "PrefStatus" pour etre
+             remplacé par l'utilisateur) 
+pref(status) : contient le message affiché
+pref(status,text) : widget text utilisé pour l'affichage de l'aide
+pref(status,font) fonte du widget text d'affichage $pref(status,text)
+pref(status,height) hauteur (en nmr de ligne) de $pref(status,text)
+
+pref(toplevel) : nom de la frame Toplevel (.pref) sera peut-etre 
+             ".pref0", ".pref1", ...
+pref(uid) :  contient un nombre utilisé une seule fois (Unic IDentif)
+pref(null) : valeur désignant une préférence inaffectée (pour éviter 
+             d'utiliser "" (défaut : "pref_null_value")
+             Les noms de la forme "pref(nullxxx)" correspondent à des 
+             variables bidon (i.e Pref_Add sans nom de variable)
+
+# Les 2 champs suivants sont a changer
+pref(appPrefsDefault) Fichier TCL des préférence de l'appli (site)
+pref(userPrefsDefault) Fichier TCL des préférence de l'utilisateur
+             utilisé pour la sauvegarde des préférences
+     
+pref(groupMode) : Mode de sélection du groupe "listbox"
+             pourra être "auto" "buttons" "popup"
+pref(groupNames) : liste des noms de groupe ({Général {Interface ut...}...})
+pref(currentGroupName) : Nom du dernier groupe entré par Pref_Add" 
+              puis nom du groupe visualisé dans Pref_Dialog
+pref(defaultGroupName) : "Group1"
+
+Les variables locales "$gn" et "$vn" représentent un nom de groupe ou un nom
+de variable.
+
+
+pref(varNames) : liste des noms de variables dans l'ordre de déclaration.
+pref(groupNames) : liste des noms de groupe dans l'ordre de déclaration.
+
+pref(gn$groupName,gid) : contient l'id du groupe dont le nom est $gName
+     exemple : set "pref(gnInterface Utilisateur,gid)" "3"
+pref(gid$gid,groupName) : contient le nom du groupe d'identité $gid
+pref(gid$gid,prefs) : liste des id des prefs du group $gid
+    Les procédures utilisateurs sont de la forme Pref_Dialog {...}
+pref(gid$gid,commentWidth) : contiendra la taille maxi du "comment" 
+    pour le groupe $gid
+
+Les variables suivantes contiennent les valeurs relatives à la variable dont le 
+nom $vn 
+
+vartmp : variable temporaire image de la variable 
+updatePref : commande permettant de mettre à jour une variable de
+       préférence à partir du widget de cette préf (exploitée par 
+       eval par exemple quand on fait "Done"
+updateWidget) : commande permettant de mettre à jour le widget d'une préf
+       à partir de la variable de préf courante. 
+       (nécessaire par exemple après avoir fait un "Reset")
+       
+Exemple pour la preferences admin :
+pref(vn$vn,comment)      = Ajout du menu administration
+pref(vn$vn,default)      = OFF
+pref(vn$vn,frame)        = .pref.b.g1.v8
+pref(vn$vn,group)        = Général
+pref(vn$vn,help)         = Cette variable permet ...
+pref(vn$vn,type)         = BOOLEAN
+pref(vn$vn,typearg)      = left right
+pref(vn$vn,updatePref)   = set gred(admin) {[set} pref(vngred(admin),vartmp)\]
+pref(vn$vn,updateWidget) = set pref(vngred(admin),vartmp) {[set} gred(admin)\]
+pref(vn$vn,vartmp)       = 1
+pref(vn$vn,xres)         = admin
+
+    exemple :
+    
+    set "pref(vngred(admin),comment)"   "Ajout du menu administration"
+
+
+Les variables suivantes contiennent les valeurs relatives au groupe dont le
+nom est $gn
+
+pref(gn$gn,commentWidth) : taille maxi du champs comment pour toutes
+       les variables du groupe $gn (inutile si on utilise grid a la place de
+       pack ?)
+pref(gn$gn,frame) : frame réservée au groupe $gn (visible ou nom suivant
+       la valeur de pref(currentGroupName)
+pref(gn$gn,varNames) : liste des préférences du groupe $gn
+
+    exemple :
+    
+    pref(gnUser Interface,commentWidth) = 26
+    pref(gnUser Interface,frame)        = .pref.b.g2
+    pref(gnUser Interface,varNames)     = gred(etapeColor) gred(geometry)
+
+
+########################################################################
+Evolutions possibles :
+----------------------
+
+Pouvoir instancier plusieurs objets "pref" en utilisant alors comme
+tableau global "pref0()", pref1(), ...
+
+Application : pouvoir utiliser ce package pour des fonctions totalement
+différentes et indépendantes (un pour gérer les préferences
+(utilisation normal), un autres pour controler les differents attributs
+d'une étape, un autre pour les transition, ou tout simplement pour 
+demander une liste de parametre à l'utilisateur... Cela necessitera la creation
+probable d'une couche de procedure intermediaire du style "labeledEnter"
+(utilisable egalement comme champs de "adressbook")
+
+
+#####################################################################
+Exemple d'utilisation : 
+-----------------------
+L'exécution de ce test crée (s'il n'existe pas déja) un fichier de
+configuration "app-defaults.tcl"  dans le même répertoire que ce
+package. 
+La valeur initiale de ce ficher est contenue dans la variable
+"appdef_content". (variable affectee dans le script)
+
+Un exemple de fichier utilisateur "user-defaults.tcl" est également 
+donné en exemple (variable user-defaults.tcl), mais celui-ci n'étant 
+pas obligatoire, il n'a pas besoin d'etre généré  pas ce programme 
+de test (il est genere par le package pref lui-même lorsqu'on clique sur 
+"Save"
+}
+
+
+proc Pref_Test {} {
+   # setup de l'application test
+   # Exemple d'utilisation :
+   global  auto_path appdef_content userdef_content
+   global appdef userdef
+
+   set olddir [pwd]
+   cd  "[file dirname [info script]]"
+   set setupDir [pwd]
+   # # lappend auto_path $setupDir
+   
+   # On source EXPLICITEMENT les fichiers necessaires
+   source [file join $setupDir pref.tk]
+   source [file join $setupDir pref2.tk]
+   source [file join $setupDir .. .. .. pist libs  xtcl sys.tcl]
+#    source [file join $setupDir .. xtcl sys.tcl]
+
+#    global tcl_platform
+#    switch -exact -- $tcl_platform(platform) {
+#        "macintosh" {
+#        	    rename scrollbar scrollbar_ori
+#        	    rename macscrollbar scrollbar
+#        	}
+#    }
+   #####################################################################
+   #####################################################################
+   #####################################################################
+   # Création éventuelle du fichier $appdef si inexistant :
+
+   wm withdraw .
+   set appdef "[file join $setupDir app-tcl.defaults]"
+   set userdef "[file join $setupDir user-tcl.defaults]"
+   if {![info exist $appdef]}  {write_file $appdef $appdef_content}
+   # if {![info exist $userdef]} {write_file $userdef $userdef_content}
+
+   Pref_Init  $appdef $userdef
+
+
+   Pref_Add { 
+        -type  ENUM  
+        -typearg  {left right}   
+        -group  Général
+        -var  gred(scrollside) 
+        -xres  scrollbarSide 
+        -default right
+        -comment "Position de la scrollBar"
+        -help "La barre de défilement verticale d'un widget text ou d'un\
+          canvas peut etre \012placée à droit (right) ou à gauche (left)"
+   }
+   Pref_Add {   -type COLOR    -group "User Interface"
+         -var gred(etapeColor)  -xres etapeColor    -default black
+         -comment "Couleur d'une etape"
+         -help "La couleur d'une étape peut etre modifier en ..."
+   }
+   Pref_Add {    -type BOOLEAN          -group Général
+         -var gred(admin)  -xres admin  -default OFF
+         -comment "Ajout du menu administration"
+         -help "Cette variable permet de rajouter un menu \"admin\" facilitant\
+          la maintenance \012de l'application gred"
+   }
+   Pref_Add {  -type SCALE -typearg {-1 .. 50}    -group Général
+         -var gred(undonumber) -xres undoNumber -default 15
+         -comment "Vitesse de Nombre d'annulations possibles"
+         -help "La valeur 0 supprime la fonctionnalité d'annulation\
+          \xaMettre -1 pour un nombre infini (limite mémoire)"
+   }
+   Pref_Add { 
+         -type GEOMETRY        -group "User Interface"
+         -var gred(geometry)  -xres geometry  -default 10+10x400x700
+         -comment "Geometrie de l'application"
+         -help "asdfasdasjdhasdasda asd as,dm sad,m as  ,m nasd,mas ,mas a,mn \
+         asdasldkjaslk asjlddklksaj aslk jaslkjsalkjas lkaslk jaslk dlkkl kaj \
+         asdas;dk ;asl;lak a;slk ;aslkd ;las as "
+   }
+   Pref_Add {
+         -type ENUM  -typearg {A B C D }    -group "Groupe bidon"
+         -var gred(PIPO) -xres pipoRessourse  -default AB
+         -comment "defaut := AB , ressource := BC pour rire"
+         -help "Rien a voir"
+   }
+   Pref_Dialog
+
+}
+
+########################################################################
+# Exemple de fichier app-tcl.defaults (doit exister) :
+########################################################################
+set appdef_content {
+option add   *geometry         150x50+6565-2   startupFile
+option add   *admin            0               startupFile
+option add   *scrollbarSide    left            startupFile
+option add   *pipoRessourse    D               startupFile
+}
+
+########################################################################
+# Exemple de fichier user-tcl.defaults :
+########################################################################
+set userdef_content {# # # option add *foreground green
+
+###!!! START of automatically added text
+###!!! Do not edit between these two "###!!!..." lines
+###!!! Modified on 16/05/96 at T
+#########################################
+# Group name : Général
+
+# Position de la scrollBar :
+option add *scrollbarSide right
+
+# Ajout du menu administration :
+option add *admin 1
+
+# Vitesse de Nombre d'annulations possibles :
+option add *undoNumber 1523\ \{sPI\ sPO
+
+#########################################
+# Group name : User Interface
+
+# Couleur d'une etape :
+option add *etapeColor { p p p sdfg p p pps}
+
+# Geometrie de l'application :
+option add *geometry {150x50+6565-2dfghdfhg }
+
+#########################################
+# Group name : Groupe bidon
+
+# defaut := AB , ressource := BC pour rire :
+option add *pipoRessourse A
+
+###!!! END of automatically added text
+
+
+# You can put any valid TCL commands outside of these automatically 
+# lines :
+# option add *background red
+# option add *Pref*background blue
+# option add *Pref*Listbox*background #f88
+}
+########################################################################
+########################################################################
+########################################################################
+
+# Execution du test
+Pref_Test
+bind all <$pref(Meta)-q> {exit}
+# relance le script
+bind all <$pref(Meta)-O> {exec [info script] &}
+vwait pref(done)
+set olddir [pwd]
+cd $olddir
+exit
+
+
+

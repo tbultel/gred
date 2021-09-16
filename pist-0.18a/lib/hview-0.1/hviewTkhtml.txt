@@ -1,0 +1,198 @@
+######################
+package hviewTkhtml --
+######################
+
+
+1) Description
+--------------
+        Ce package permet de parser un fichier HTML pour permettre 
+    de creer un mini-browser de fichier HTML. Le but etant d'afficher 
+    des fichiers d'aide. Le widget text contenant le texte du fichier 
+    HTML sera nomme widget HTML (pour des racourcis d'ecriture...).
+        Ce package permet aussi de gerer une 
+    seconde fenetre pour afficher une liste des index du fichier
+    HTML. Ces index permettent d'avoir une vue d'ensemble du fichier
+    HTML. Il s'agit d'une sorte de table des matieres du fichier 
+    HTML. Ce widget text contenant cette table des matieres sera nomme
+    widget index (pour des racourcis d'ecriture...).
+        Ce package genere aussi 4 fichiers temporaires contenant du 
+    code TCL/TK. Ces fichiers contiennent alors les differentes 
+    instructions executees lors de l'affichage du fichier HTML. 
+    La concatenation de ces 4 fichiers correspond a une cache 
+    permettant d'accelerer la lecture d'un fichier HTML.
+
+
+2) Utilisation
+--------------
+        Pour parser un fichier HTML, il faut utiliser la commande 
+   tkhtml_render en lui passant le chemin du widget HTML, le chemin du 
+   widget index et une chaine contenant le texte HTML a parser.
+        Pour utiliser le package tkhtml, il faut installer differente 
+    procedure, qui seront utilisees par le package pendant que le fichier 
+    HTML est parse. Ces procedures sont :
+      - tkhtml_set_render_hook : elle permet de gerer par exemple 
+        une barre de progression indiquant quelle quantite de fichier 
+        HTML il reste a parser.
+      - tkhtml_set_command_href : commande exectutee a chaque click 
+        sur une "href", cette procedure recoit le lien par exemple :
+                lsort.n.html#INTRODUCTION
+      - tkhtml_set_command_header : commande executee a chaque click 
+        sur un index du widget index.
+      - tkhtml_set_image_hook : commande executee pour creer une image 
+        dans le widget HTML
+      - tkhtml_set_tmpFile : permet de specifier au package tkhtml 
+        ou il doit sauvegarder les fichiers temporaires
+   Pour parser un fichier HTML, il faut utiliser la commande tkhtml_render
+   en lui passant le chemin du widget HTML, le chemin du widget index 
+   et une chaine contenant le texte HTML a parser.
+
+
+3) Un exemple d'utilisation
+---------------------------
+        Le fichier hview.tcl contient un exemple d'utilisation 
+    du package tkhtml. Cette exemple gere une barre de progression 
+    indiquant quelle quantite du fichier HTML a ete parsee, il 
+    gere un index permettant d'ouvrir plusieurs fichiers et gere 
+    aussi des fichiers de cache pour permettre une reouverture 
+    tres rapide des fichiers deja parses.
+    
+    A) Utilisation
+    --------------
+    hView_Box .help -topics [list exemple.html] \
+        -helpdir /usr/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/ESSAI1/ \
+        -cacheDir /usr/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/TMP/ \
+        -tmpFile /usr/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/TMP/temp
+    et pour ouvrir un fichier contenu dans le repertoire helpdir :
+    .help follow_link exemple.html
+    
+    On doit passer plusieurs parametres a la procedure hView_Box :
+        * <NameOfWindow> : Nom de la fenetre
+        * -helpdir : Specifie le repertoire ou se trouve les fichiers 
+         HTML afficher (vaut . par defaut),
+        * -topics : Contient la liste des fichiers a mettre dans le 
+         menu "Topics" (vaut {} par defaut)
+        * -cacheDir : Specifie ou l'on doit sauvegarder les fichiers 
+         de cache (vaut [file join [pwd] TMP] par default),
+        * -tmpFile : Specifie ou l'on doit sauvegarder les fichiers 
+         temporaire (vaut [file join [pwd] TMP] par default).
+    La commande follow_link permet d'afficher le fichier specifier. 
+    Ici on affichera le fichier : 
+       /usr/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/ESSAI1/exemple.html
+    
+    B) Gestion des fichiers de cache
+    --------------------------------
+        1) Priorite de lecture
+        ----------------------
+        Par default, lorsque l'on ouvre le fichier :
+    /usr/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/ESSAI1/exemple.html, 
+    par default hView_Box examine si il y a un cache de nom :
+    /usr/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/ESSAI1/exemple.htcl 
+    pour le charger au lieu de parser le fichier exemple.html,
+    Ensuite, il examine si il existe un cache associe au fichier HTML
+    dans le repertoire specifie a l'aide de l'option -cacheDir.
+        2) Fichier Index
+        ----------------
+        Dans le fichier d'Index on indique une correspondance entre 
+    une fichier HTML et son cache associe. Par exemple :
+    
+        array set CacheInfo {/usr/m2/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/ESSAI1/HTML/tcltk-4.2b1/contents.html 1}
+        set slot(cacheIdx) 1
+
+        array set CacheInfo {/usr/m2/lei/mos4/carqueij_work/LIBS/AFFICHE_HTML/ESSAI1/HTML/tcltk-4.2b1/TkCmd/bell.n.html 2}
+        set slot(cacheIdx) 2
+
+        Ses correspondances sont stockees dans un tableau de nom CacheInfo 
+    qui reste locale a la methode read_topic. La variable cacheIdx 
+    est locale au widget affichant l'aide. Elle permet de connaitre 
+    le nom du prochain fichier de cache. Ce nom sera $slot(cacheIdx).htcl
+    
+    C) Pre-compilation des fichiers HTML en fichier HTCL
+    ----------------------------------------------------
+        Le fichier compile_html2htcl permet de compiler un fichier ou 
+    une arborescence de fichier HTML. Il utilise lui aussi le package 
+    tkhtml. On peut lui passer 2 types d'option :
+        * -file : pour specifier le nom d'un fichier a compiler
+        * -directory : pour specifier le nom d'une arborescence 
+         a compiler (le programme ne compile que les fichiers 
+         d'extension html ou html de l'arborescence).
+    A la sortie on obtient pour chaque fichier HTML de nom NameOfFile.html
+    un fichier HTCL de nom NameOfFile.htcl situe dans le meme repertoire 
+    que le fichier NameOfFile.html
+    
+    REMARQUE :
+    Il est preferable de placer les fichiers images dans le meme repertoire 
+    que le fichiers HTML qui l'utilise. Mais normalement ecrire en 
+    HTML :
+        <img ../images/MonImage.gif> devrait marcher...
+    
+    
+4) Principe du package
+----------------------
+    A) Principe generale
+    --------------------
+        La principe de ce package est tres simple. Il s'agit de transformer
+    une commande HTML en une commande TCL/TK. A chaque commande HTML 
+    une commande TCL correspondante est executee.
+        La commande TCL/TK positionnera des flags qui seront ensuite 
+    utilisee par la procedure tkhtml_set_tag. La procedure tkhtml_set_tag
+    insere du texte dans le widget HTML, ce texte sera tagge. Cette 
+    procedure defini ensuite les proprietes du tag (par exemple : 
+    texte en italique, de taille 12, avec la fonte medium-adobe...)
+     
+        Pour clarifier, voici un exemple pour la commande HTML      
+    <i>...</i>. Des que le parseur tombe sur <i>, il execute le code 
+    declare par :
+         tkhtml_define_entity i {
+            incr tkhtml_priv(slant)
+            tkhtml_set_tag
+        }
+    Cette commande rend positive la variable tkhtml_priv(slant).
+    Ensuite on execute la procedure tkhtml_set_tag, qui cree un tag 
+    timesI2-480blackL configuree comme suit :
+        {-background {} {} {} {}} {-bgstipple {} {} {} {}} 
+        {-borderwidth {} {} 0 {}} {-fgstipple {} {} {} {}} 
+        {-font {} {} {} -adobe-times-medium-i-normal-*-*-120-*-*-*-*-iso8859-*} 
+        {-foreground {} {} {} black} {-justify {} {} {} left} 
+        {-lmargin1 {} {} {} 4m} {-lmargin2 {} {} {} 8m} {-offset {} {} {} {}} 
+        {-overstrike {} {} {} {}} {-relief {} {} {} {}} {-rmargin {} {} {} {}} 
+        {-spacing1 {} {} {} {}} {-spacing2 {} {} {} {}} {-spacing3 {} {} {} {}} 
+        {-tabs {} {} {} {}} {-underline {} {} {} {}} {-wrap {} {} {} {}}
+    Ensuite tout le texte contenue entre <i> et </i> sera insere dans 
+    le widget HTML avec le tag timesI2-480blackL. On prend garde de 
+    revenir a l'etat precedent la commande <i> lors de l'execution 
+    de la commande </i>.
+        tkhtml_define_entity /i {
+            incr tkhtml_priv(slant) -1
+            tkhtml_set_tag
+        }
+    Ainsi pour chacune des commandes HTML <H>, soit E l'etat avant l'execution 
+    de la commande <H>, alors la constante du programme garantiera 
+    que l'etat E sera retrouve juste apres l'execution de la commande 
+    </H>.
+    
+    B) gestion des hrefs
+    --------------------
+        Pour chaque href (par exemple <a href=lsort.n.html#KIKI>), 
+    le texte est insere avec le tag HREF, plus le tag hrefXXX ou XXX est 
+    un entier incremente a chaque nouvelle href. Ensuite dans le tableau 
+    tkhtml_priv,on place une correspondance entre hrefXXX et l'adresse 
+    physique du lien, c'est a dire : "lsort.n.html#KIKI".
+        Ainsi, a chaque click on recupere le tag hrefXXX dans la liste 
+    des tags au point clicke. On appele ensuite la commande installe 
+    par la fonction tkhtml_set_command_href en lui passant comme parametre
+    $tkhtml_priv(hrefXXX), c'est a dire "lsort.n.html#KIKI".
+    
+    
+5) Dependance des fichiers
+--------------------------
+    
+ hviewObject.tcl  hviewTkhtml.tcl
+         \          |    \
+          \         |     \
+           \       /       \
+            \     /         \
+            hview.tcl    html2htcl.tcl
+               |                  \
+               |                   |
+         hview.exemple.tcl   compile_html2htcl
+        

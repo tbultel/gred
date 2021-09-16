@@ -1,0 +1,7 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec wish4.2 "$0" -- ${1+"$@"}
+
+source [file join [file dirname [info script]] html2htcl.tcl]
+
+eval {html2htcl } $argv

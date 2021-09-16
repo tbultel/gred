@@ -1,0 +1,314 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec wish8.0 "$0" ${1+"$@"}
+
+
+########################################################################
+# 
+# fichier miniPistTkAppli
+#
+# $Id: miniPistTkAppli-1.2,v 1.2 1997/05/13 09:28:06 diam Exp $
+# Ce script est un template pour crŽer une nouvelle appli monofichier
+# necessitant la librairie PIST.
+# 
+# NECESSITE TK (à modifier pour tcl seul)
+# 
+# v1.2 - (03/04/97 diam) : correction bug dans recherche de la librairie PIST
+# v1.1 - (27/03/97 diam) : rajout de app:usage
+# 09/03/97 (diam) : refonte
+
+proc app:usage {} {
+global app env
+
+   set    msg "Ce programme \"[file tail [info script]]\" ne sert que "
+   append msg "de template pour rechercher et utiliser la librairie PIST"
+   append msg \n\n
+   append msg "La doc viendra un jour ... :-)\n\n"
+   append msg "Vous pouvez toujours lire les commentaires de ce fichier\n"
+   append msg "dans :\n\n"
+   append msg "\"[file:realName [info script]]\"\n\n"
+   
+   append msg "La librairie PIST utilisee est :\n\n"
+   append msg "app(pistsetup)=$app(pistsetup) :\n"
+   append msg "env(PIST_SETUP)=$env(PIST_SETUP) :\n\n"
+
+   return $msg
+}
+
+
+
+proc app:new {} {
+global app
+
+  parray app
+  
+  
+  set button [tk_messageBox \
+            -title miniPistAppli \
+            -message [app:usage]]
+  
+  exit
+}
+
+# miniappli:setup -- recherche des librairies pist pour appli monfichier
+# 
+# argument : 
+# 
+#  - appli : nom du tableau a initialiser (i.e gred, stead, ...)
+# 
+# 
+# sortie : 
+# 
+#  positionnement des variables suivantes :
+#   - appli(exe) : nom absolu de cet exécutable (en vue de le re-sourcer)
+#   - appli(pistsetup) et env(PIST_SETUP) : installation de PIST
+#   - auto_path
+# 
+# description :
+# 
+#  Le fonction principale de cette procedure est de le repertoire 
+#  d'installation de la librairie PIST utilisée.
+#  Cette application est du type mono fichier, et PIST est la seule 
+#  librairie utilisee
+# 
+#  n'est executee qu'une seule fois au lancement
+# 
+# 
+proc miniappli:setup {appliName} {
+
+global env auto_path argc argv tcl_platform
+upvar #0 $appliName appli
+
+
+    # on n'utilise pas la fenetre root de l'interpréteur maitre
+    # (le catch sert si on n'utilise QUE tclsh)
+    catch {wm withdraw .}
+
+    switch $tcl_platform(platform) {
+        macintosh  {  cd [file dirname [info script]]  }
+        windows    {}
+        unix       {}
+    }
+
+    # On mémorise le nom de cette application (en principe : .../.../appli)
+    set appli(exe) [info script]
+    if {[file pathtype $appli(exe)] == "relative"} {
+       set appli(exe) [file join [pwd] $appli(exe)]
+    }
+
+    while {[string match -* $argv]} {
+      switch -glob -- [lindex $argv 0] {
+         --         { 
+            # One live the "--" because it should be seen by another 
+            # argument parsing
+            ## set args [lreplace $argv 0 0]
+            break  ;# no more options
+         }
+         -pist      -
+         -pistsetup {
+             set tmp  [lindex $argv 1]
+             set env(PIST_SETUP) [file:realName $tmp]
+             set argv [lreplace $argv 0 1]
+             continue
+         }
+         default    { 
+             break  ;# no more options
+         }
+      }
+    }
+
+
+
+    ####################################################################
+    # On cherche la librairie PIST (cas d'une mini-application).
+    # 
+    # Si une variable d'environnement PIST_SETUP existe, alors c'est elle
+    # qui sera utilisée pour déterminer les librairies.
+    # 
+    # Sinon, la variable d'environnement PIST_SETUP sera créée
+    # par défaut, on cherche la librairie PIST dans le meme répertoire 
+    # que l'application, puis au niveau parent, puis grand parent.
+    # 
+    # En cas de présence de plusieurs librairies de la forme "pist*"
+    # la derniere par ordre alphabetique sera retenue (par exemple 
+    # pist-0.11a2 sera retenu à la place de pist-0.11a1
+    # BUG : la prérelease pist-0.11a2 sera retenu à la place la version 
+    #       officielle pist-0.11
+
+    if {[info exists env(PIST_SETUP)]} {
+        set appli(pistsetup) $env(PIST_SETUP)
+    } else {
+        
+        # on assainit le nom de l'appli pour éviter :/usr/local/bin/./appli.tcl
+        set appli(exe) [file:realName $appli(exe)]
+        # Recherche de la librairie PIST dans le repertoire
+        # de l'appli, dans son repertoire parent, puis grand-parent :
+        set dirToScan [list   \
+           [file dir $appli(exe)] \
+           [file dir [file dir $appli(exe)]] \
+           [file dir [file dir [file dir $appli(exe)]]] \
+        ]
+    	
+    	foreach dir $dirToScan {
+    	   
+           set pistDirs [glob -nocomplain [file join $dir pist]* ]
+           if {[llength $pistDirs] == 0} {
+               continue
+           } 
+           
+           foreach name [lsort -decreasing  $pistDirs] {
+              if [file isdir $name] {
+                 set pistSetup $name
+                 break
+              }
+           }
+
+
+    	}
+    	
+    	if ![info exist pistSetup] {
+    	
+           # On n'a pas trouvé de librairie PIST :-((
+           
+           set msg "J'ai n'ai pas trouvé de librairie PIST\n"
+           append msg "Elle doit etre de la forme \"pistXXX\"\n"
+           append msg "et etre situé dans le répertoire de l'appli\n"
+           append msg "   $appli(exe)\n"
+           append msg "   dans son repertoire parent\n"
+           append msg "   ou dans son repertoire grand-parent\n"
+           append msg "Vous pouvez aussi utiliser l'option -pistsetup."
+           
+           tk_messageBox -icon warning -type ok \
+                    -title "Probleme d'intallation" \
+                    -message $msg
+           exit
+    	}
+    	
+        puts "\n##### pistSetup=$pistSetup\n\n"
+        set appli(pistsetup) [file:realName $pistSetup]
+        set env(PIST_SETUP) $appli(pistsetup)
+    }
+    # Les variables d'installations  
+    # $appli(pistsetup) et env(PIST_SETUP) sont positionnées
+    ####################################################################
+    
+
+
+    
+    ####################################################################
+    # Declaration de l'ensemble des packages de PIST.
+    # 
+    # En cas d'erreur avec package inconnu (epsf, ...) : vérifie
+    # que la procedure Pist_PackageRequireAll est bien à jour
+    set auto_path [linsert $auto_path 0 [file join $appli(pistsetup) lib]]
+    package require pist
+    Pist_PackageRequireAll
+    
+    puts "[join $auto_path \n]"
+
+    parray appli
+    
+    # set appli(initialised) 1   ;# la mise a 1 est reportée dans appli:init
+report -t "proc : miniappli:setup : FIN ..."
+} ;#endproc miniappli:setup
+
+
+
+
+
+
+
+########################################################################
+# file:realName <fileOrDir>
+#    retourne le nom absolu physique õ partir d'un nom relatif
+#    ou absolu, et en suivant les liens éventuels.
+#    "name" peut etre un nom de fichier ou de répertoire QUI DOIT EXISTER
+#    exemple :  file:realName /usr/local/bin/stead
+#    retourne : /usr/vb/amd/lib/STEAD-0.36-alpha/stead
+#
+# A FAIRE : envisager constantes global :
+#     file(parent) ("..",  ou "::")
+#     file(...)
+#     global file
+#     if ![info exist file(separator)] {
+#        initialiser les contantes file(..)
+#     }
+# A FAIRE traiter differemenet le cas unix des cas windows et Macintosh
+#         pour lesquel c'est plus simple (pas d'automontage)
+#
+# 16/07/96 : refonte complete suppression recursives des liens dans le path
+#            fiable mëème si automontages car ne suit pas les lien de la
+#            /tmp_mnt/...  ou /auto/...
+#            Le résultat ne contient ni "." ni ".."
+#            On peut donc utiliser [file dirname [file dirname ..]]
+#            sur le résultat de cette procédure.
+#            En principe multiplatteforme (non testé à fond pour l'instant
+# 
+# Remarque : si <name> contient deja /tmp_mnt/ ou /auto/, ces chaines ne 
+# sont pas supprimer dans le resultat !
+########################################################################
+interp alias {} frn {} file:realName
+proc file:realName {name} {
+
+    # # glob make the tilda substitution like "~/bin/appli" :
+    # set name [glob $name] ;# inutile car exploité par "file dirname ~"
+    # If the name is relative: one make it absolute
+    if {[file pathtype $name] == "relative"} {
+       set name [file join [pwd] $name]
+    }
+    # /usr/local/bin/../../amd/bin/./te
+    # One follow all possible links in the path
+    set name [file:followLinks $name]
+    # could be "/usr/local/bin/../../m2b/lei/bin/../lib/./stead_v036a/stead"
+
+    # remove directory nodes like "." or ".." from the path
+    set lpath [file split $name]    ;# full path list {/ usr local ...}
+    set finalPath [lindex $lpath 0] ;# root could be "/" or "MacOS:"
+    set lpath [lreplace $lpath 0 0] ;# rest of lpath {usr local ...}
+    foreach node $lpath {
+        switch -exact -- $node {
+          .  continue
+          .. {
+             set finalPath [file dirname $finalPath]
+             continue
+          }
+          default {
+             set finalPath [file join $finalPath $node]
+          }
+        }
+    }
+    return $finalPath
+
+} ;# endproc file:realName
+
+# file:followLink <absoluteName> :
+# Return an absolute name without any link in the path.
+# But could return something like :
+#    "/usr/local/bin/../../m2b/lei/bin/../lib/./stead_v036a/stead"
+# Principe:
+# One follow a possible link (which can be absolute or relative)
+# for the tail node, then recurse for all parents directories.
+# One don't follow links starting with /tmp_mnt/ ou /auto/
+# to avoid problems with auto"un"mount directories under unix NFS
+proc file:followLinks {name} {
+  while {[string match "link" [file type $name] ]} {
+    set followName [file readlink $name]
+    if {[regexp {^(/tmp_mnt/)|(/auto/)} $followName]} {break}
+    if {[file pathtype $followName] == "relative"} {
+      set followName [file join  [file dirname $name] $followName]
+    }
+    set name $followName
+  }
+  set dir [file dirname $name]
+  if {"x$dir" == "x$name"} {
+     return $name
+  } else {
+     return [file join [file:followLinks $dir] [file tail $name]]
+  }
+} ;# endproc file:followLinks
+
+
+# Si c'est la premiere execution : recherche des librairies>>>
+if ![info exists app(initialised)] {miniappli:setup app}
+
+eval app:new $argv

@@ -1,0 +1,62 @@
+
+package provide list 0.1
+
+# A FAIRE procedure "llsort" ou "Lsort" acceptant TOUTES les options 
+# de "lsort" plus d'autres options :
+#   -k ou -keylist 
+# 
+#     Lsort -numeric -reverse -k {3 0 2} $myListOfList
+# 
+# 
+#     proc lcomp { keyndx subl1 subl2} {
+#          return [string comp [lindex $subl1 2] [lindex $subl2 2]]
+#     }
+# 
+# si le tri numerique, utiliser expr :
+#     proc on3rd {a b} { return [expr [lindex $a 2] - [lindex $b 2]] }
+# 
+# IL FAUT OPTIMISER LA PROC ELEMENTAIRE (CAR ELLE EST APPELER SOUVENT)
+#     proc comp3 {subl1 subl2} {
+#          return [string comp [lindex $subl1 2] [lindex $subl2 2]]
+#     }
+
+#     set x {{X a 3} {C v 1} {V b 4} {A s 2}}
+#     proc on3rd {a b} { return [expr [lindex $a 2] - [lindex $b 2]] }
+#     
+#     puts [lsort -command on3rd $x]
+
+
+########################################################################
+# Copyright 1994 Matt Newman, D.E. Shaw Securities Intl.
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for any purpose and without fee is hereby granted, provided
+# that the above copyright notice appear in all copies.  Matt Newman and
+# D.E. Shaw Securities Intl. make no representations about the
+# suitability of this software for any purpose.  It is provided "as is"
+# without express or implied warranty.
+
+#
+# Usage: llsort fldlist list
+#
+# Where: fldlist is list of index's of sublists
+#
+# This is used to sort lists of lists, by items in sub-lists.
+#
+proc llsort:field {fldlist item1 item2} {
+    foreach fld $fldlist {
+	set i1 [lindex $item1 $fld]
+	set i2 [lindex $item2 $fld]
+
+	set ret [string compare $i1 $i2]
+	if { $ret != 0 } {
+	    return $ret
+	}
+    }
+    # Must be same to reach this point
+    return 0
+}
+
+proc llsort {list fldlist} {
+    return [lsort -command [list llsort:field $fldlist] $list]
+}

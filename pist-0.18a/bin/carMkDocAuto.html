@@ -1,0 +1,182 @@
+<H1>LIST OF FILES</H1>
+<OL TYPE=1>
+  <LI><A HREF="#F1">./pistMkDoc.tcl</A>
+</OL>
+<P>
+<HR SIZE=5 WIDTH="100%">
+
+<A NAME="#F1">
+<H2>LIST OF PROCS in ./pistMkDoc.tcl</H2>
+</A>
+
+Fichier permettant de parser un ou plusieurs fichiers TCL en vue de 
+générer automatiquement une documentation HTML sur ces fichiers.
+La méthode consiste à utiliser plusieurs fichiers temporaires puis de
+concaténer ces fichiers pour genérer un fichier HTML.
+<DL>
+<DT>Description des fichiers temporaires :
+<DD><I>$pistMkDoc(tmpDir)/lof.tmp</I> : Contient la liste des fichiers
+dont on veut genérer une documentation. Ce channel est mémorisé dans
+pistMkDoc(lof) (lof comme Liste Of File)
+<DT>La procédure parseTCLFile utilise 2 fichiers temporaires :
+<DD><I>$pistMkDoc(tmpDir)/lop.tmp</I> : Contiendra la liste des
+procédures dans fichier TCL parsées par parseTCLFile (lop comme 
+Liste Of Proc)
+<DD><I>$pistMkDoc(tmpDir)/dop.tmp</I> : Contient la description HTML 
+des procédures du fichier TCL parsées par parseTCLFile 
+(dop comme Description Of Proc)
+<DT>Enfin un dernier fichier est nécessaire comme accumulateur :
+<DD><I>$pistMkDoc(tmpDir)/ldop.tmp</I> : Contient la description
+des fichiers TCL déjà parsée par la procédure parseTCLFile. Ce 
+channel est mémorisé dans pistMkDoc(ldop) (ldop comme Liste and
+Description Of Proc)
+</DL>
+<OL>
+    <LI><A HREF="#P1">lempty</A> Return 1 if it argument is empty
+    <LI><A HREF="#P2">recursive_glob</A> Retourne une liste récursive d'éléments d'un répertoire
+    <LI><A HREF="#P3">showHelp</A> Imprime l'aide pour utiliser html2htcl.
+    <LI><A HREF="#P4">addLine</A> Parse une chaîne TCL, pour en extraire les commentaires
+    <LI><A HREF="#P5">insereInfo</A> Parse une chaîne TCL, pour en extraire les commentaires
+    <LI><A HREF="#P6">parseTCLFile</A> Parse un fichier TCL, pour en extraire les commentaires
+    <LI><A HREF="#P7">pistMkDoc</A> Permet de tester les arguments passes au package pistMkDoc
+</OL>
+<OL>
+
+    <LI><A NAME="#P1"><H3>lempty</H3></A><p>
+Return 1 if it argument is empty<p>
+lempty <i>list</i>  => return 1 if <i>list</i> is empty, 0 otherwise
+one can use insteed : if ![llength $my_list]   {...}
+insteed of :          if [lempty $my_list]     {...}
+<P>
+<HR WIDTH="50%">
+    <LI><A NAME="#P2"><H3>recursive_glob</H3></A><p>
+Retourne une liste récursive d'éléments d'un répertoire<p>
+Retourne une liste récursive de fichiers ou répertoires
+sous la forme <i>dir</i>/<i>relativeFilePath</i>.
+Attention la liste optenue peut contenir des répertoires ou des 
+doublons (de la meme façon que la commande UNIX "ls * *)"<p>
+<OL>
+      <LI><B>Arguments</B><br>
+<OL TYPE=a>
+        <LI><I><B>  dirlist </I></B>  Répertoire de base où va s'effectuer la recherche<BR>
+        <LI><I><B>  globlist </I></B>  Pattern permettant de selectionner les fichiers <BR>
+</OL>
+      <LI><B>Exemple</B><br>
+recursive_glob . * 
+retourne {./rep1 ./fich1 ./fich2 ./rep1/fic11 ./rep1/fic12 ....}
+      <LI><B>Remarque</B><br>
+Attention si globlist contient ".*" alors les répertoires
+de la forme ".../." et .../.." font partie du résultat !!
+      <LI><B>Exemple d'utilisation</B><br>
+<CODE>set ABS [recursive_glob [pwd] $listOfPatterns]</CODE> : liste
+de noms absolus<br>
+<CODE>set REL [lcutleft $ABS [expr [string length [pwd]] + 1]]</CODE>
+: liste de noms relatifs
+      <LI><B>Modif 10/06/96</B><br>
+compatibilité Mac et Windows (utilisation de la commande file join...).<BR>
+Problemes potentiels 
+avec les fichiers invisibles pour unix (* et .*)
+</OL>
+<P>
+<HR WIDTH="50%">
+    <LI><A NAME="#P3"><H3>showHelp</H3></A><p>
+Imprime l'aide pour utiliser html2htcl.<p>
+<P>
+<HR WIDTH="50%">
+    <LI><A NAME="#P4"><H3>addLine</H3></A><p>
+Parse une chaîne TCL, pour en extraire les commentaires<p>
+Cette fonction supprime les "#" en début de ligne
+<OL>
+      <LI><B>Arguments</B><br>
+<OL TYPE=a>
+        <LI><I><B>  dop </I></B>  Nom du fichier où les infos en HTML doivent être sauvées<BR>
+        <LI><I><B>  comment </I></B>  Contenu du commentaire<BR>
+</OL>
+      <LI><B>Effets de bord</B><br>
+      <LI><B>Calls</B><br>
+      <LI><B>Outputs</B><br>
+Ajoute des informations dans le fichier pointé par <I>dop</I>
+      <LI><B>Returns</B><br>
+</OL>
+<P>
+<HR WIDTH="50%">
+    <LI><A NAME="#P5"><H3>insereInfo</H3></A><p>
+Parse une chaîne TCL, pour en extraire les commentaires<p>
+Procédure permettant de parser une chaîne Tcl, pour en extraire des
+données HTML en vue de générer une documentation automatique.
+Si <I>categorie</I> vaut "Arguments" parse une chaine du type
+<PRE>"# arg1 - Infos sur l'argument 1
+Complément d'information sur l'argument 1
+# arg2 - Infos sur l'argument 2
+etc..."</PRE> pour générer une liste en HTML.
+Sinon renvoie le simplement le texte en supprimant les "#" en tête de ligne
+<OL>
+      <LI><B>Arguments</B><br>
+<OL TYPE=a>
+        <LI><I><B>  dop </I></B>  Nom du fichier où les infos en HTML doivent être sauvées<BR>
+        <LI><I><B>  categorie </I></B>  Catégorie du commentaire<BR>
+        <LI><I><B>  categorieComment </I></B>  Contenu du commentaire<BR>
+</OL>
+      <LI><B>Effets de bord</B><br>
+      <LI><B>Calls</B><br>
+addLine
+      <LI><B>Outputs</B><br>
+Ajoute des informations dans le fichier pointé par <I>dop</I>
+      <LI><B>Returns</B><br>
+</OL>
+<P>
+<HR WIDTH="50%">
+    <LI><A NAME="#P6"><H3>parseTCLFile</H3></A><p>
+Parse un fichier TCL, pour en extraire les commentaires<p>
+Procédure permettant de parser un fichier Tcl, pour en extraire des
+données HTML en vue de générer une documentation automatique.
+<OL>
+      <LI><B>Arguments</B><br>
+<OL TYPE=a>
+        <LI><I><B>  fileName </I></B>  Nom du fichier HTML à parser<BR>
+</OL>
+      <LI><B>Effets de bord</B><br>
+Crée 2 fichier temporaire dans le repertoire temporaire pointé par
+<I>pistMkDoc(tmpDir)</I>
+      <LI><B>Calls</B><br>
+insereInfo
+      <LI><B>Outputs</B><br>
+remplit les fichiers dont les noms sont contenus dans les variables : <I>
+pistMkDoc(ldop)</I> et <I>pistMkDoc(lof)</I>
+      <LI><B>Returns</B><br>
+</OL>
+<P>
+<HR WIDTH="50%">
+    <LI><A NAME="#P7"><H3>pistMkDoc</H3></A><p>
+Permet de tester les arguments passes au package pistMkDoc<p>
+<OL>
+      <LI><B>Arguments</B><br>
+<OL TYPE=a>
+        <LI><I><B>  -files "Liste de fichier" </I></B>  Specifier une liste de fichier+un pattern<BR>
+Permet de specifier une liste de fichier+un pattern<BR>
+<B>Exemple :</B> "-files ./*.tcl ./*.tk"
+        <LI><I><B>  -f a </I></B>  force l'effacement des fichiers<BR>
+        <LI><I><B>  -out FileName </I></B>  Nom du fichier HTML de sortie<BR>
+        <LI><I><B>  -tmp Directory </I></B>  Emplacement des fichiers temporaires<BR>
+Si cette option n'est pas précisée, les fichiers temporaires seront
+placés dans les répertoire courant, ou bien dans le même répretoire
+que le fichier HTML de sortie si l'option -out est précisée.
+        <LI><I><B>  -h </I></B>  Affiche l'aide concernant l'utilisation de pistMkDoc<BR>
+</OL>
+      <LI><B>Effets de bord</B><br>
+remplit le tableau global "pistMkDoc" avec les paramètres passés 
+au programme
+      <LI><B>Calls</B><br>
+pistMkDocInit, recursive_glob, showHelp, parseTCLFile, pistMkDocClose.
+      <LI><B>Outputs</B><br>
+ 
+      <LI><B>Returns</B><br>
+</OL>
+<P>
+<HR WIDTH="50%">
+</OL>
+<P>
+<HR SIZE=5 WIDTH="100%">
+
+
+

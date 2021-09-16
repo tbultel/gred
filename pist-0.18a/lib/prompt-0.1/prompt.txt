@@ -1,0 +1,312 @@
+############################################
+DOCUMENTATION sur la procedure Promp_Box.tcl
+############################################
+
+1) Description
+--------------
+    Ce fichier contient une procedure Prompt_Box qui permet 
+    d'afficher une fenetre de dialogue pour permettre de demander 
+    des informations a l'utilisateur. On peut ainsi recevoir des 
+    informations sur des chaines, des booleens, des types enumeres, des
+    noms de fichiers et des couleurs.
+    Chaque information demandee sera appelee une entree (ou entry !).
+    
+2) La ligne d'argument de la procedure Prompt_Box
+-------------------------------------------------
+    Pour pouvoir utiliser cette procedure, il faut passer des informations 
+    globales comme par exemple le titre de la fenetre, le chemin tk de la 
+    fenetre et des informations specifiques a chaque entree.
+    Cette procedure utilise un tableau de nom "Prompt" pour stocker 
+    les informations dont elle a besoin. Suite a l'execution de la 
+    procedure Prompt_Box seuls les chaines de message (Prompt(msg,ok)...) 
+    et les noms de variables Prompt(value$indiceEntry) 
+    existeront.
+    
+    a) Passage des informations globales
+    ------------------------------------
+        La ligne de commande sera donc de la forme :
+            Prompt_Box   \
+                -title "TITRE"    \
+                -parent .hello.f2 \
+                -entries {ListeDesInfosPourChaqueEntree}
+    L'option -title permet de donner un nom a la fenetre de dialogue. 
+    L'option -parent permet de specifier un chemin pour afficher 
+    la fenetre. Si cette fenetre n'existe pas la procedure
+    cree la fenetre. Si l'option -parent n'est pas specifiee, le chemin par
+    defaut sera ".prompt". Si la fenetre existe, alors la fenetre de 
+    dialogue est packe dans la fenetre specifiee avec l'option -parent.
+    
+    Lors du premier appel a la procedure Prompt_Box un tableau 
+    global de nom "Prompt" est cree. Il contiendra toutes les informations 
+    utiles a la procedure Prompt_Box.
+    
+    Pour permettre une utilisation aisee de la procedure, il est possible 
+    d'afficher une fenetre contenant seulement une entree de type 
+    ENTRY. Pour cela, il ne doit pas y avoir d'option -entries mais
+    une option -default, une option -variable et -label, comme pour 
+    le type ENTRY.
+    Si une option -entries est specifiees les options -label, -default 
+    et - variable sont ignorees.
+    Ex : set a [Prompt_Box \
+            -title "Titre de la fenetre" \
+            -parent . \
+            -label "Entrer votre nom" \
+            -variable VariableEssai \
+            -default "Valeur par defaut (non utilise)" ]
+    Return dans a, la valeur saisie par l'utilisateur.
+    Pour demander une chaine, il n'y a rien a specifier, par exemple la ligne
+    suivante : Prompt_Box. Ouvre une fenetre avec une seule entree. Cependant,
+    il n'y a aucune information pour guider l'utilisateur.
+    
+    b) Passage des informations specifiques a chaque entree
+    -------------------------------------------------------
+        Les infos concernant chaque entrees seront stockees dans une 
+    liste de liste de nom Prompt(-entries).
+    Chaque entry possede un type. Il existe ensuite des parametres 
+    specifique a chaque type d'entree. Nous allons les decrire :
+        * Type SEPARATEUR : Permet d'afficher un commentaire par exemple.
+          On peut positionner un trait horizontal avant, apres ou 
+          avant et apres ce commentaire. Les options sont :
+              -label Label : Label a afficher en commentaire.
+              -line {both|up|down|none} : pour afficher la ligne de 
+               separation au dessus, en dessous ou au dessus et en 
+               dessous du message. Par default aucune ligne 
+               n'est affiche.
+          Ex : {-type ENTRY -label "Ceci est un label" -line both}
+          
+REMARQUES GENERALES pour les autres entrees :
+---------------------------------------------
+    Pour les entrees suivantes, il est possible de specifier un nom 
+    de variable avec l'option -variable. C'est dans cette variable 
+    que sera stocke la variable utilisee par l'entree. Par default 
+    la procedure utilise Prompt(value$indiceEntry) pour 
+    stocker cette information (indiceEntry etant l'indice de 
+    l'entry, vaut 0 pour la premiere entry puis s'incremente de 1 a 
+    chaque nouvelle entry). 
+    Il est possible de specifier une valeur par default de la variable 
+    avec l'option -default. Cette valeur est utilise si :
+        - aucun nom de variable n'est specifie,
+        - la variable specifiee avec l'option -variable n'existe pas.
+        
+        
+        * Type ENTRY : Permet de demander a l'utilisateur d'entrer 
+          une valeur. Il est possible de bloquer la saisi de valeur 
+          en positionnant l'option -lock a 1. Il faut alors imperativement 
+          specifier un nom de variable.Les options sont : 
+              -variable varName : Nom de la variable par default
+              -default defaultValue : Valeur par default si la variable 
+               par default n'existe pas ou si il n'y a pas eu d'option 
+               -variable
+              -lock {1|TRUE|ON|0|FALSE|OFF} : permet de locker l'entry : on 
+               affiche seulement une valeur. Cette option vaut 0 pas default
+              -width Largeur en caracteres : permet de preciser la 
+               largueur de l'entry (vaut 30 caracteres par default). 
+          Ex : {-type ENTRY -variable Var2Bis -lock 1 -label "LABEL 2bis"}
+          Pour creer une entree de type ENTRY qui ne fait qu'afficher 
+          une valeur. 
+          Ex : {-type ENTRY -label "LABEL 2" -default "DEFAULT 2" -variable var}
+          Pour creer une entree de type ENTRY permettant de saisir 
+          une valeur dans la variable "var". La valeur par default 
+          "DEFAULT 2" ne sera utilise que si la variable "var" n'existe 
+          pas a l'appel de la procedure Prompt_Box. La variable var 
+          doit etre une vriable par defaut
+           
+        * Type BOOLEAN : Permet d'entrer une valeur booleenne. Les 
+          options sont :
+              -label NomLabel : label a afficher
+              -variable varName : Nom de la variable par default
+              -default defaultValue : Valeur par default utilisee 
+               si la variable par default n'existe pas ou si il n'y a 
+               pas eu d'option -variable
+          Ex : {-type BOOLEAN -label "LABEL 3" -default TRUE -variable Var3}
+          Permet de saisir une valeur booleene dans la variable "Var3".
+          
+        * Type RADIOBUTTON : Permet d'entrer un type enumere. 
+          L'affichage des valeurs se fait par l'intermediaire d'une 
+          serie de radiobutton. La variable liee a une entry de type 
+          RADIOBUTTON ne pourra prendre qu'un nombre fixe de valeur.
+          Les options sont :
+              -label NomLabel : label a afficher
+              -typearg listeOfValue : liste des valeurs possibles
+              -variable varName : Nom de la varibla par default
+              -default defaultValue : Valeur par default si la variable 
+               par default n'existe pas ou si il n'y a pas eu 
+               d'option -variable
+          Ex : {-type RADIOBUTTON -label "LABEL 4" -default CHIEN
+                -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                -variable TABLEAU(6)}
+          Permet de stocker un type enumere dans la variable TABLEAU(6). 
+          Les valeurs possibles seront au nombre de 5, elles seront :
+          CHAT, VACHE, MOUTON, CHAUVE SOURIS et CHIEN.
+        
+        * Type POPUP : Permet d'entrer un type enumere. L'affichage 
+          des valeurs possibles se fait par l'intermediaire d'un menu 
+          de type POPUP. La variable correspondante a cette entree 
+          ne pourra prendre qu'un nombre fixe de valeur.
+          Les options sont :
+              -label NomLabel :label a afficher
+              -typearg listeOfValue : liste des valeurs possibles
+              -variable varName : Nom de la variable par default
+              -default defaultValue : Valeur par default si la variable 
+               par default n'existe pas ou si il n'y a pas eu 
+               d'option -variable
+          Ex : {-type POPUP -label "LABEL 6"
+                -default {MOUTON}
+                -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                -variable Var6}
+          Permet de stocker un type enumere dans la variable Var6. 
+          Les valeurs possibles seront au nombre de 5, elles seront :
+          CHAT, VACHE, MOUTON, CHAUVE SOURIS et CHIEN.
+          
+        * Type FILE : Permet d'entrer un nom de fichier a l'aide du 
+          browser de fichier fourni avec la version 4.2 de tk. Pour 
+          ouvrir un fichier on utilise l'option -operation open. 
+          Dans ce cas si le fichier n'existe pas la procedure leve une 
+          erreur. Pour sauvegarder un fichier (option -operation save), 
+          un warning  est leve si le fichier existe deja. Les options sont :
+              -default directory : l'option -default est prise en compte 
+               que si la variable specifie grace a l'option -variable 
+               n'existe pas ou est vide. Si il n'y a pas d'option -variable 
+               la valeur par default sera celle precise avec l'option -default.
+               La valaeur par defaut permet aussi au browser de savoir dans 
+               quel repertoire commencer la recherche. Si aucune valeur
+               par default n'est trouve, cette option vaut alors :
+                  [file dirname ~]
+              -filetype ListeOfFileType : liste du type des fichiers. 
+               La valeur par default de ce champs est :
+                  {
+                        {{Text files}		{.txt .doc}	}
+                        {{Text files}		{}		TEXT}
+                        {{Tcl Scripts}    	{.tcl}		TEXT}
+                        {{C Source Files}	{.c .h}		}
+                        {{All Source Files}	{.tcl .c .h}	}
+                        {{Image Files}    	{.gif}		}
+                        {{Image Files}	        {.jpeg .jpg}	}
+                        {{Image Files}    	{}		{GIFF JPEG}}
+                        {{All files}		*}
+                  }
+              -operation {read|write} : read pour ouvrir un fichier et write 
+               pour sauvegarder un fichier "Save As"
+              -options ListOfOptions : Liste des options a passer a 
+               tk_getOpenFile ou a tk_getSaveFile. La valeur par default 
+               est :
+                  {-initialfile Untitled -defaultextension .txt}.
+           Ex : {-type FILE -variable Var7 -label "Save As" 
+                 -default /usr/ 
+                 -operation write -options {-defaultextension .tcl
+                 -initialfile defaultFile}}
+          Permet de stocker un nom de variable en vue d'une prochaine 
+          sauvegarde. Le repertoire par default sera "/usr". Le nom 
+          du fichier sera stocke dans la variable Var7. Le nom de 
+          fichier par default a l'ouverture du browser sera : "defaultFile", 
+          son extension par default sera ".tcl".
+          Ex :  {-type FILE  -label "Open" -default /usr/lei/lib
+                 -operation read }
+          Permet de stocker un nom de variable dans en vue d'un futur 
+          chargement.
+          
+        * Type COLOR : Permet de saisir un couleur a l'aide du Browser 
+          de couleur fourni avec la version 4.2 de tk.
+          Les options sont :
+          -variable varName : la variable (par default la variable sera 
+           Prompt(value$indice))
+          -default color : l'option -default est prit en compte que si la 
+           variable specifiee grace a l'option -variable n'existe pas. Si il 
+           n'y a pas d'option -variable la valeur par default sera celle 
+           precisee avec l'option -default. Si aucune valeur par default 
+           n'est trouvee, celle-ci vaudra alors "black".
+           l'option -default permet aussi au browser de savoir par quel 
+           couleur commencer.
+          -title windowName : nom de la fenetre contenant le browser 
+           de couleur
+           Ex : {-type COLOR -label "Choose a color"
+                 -variable kiki(9) -default blue4
+                 -title "Choose a background color"}
+           Permet de specifier une couleur dans la variable "kiki(9)" 
+           Le titre de la fentre du browser de couleur sera "Choose 
+           a background color".
+           
+        * TYPE WINDOW : Permet d'incorporer une fenetre dans la fenetre 
+          Prompt_Box sans avoir a definir un nouveau type. Il faut 
+          alors creer une frame et passer son nom par l'intermediaire 
+          de l'option -frame (Voir l'exemple 10 dans le fichier test.tcl)
+          Le nom de la fenetre doit etre en accord avec le parametre 
+          -parent specifie a la procedure Prompt_Box. 
+          
+3) Rajouter une entree
+----------------------
+    Pour rajouter une type EXEMPLE, il suffit de rajouter 2 procedures, 
+    une procedure de nom PromptTypeEXEMPLE et une procedure 
+    PromptResetValuesEXEMPLE. La premiere a besoin de 2 parametres
+    une frame f et un ligne d'option. La frame f 
+    est la frame qui contiendra les elements a generer.
+    La seconde fonction permet de faire un reset de l'entree lors 
+    d'un appuie sur le boutton "reset".
+ 
+4) Variables
+------------
+    Prompt(msg,button_reset) "Reset"
+    Prompt(msg,button_ok) "Ok"
+    Prompt(msg,button_cancel) "Cancel"
+    Prompt(msg,icon_title) "Prompt"
+    Prompt(Meta) "Meta"
+    Prompt(value$indiceEntry) : Nom de la variable 
+      par default utilisee par l'entry. Cette variable est utilisee 
+      si il n'y a pas d'option -variable.
+   
+    
+    Les variables suivantes sont locales a la procedure Prompt_Box :
+    Pour les utiliser dans d'autre procedure, on utilise la commande :
+        upvar #[PromptReturnPrompt_BoxLevel] PromptLocal PromptLocal
+        
+    PromptLocal(idBox) : Nombre de fenetre ouverte avec la procedure 
+      Prompt_Box. La numerotation commence a 1.
+    PromptLocal(-entries) : Liste des entrees a afficher.
+    PromptLocal(-title) : titre de la fenetre.
+    PromptLocal(-parent) : parent de la fenetre.
+    
+    indice : indice contient un entier qui s'incremente a chaque nouvelle
+      entry specifiee par l'option -entries.
+    PromptLocal(variable$indice) : contient le nom de la 
+      variable pour l'entry en cours. Contient le contenue de l'option
+      -variable ou bien Prompt(value$indice) si aucune variable n'est
+      specifiee. 
+    PromptLocal(default$indice) : contient la valeur par 
+      default de l'entry en cours.
+    PromptLocal(maxWidthLabel) : contient la taille 
+      du plus long label.
+     
+5) La procedure Prompt_Box
+--------------------------
+        On commence par recuperer la valeur des parametres fournis 
+    a la procedure. 
+        Puis on recupere le nom de la fenetre. Si il s'agit d'un fenetre
+    deja existente on pack la fenetre contenant les entries dans cette
+    fenetre. Si la fenetre specifie avec l'option -parent n'existe 
+    pas, on cree une nouvelle fenetre. On la place au milieu de l'ecran...
+        Si il n'y a pas d'option -entries, on considere
+    qu'il s'agit d'un appel directe au type ENTRY. Pour cela on cree
+    un option -entries ayant le type ENTRY.
+          On recupere dans PromptLocal(maxWidthLabel) la taille du 
+    label le plus long.
+        Pour chaque liste specifiee dans l'option -entries, on appelle
+    la procedure associe si elle existe. Par exemple pour le type 
+    RADIOBUTTON, on appele la procedure PromptTypeRADIOBUTTON. Chaque 
+    widgets generes par les procedures du type PromptType$type seront 
+    packes dans une frame de nom $w.prompt$indice (ou $w est le nom 
+    de la fenetre generee par la procedure Prompt_Box)
+        On cree une rangee de button cancel, reset et ok.
+        Si il s'agit d'une nouvelle fenetre (newWindow==1), on centre
+    cette fenetre. On effectue un grab sur la fenetre qui possedait 
+    le focus a l'appel de Prompt_Box. 
+       Puis on attends que l'utilisateur appuie sur un boutton (fermer 
+    la fenetre revient a appuyer sur cancel), trois cas sont possibles:
+        1) l'utilisateur a clicke sur "ok" : On renvoie la liste des 
+        valeurs, on ferme la fenetre et on "degrab" la fenetre possedait 
+        le focus a l'appel de Prompt_Box.
+        2) l'utilisateur a clicke sur "cancel" : On reset les valeurs, 
+        on renvoie la liste des valeurs, on ferme la fenetre et on "degrab" 
+        la fenetre precedente.
+        3) l'utilisateur a clicke sur "reset" : On reset les valeurs,
+        on attends que l'utilisateur appuie sur un autre boutton...
+

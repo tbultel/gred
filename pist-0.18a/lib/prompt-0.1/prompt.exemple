@@ -1,0 +1,436 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec wish4.2 "$0" "$@"
+
+source [file join [file dirname [info script]] prompt.tcl]
+
+########################################################################
+# EXEMPLES de la procedure Prompt_Box --
+########################################################################
+
+proc main {} {
+    global argc argv
+    proc helpDoc {} {
+        puts "-h  : Print this help"
+        puts "-doc : show prompt.txt file"
+        puts "-1  : Obtenir un prompt facilement"
+        puts "-2  : Un prompt avec un minimum de commande"
+        puts "-3  : Le meme exemple que l'exemple 2 en utilisant la\
+              commande -entries"
+        puts "-4  : On affiche la valeur d'une variable."
+        puts "      Utilisation de l'option -lock pour le type ENTRY"
+        puts "-5  : Exemple de creation de type BOOLEAN"
+        puts "-6  : Exemple de creation de type RADIOBUTTON"
+        puts "-7  : Exemple de creation de type POPUP"
+        puts "-8  : Exemple de creation de type FILE"
+        puts "-9  : Exemple de creation de type COLOR"
+        puts "-10 : Exemple de creation de type WINDOW"
+        puts "-11 : Gestion des valeurs par defaut"
+        puts "-12 : Exemple d'appel de la procedure Prompt_Box"
+        puts "      a patir d'une autre fenetre. Il s'agit d'un\
+                    exemple complet !"
+    }
+    
+    proc allExemple {} {
+        puts "All exemple passing"
+        set indice 1
+        while {[info procs exemple-$indice] == "exemple-$indice"} {
+            puts "executing \"exemple-$indice\""
+            exemple-$indice
+            incr indice
+        }
+    }
+    
+    if {$argc > 2} { helpDoc }
+    
+    switch -regexp -- [lindex $argv 0] {
+        -h { helpDoc}
+        -all { allExemple }
+        -doc { set file [open [file join \
+                        [file dirname [info script]] prompt.txt] \
+                        RDONLY]
+               set text [gets $file]
+               puts $text
+               set nbLigne 1
+               while {[eof $file] != 1} {
+                 incr nbLigne
+                 set text [gets $file]
+                 puts $text
+                 if {$nbLigne >=22} {
+                      puts "-- more --"
+                      gets stdin
+                      set nbLigne 0
+                 }
+               }
+               destroy .
+
+        }
+        -([0-9]) { exemple[lindex $argv 0] }
+        -1([0-9]) { exemple[lindex $argv 0] }
+        default { if {$argc != 0} { 
+                      puts "Bad argument : [lindex $argv 0]" 
+                  }
+                      helpDoc
+                      destroy .
+                }
+    }
+}
+
+proc exemple-1 {} {
+########################################################################
+# EXEMPLE 1 Obtenir un prompt facilement
+    puts [Prompt_Box -label "Entrer votre nom"]
+# On est pas obliger de specifier -label, puts [Prompt_Box] marche aussi
+# Mais dans ce cas rien ne guide l'utilisateur...
+}
+
+proc exemple-2 {} {
+########################################################################
+# EXEMPLE2 Un prompt avec un minimum de commande. La variable
+# VariableEssai doit etre une variable globale. Dans cette exemple 
+# on modifie directement la variable "VariableEssai"
+    global VariableEssai
+    set VariableEssai "Valeur par defaut (utilise)"
+    Prompt_Box -label "Entrer votre nom" \
+               -title "Entrer votre nom" \
+               -variable VariableEssai
+    puts $VariableEssai
+}
+
+proc exemple-3 {}  {
+########################################################################
+# EXEMPLE 3 Le meme exemple que le EXEMPLE2 en utilisant la commande 
+# -entries
+    global VariableEssai
+    set VariableEssai "Valeur par defaut (utilise)"
+    Prompt_Box \
+               -title "Entrer votre nom" \
+               -entries {
+                {-type ENTRY -label "Entrer votre nom" \
+                 -variable VariableEssai}
+               }
+    puts $VariableEssai
+    # REMARQUE : On est pas oblige de specifier "-type ENTRY" car le 
+    # type est ENTRY par defaut
+}
+proc exemple-4 {}  {
+########################################################################
+# EXEMPLE 3 On affiche la valeur d'une variable. Ce champs ne permet pas
+# de modifier la variable. Il est locke !
+    global VariableEssai
+    set VariableEssai "Valeur par defaut (utilise)"
+    Prompt_Box \
+               -title "Entrer votre nom" \
+               -entries {
+                {-type ENTRY -label "Entrer votre nom" \
+                 -variable VariableEssai -lock ON}
+               }
+    puts $VariableEssai
+    # REMARQUE : On est pas oblige de specifier "-type ENTRY" car le 
+    # type est ENTRY par defaut. -lock {1|TRUE|ON} produise le meme 
+    # effet
+}
+proc exemple-5 {} {
+########################################################################
+# EXEMPLE 5 Exemple de creation de type BOOLEAN
+    global Prompt
+    global VariableEssai
+    set VariableEssai TRUE
+    set a [Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .test \
+                -entries {
+                  {-type BOOLEAN -label "LABEL 2" -default FALSE
+                     -variable VariableEssai}
+                  {-type BOOLEAN -label "LABEL 3" -default FALSE}} ]
+    puts "VariableEssai=$VariableEssai"
+    puts "Prompt(value1)=$Prompt(value1)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    destroy .
+    # REMARQUE : c'est TRUE qui est prit comme valeur par default pour
+    # la premiere entry, l'option -default est ignoree, dans la mesure
+    # ou "VariableEssai" etait initialisee a TRUE.
+}
+proc exemple-6 {} {
+########################################################################
+# Test 6 Exemple de creation de type RADIOBUTTON
+    global VariableEssai
+    global VariableEssai1
+    global Prompt
+    set VariableEssai(2) CHIEN
+    set a [Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .test \
+                -entries {
+                  {-type RADIOBUTTON -label "LABEL 1"
+                   -default {MOUTON}
+                   -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                   -variable VariableEssai1}
+                  {-type RADIOBUTTON -label "LABEL 2"
+                   -default {VACHE}
+                   -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                   -variable VariableEssai(2)}
+                  {-type RADIOBUTTON -label "LABEL 3"
+                   -default {CHAT}
+                   -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}}
+                  {-type RADIOBUTTON -label "LABEL 4"
+                   -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}}
+    } ]
+    puts "VariableEssai1=$VariableEssai1"
+    puts "VariableEssai(2)=$VariableEssai(2)"
+    puts "Prompt(value2)=$Prompt(value2)"
+    puts "Prompt(value3)=$Prompt(value3)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    destroy .
+    # Remarquer les valeurs par defaut utilisees et le fait qu'il
+    # est possible de ne pas avoir de valeur par defaut (ENTRY numero 4).
+    # Si on fait "ok" alors que la derniere entry est vide, elle vaut alors
+    # OFF !
+}
+proc exemple-7 {} {
+########################################################################
+# Test 7 Exemple de creation de type POPUP
+    global Prompt
+    global VariableEssai VariableEssai1
+    set VariableEssai(2) CHIEN
+    set a [Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .test \
+                -entries {
+                    {-type POPUP -label "LABEL 1"
+                     -default {MOUTON}
+                     -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                     -variable VariableEssai1 }
+                    {-type POPUP -label "LABEL 2"
+                     -default {MOUTON}
+                     -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                     -variable VariableEssai(2) }
+                    {-type POPUP -label "LABEL 3"
+                     -default {CHAUVE SOURIS}
+                     -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}}
+    }]
+    puts "VariableEssai1=$VariableEssai1"
+    puts "VariableEssai(2)=$VariableEssai(2)"
+    puts "Prompt(value2)=$Prompt(value2)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    destroy .
+}
+proc exemple-8 {} {
+########################################################################
+# Test 8 Exemple de creation de type FILE
+    global Prompt
+    global VariableEssai1 VariableEssai
+    set VariableEssai(2) "~/TMP/"
+    set a [Prompt_Box \
+                    -title "Titre de la fenetre" \
+                    -parent .test \
+                    -entries {
+                        {-type FILE -variable VariableEssai1 -label "Save As" 
+                         -default /usr/ 
+                         -operation write -options {-defaultextension .tcl \
+                         -initialfile defaultFile}}
+                        {-type FILE -variable VariableEssai(2) -label "Save As" 
+                         -default /usr/bin -options {-defaultextension .tcl \
+                         -initialfile defaultFile}}
+                        {-type FILE  -label "Open" -default /usr/lei/lib
+                         -operation read }}
+                ]
+    puts "VariableEssai1=$VariableEssai1"
+    puts "VariableEssai(2)=$VariableEssai(2)"
+    puts "Prompt(value2)=$Prompt(value2)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    destroy .
+}
+ 
+proc exemple-9 {} {
+########################################################################
+# EXEMPLE 9 Exemple de creation de type COLOR
+    global Prompt
+    global VariableEssai1 VariableEssai
+    set VariableEssai(2) #112233
+    set a [Prompt_Box \
+                    -title "Titre de la fenetre" \
+                    -parent .test \
+                    -entries {
+                    {-type COLOR -label "Choose a color"
+                     -default blue4 -variable VariableEssai1
+                     -title "choose a background color"}
+                    {-type COLOR -label "Another beautiful color"
+                     -variable VariableEssai(2) -default #223344}
+                    {-type COLOR -label "Another beautiful color"
+                     -default #f81111}}]
+    puts "VariableEssai1=$VariableEssai1"
+    puts "VariableEssai(2)=$VariableEssai(2)"
+    puts "Prompt(value2)=$Prompt(value2)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    destroy .
+}
+
+proc exemple-10 {} {
+########################################################################
+# EXEMPLE 10 Exemple de creation de type WINDOW
+# On cree la frame "top"
+    frame ._test_
+    pack ._test_
+    # On cree une frame qui contiendra le boutton
+    set f ._test_.testframe
+    frame $f
+    frame $f.f -relief raised
+    # On cree le boutton
+    button $f.f.b -text "Hello, world" \
+                  -command {puts stdout "Hello, world"
+                            # Pour rendre la main on doit
+                            # modifier la variable suivante
+                            set Prompt(button) cancel
+                           }
+    pack $f.f.b
+    pack  $f.f
+    # On cree une frame qui contiendra le 2eme boutton
+    set f ._test_.testframe2
+    frame $f
+    frame $f.f -relief raised
+    # On cree le boutton numero 2
+    
+    button $f.f.b -text "Hello, world2" \
+                  -command {puts stdout "Hello, world2"
+                            # Pour rendre la main on doit
+                            # modifier la variable suivante
+                            set Prompt(button) cancel
+                           }
+    pack $f.f.b
+    pack $f.f
+    Prompt_Box \
+                -title "TITRE" \
+                -parent ._test_ \
+                -entries {
+                    {-type SEPARATOR -line both -label "LABEL 1"}
+                    {-type SEPARATOR -line up} 
+                    {-type WINDOW -frame ._test_.testframe}
+                    {-type SEPARATOR -line up}
+                    {-type WINDOW -frame ._test_.testframe2}
+                    {-type SEPARATOR -line up}
+                }
+    destroy .
+}
+
+proc exemple-11 {} {
+########################################################################
+# Test 11 La valeur par defaut sera pout tous les types :
+#     1) Si l'option variable est specifie :
+#            - la valeur de la variable si elle existe.
+#            - la valeur precise par l'option -default
+#     2) Si l'option variable n'est pas specifie :
+#            - la valeur de l'option -default
+#            - vide si il n'y a aucune option -default de specifie
+    global var1
+    set var1 "Valeur par defaut de var1 (utilise)"
+    set Prompt(1,value2) "Valeur par defaut de Prompt(1,value2) (non utilise)"
+    puts [Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .prompt \
+                -entries {
+                    {-type ENTRY -label "Variable Var1" -variable var1
+                     -default "Valeur par defaut 1 (non utilise)..."}
+                    {-type ENTRY -label "Variable Var2" -variable var2
+                     -default "Valeur par defaut 2 (utilise)..."}
+                    {-type ENTRY -label "Variable Prompt(value2)"
+                     -default "Valeur par defaut 3 (utilise)..."}
+                    {-type BOOLEAN -label "LABEL 3" -default TRUE
+                     -variable Var3} 
+                         }]
+   destroy .
+}
+
+########################################################################
+proc exemple-12 {} {
+# EXEMPLE 12
+# On pack dans une autre fenetre. On obtient alors une fenetre globale
+# contenant un boutton "hello world" contenue dans la fenetre demandant 
+# des informations
+# On cree la frame "top"
+    frame ._test_
+    pack ._test_
+    # On cree une frame qui contiendra le boutton
+    set f ._test_.testframe
+    frame $f
+    frame $f.f -relief raised
+    # On cree le boutton
+    button $f.f.b -text "Hello, world" \
+                  -command {puts stdout "Hello, world"
+                            # Pour rendre la main on doit
+                            # modifier la variable suivante
+                            set Prompt(button) cancel
+                           }
+    pack $f.f.b
+    pack  $f.f
+    # On cree une frame qui contiendra le 2eme boutton
+    set f ._test_.testframe2
+    frame $f
+    frame $f.f -relief raised
+    # On cree le boutton numero 2
+    
+    button $f.f.b -text "Hello, world" \
+                  -command {puts stdout "Hello, world"
+                            # Pour rendre la main on doit
+                            # modifier la variable suivante
+                            set Prompt(button) cancel
+                           }
+    pack $f.f.b
+    pack $f.f
+    global Prompt
+    set Var2(1) "DEFAULT VALUE INIT"
+    # set Var3 FALSE
+    set Var2Bis "AAAAAAAAAAAAAAAAAA"
+    set Var6 "OOOOO"
+    set Var7 "/usr/lei/"
+    set TABLEAU(6) "CHAUVE SOURIS"
+    set kiki1 #123456
+    proc INFOS {} {
+    Prompt_Box \
+                -title "TITRE" \
+                -parent ._test_ \
+                -entries {
+                    {-type SEPARATOR -line both -label "LABEL 1"}
+                    {-type ENTRY -label "LABEL 2" -default "DEFAUT 2"
+                     -variable var}
+                    {-type ENTRY -variable Var2Bis -lock 1
+                     -label "LABEL 2bis"}
+                    {-type BOOLEAN -label "LABEL 3" -default FALSE
+                     -variable Var3}
+                    {-type RADIOBUTTON -label "LABEL 6"
+                     -default {MOUTTON}
+                     -typearg {CHAT VACHE MOUTTON {CHAUVE SOURIS} CHIEN}
+                     -variable TABLEAU(6)}
+                    {-type WINDOW -frame ._test_.testframe}
+                    {-type POPUP -label "LABEL 6"
+                     -default {MOUTTON}
+                     -typearg {CHAT VACHE MOUTTON {CHAUVE SOURIS} CHIEN}
+                     -variable Var6 }
+                    {-type FILE -variable Var7 -label "Save As" 
+                     -default /usr/ 
+                     -operation write -options {-defaultextension .tcl \
+                     -initialfile defaultFile}}
+                    {-type WINDOW -frame ._test_.testframe2}
+                    {-type FILE  -label "Open" -default /usr/lei/lib
+                     -operation read }
+                    {-type COLOR -label "Choose a color"
+                     -default blue4 -variable kiki1
+                     -title "choose a background color"}
+                    {-type COLOR -label "Another beautiful color"
+                     -variable kiki(10) -default #223344}
+                    {-type ENTRY -label "LABEL 12" -default "DEFAUT 12"}
+                    {-type ENTRY -label "LABEL 13" -default "DEFAUT 13"}
+                         }
+    }
+    # puts $kiki1
+    set infos [INFOS]
+    # puts $kiki1
+    puts $infos
+}
+
+main

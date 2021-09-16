@@ -1,0 +1,257 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec tclsh7.6 "$0" ${1+"$@"}
+
+
+########################################################################
+# 
+# fichier mkpistdoc
+#
+# Le but de ce script est de faciliter la mise à jour de la
+# documentation de pist pour chaque librairie 
+# 
+# 02/01/96 (diam)
+#   creation
+########################################################################
+
+# - rajouter option -edit
+
+
+proc mkpistdocUsage {} {
+    set txt [subst {
+    [file tail [info script]] ?options? args
+
+    opts:	
+    
+    args:
+    
+    Outputs:
+    
+    samples:
+    
+      mkpistdoc -tclindex -p {* .*} ../lib/*
+        generate tclIndex with all files in subdirectories of ../lib
+    
+    to do?: 
+    }]
+}
+
+proc main {} {
+global app argv
+
+    set app(dir_original) [pwd]
+    set app(exe) [file:realName [info script]]
+    
+    
+    # Repertoire d'install de cette version de pist
+    set app(pistSetup) [file dirname [file dirname $app(exe)]]
+    set app(pistLib) [file join $app(pistSetup) lib]
+    
+    puts "le fichier $app(exe)\n est en cours de developpement"
+    exec stead $app(exe) &
+    exit 
+    
+
+}
+
+
+########################################################################
+########################################################################
+# DEBUT DE LIBRAIRIES :
+########################################################################
+########################################################################
+
+
+########################################################################
+# file:realName <fileOrDir>
+#    retourne le nom absolu physique õ partir d'un nom relatif
+#    ou absolu, et en suivant les liens éventuels.
+#    "name" peut etre un nom de fichier ou de répertoire QUI DOIT EXISTER
+#    exemple :  file:realName /usr/local/bin/stead
+#    retourne : /usr/vb/amd/lib/STEAD-0.36-alpha/stead
+#
+# A FAIRE : envisager constantes global :
+#     file(parent) ("..",  ou "::")
+#     file(...)
+#     global file
+#     if ![info exist file(separator)] {
+#        initialiser les contantes file(..)
+#     }
+# A FAIRE traiter differemenet le cas unix des cas windows et Macintosh
+#         pour lesquel c'est plus simple (pas d'automontage)
+#
+# 16/07/96 : refonte complete suppression recursives des liens dans le path
+#            fiable mëème si automontages car ne suit pas les lien de la
+#            /tmp_mnt/...  ou /auto/...
+#            Le résultat ne contient ni "." ni ".."
+#            On peut donc utiliser [file dirname [file dirname ..]]
+#            sur le résultat de cette procédure.
+#            En principe multiplatteforme (non testé à fond pour l'instant
+# 
+# Remarque : si <name> contient deja /tmp_mnt/ ou /auto/, ces chaines ne 
+# sont pas supprimer dans le resultat !
+########################################################################
+interp alias {} frn {} file:realName
+proc file:realName {name} {
+
+    # # glob make the tilda substitution like "~/bin/appli" :
+    # set name [glob $name] ;# inutile car exploité par "file dirname ~"
+    # If the name is relative: one make it absolute
+    if {[file pathtype $name] == "relative"} {
+       set name [file join [pwd] $name]
+    }
+    # /usr/local/bin/../../amd/bin/./te
+    # One follow all possible links in the path
+    set name [file:followLinks $name]
+    # could be "/usr/local/bin/../../m2b/lei/bin/../lib/./stead_v036a/stead"
+
+    # remove directory nodes like "." or ".." from the path
+    set lpath [file split $name]    ;# full path list {/ usr local ...}
+    set finalPath [lindex $lpath 0] ;# root could be "/" or "MacOS:"
+    set lpath [lreplace $lpath 0 0] ;# rest of lpath {usr local ...}
+    foreach node $lpath {
+        switch -exact -- $node {
+          .  continue
+          .. {
+             set finalPath [file dirname $finalPath]
+             continue
+          }
+          default {
+             set finalPath [file join $finalPath $node]
+          }
+        }
+    }
+    return $finalPath
+
+} ;# endproc file:realName
+
+# file:followLink <absoluteName> :
+# Return an absolute name without any link in the path.
+# But could return something like :
+#    "/usr/local/bin/../../m2b/lei/bin/../lib/./stead_v036a/stead"
+# Principe:
+# One follow a possible link (which can be absolute or relative)
+# for the tail node, then recurse for all parents directories.
+# One don't follow links starting with /tmp_mnt/ ou /auto/
+# to avoid problems with auto"un"mount directories under unix NFS
+proc file:followLinks {name} {
+  while {[string match "link" [file type $name] ]} {
+    set followName [file readlink $name]
+    if {[regexp {^(/tmp_mnt/)|(/auto/)} $followName]} {break}
+    if {[file pathtype $followName] == "relative"} {
+      set followName [file join  [file dirname $name] $followName]
+    }
+    set name $followName
+  }
+  set dir [file dirname $name]
+  if {"x$dir" == "x$name"} {
+     return $name
+  } else {
+     return [file join [file:followLinks $dir] [file tail $name]]
+  }
+} ;# endproc file:followLinks
+########################################################################
+# recursive_glob : retourne une liste r»cursive de fichiers ou r»pertoires
+# sous la forme <dir>/<relativeFilePath>
+# Attention la liste optenue peut contenir des r»pertoires ou des 
+# doublons (de la meme fa¡on que la commande UNIX "ls * *)"
+# exemple : recursive_glob . * 
+#    retourne {./rep1 ./fich1 ./fich2 ./rep1/fic11 ./rep1/fic12 ....)
+#   
+# REMARQUE : Attention si globlist contient ".*" alors les r»pertoires
+# de la forme ".../." et .../.." font partie du r»sultat !!
+# exemple d'utilisation :
+#  set ABS [recursive_glob [pwd] $listOfPatterns]
+#      liste de noms absolus
+#  set REL [lcutleft $ABS [expr [string length [pwd]] + 1]]
+#      liste de noms relatifs
+# Modif 10/06/96 : compatibiltité Mac et Windows (utilisation de la commande
+#                  file join...) : Problemes potenciel avec fichier invisibles 
+#                  pour unix (* et .*)
+proc recursive_glob {dirlist globlist} {
+    # # global tcl_platteform
+    # # switch $tcl_platform(platform) {
+    # #     macintosh {recursive_globMac $dirlist $globlist}
+    # #     windows   {}
+    # #     unix      {}
+    # # }
+
+    set result {}
+    set recurse {}
+    foreach dir $dirlist {
+        if ![file isdirectory $dir] {
+            error "\"$dir\" is not a directory"
+        }
+        foreach pattern $globlist {
+            set result [concat $result \
+                [glob -nocomplain -- [file join $dir $pattern]]]
+        }
+        foreach file [glob -nocomplain -- [file join $dir *]  \
+                                          [file join $dir .*] ] {
+            if [file isdirectory $file] {
+                # should not process special cases of "." and ".." on Mac ?
+                set fileTail [file tail $file]
+                if {!(($fileTail == ".") || ($fileTail == ".."))} {
+                    lappend recurse $file
+                }
+            }
+        }
+    }
+    if ![lempty $recurse] {
+        set result [concat $result [recursive_glob $recurse $globlist]]
+    }
+    return $result
+}
+# Exemple (sous tclsh)
+# proc frg  args {uplevel  for_recursive_glob $args}
+# frg file . {*[~%]} {ls -al $file}
+proc for_recursive_glob {var dirlist globlist code {depth 1}} {
+    # # global tcl_platteform
+    # # switch $tcl_platform(platform) {
+    # #     macintosh {recursive_globMac $dirlist $globlist}
+    # #     windows   {}
+    # #     unix      {}
+    # # }
+    upvar $depth $var myVar
+    set recurse {}
+    foreach dir $dirlist {
+        if ![file isdirectory $dir] {
+            error "\"$dir\" is not a directory"
+        }
+        foreach pattern $globlist {
+            foreach file [glob -nocomplain -- [file join $dir $pattern]] {
+                set myVar $file
+                uplevel $depth $code
+            }
+        }
+        foreach file [glob -nocomplain -- [file join $dir *]  \
+                                          [file join $dir .*] ] {
+            if [file isdirectory $file] {
+                # should not process special cases of "." and ".." on Mac ?
+                set fileTail [file tail $file]
+                if {!(($fileTail == ".") || ($fileTail == ".."))} {
+                    lappend recurse $file
+                }
+            }
+        }
+    }
+    if {[llength  $recurse]} {
+        for_recursive_glob $var $recurse $globlist $code [expr {$depth + 1}]
+    }
+    return {}
+}
+
+########################################################################
+########################################################################
+# FIN DE LIBRAIRIES :
+########################################################################
+########################################################################
+
+
+main
+
+return
+########################################################################
+########################################################################
+########################################################################
+

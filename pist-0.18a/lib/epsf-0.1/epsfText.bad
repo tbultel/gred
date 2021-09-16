@@ -1,0 +1,54 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec wish4.1 "$0" ${1+"$@"}
+
+lappend auto_path .
+
+set f [frame .f]
+pack $f
+
+set c [canvas $f.c -width 800 -height 400 -background gray50]
+pack $c -padx 5 -pady 5
+
+button .b -text "Quit" -command {destroy .}
+pack .b -padx 5 -pady 5
+
+Epsf_Init
+
+$c create rect 0 0 300 300 -fill blue -tag movable
+$c create oval 100 100 300 300 -fill red -tag movable
+$c create text 50 50 -text "hello, world!" -tag movable
+$c create text 40 40 -text "Come Back?" -tag movable
+
+$c bind movable <Button-1> {Mark %x %y %W}
+$c bind movable <B1-Motion> {Drag %x %y %W}
+
+bind . <Button-3> { Epsf_Generate $c }
+bind . <Meta-q> { destroy .}
+bind . <Alt-q> { destroy .}
+
+
+proc Epsf_Generate {c} {
+    set textPs [Epsf_Box $c]
+    error "Ce fichier est à terminer ou à refaire"
+} ;# endproc Epsf_Generate
+
+
+proc Mark { x y w } {
+  global state
+  
+  set state($w,obj) [$w find closest $x $y]
+  set state($w,x) $x
+  set state($w,y) $y
+  $w raise $state($w,obj)
+}
+
+proc Drag { x y w } {
+  global state
+  set dx [expr $x - $state($w,x)]
+  set dy [expr $y - $state($w,y)]
+  $w move $state($w,obj) $dx $dy
+  set state($w,x) $x
+  set state($w,y) $y
+  $w raise $state($w,obj)
+}

@@ -1,0 +1,680 @@
+#!/bin/sh
+# the next line restarts using wish \
+exec wish4.2 "$0" "$@"
+
+source [file join [file dirname [info script]] prompt.tcl]
+
+########################################################################
+# TESTS de la procedure Prompt_Box --
+########################################################################
+
+proc main {} {
+    global argc argv
+    proc helpDoc {} {
+        puts "-h : Print this help"
+        puts "-doc : show prompt.txt file"
+        puts "-1 : On pack une fenetre generee par Prompt_Box dans une autre\
+              fenetre"
+        puts "-2 : Exemple complet. Une fenetre principale appele une fenetre"
+        puts "     generee par Prompt_Box"
+        puts "-3 : Test de la disposition des fenetres sans option -label"
+        puts "-4 : On leve une erreur si un parametre n'est pas valide"
+        puts "-5 : On leve une erreur si il n'y a pas d'option -typearg pour"
+        puts "     un type RADIOBUTTON ou POPUP"
+        puts "-6 : On leve une erreur si il n'y a pas de variable specifie"
+        puts "     avec l'option -lock d'un type ENTRY"
+        puts "-7 : On leve un erreur si l'option -operation n'est {read|write}"
+        puts "     pour un type FILE"
+        puts "-8 : Test de l'utilisation de la bonne valeur par defaut"
+        puts "-9 : On utilise le type WINDOW pour packer une fenetre"
+        puts "     quelconque dans une fenetre generee par Prompt_Box"
+        puts "-10 : Obtient on un prompt facilement ?"
+        puts "-11 : Tests pour le type ENTRY et le type BOOLEAN"
+        puts "-12 : Test du type POPUP"
+        puts "-13 : Test du type RADIOBUTTON"
+        puts "-14 : Test du type FILE, avec un plus un changement du niveau"
+        puts "      d'appel de la procedure Prompt_Box"
+        puts "-15 : Test du type COLOR, avec un plus un changement du niveau"
+        puts "      d'appel de la procedure Prompt_Box"
+        puts "-16 : Obtenir un Prompt avec un peu plus d'option"
+        puts "-17 : Une suite de type ENTRY et un type SEPARATOR. Test"
+        puts "      des valeurs par defaut"
+    }
+    
+    proc allTest {} {
+        puts "All test passing"
+        set indice 1
+        while {[info procs test-$indice] == "test-$indice"} {
+            puts "executing \"test-$indice\""
+            test-$indice
+            incr indice
+        }
+    }
+    
+    if {$argc > 2} { helpDoc }
+    # On recupere les arguments et on effectue ce que demande l'utilisateur
+    switch -regexp -- [lindex $argv 0] {
+        -h { helpDoc }
+        -all { allTest }
+        -doc { set file [open [file join \
+                        [file dirname [info script]] prompt.txt] \
+                        RDONLY]
+               set text [gets $file]
+               puts $text
+               set nbLigne 1
+               while {[eof $file] != 1} {
+                   incr nbLigne
+                   set text [gets $file]
+                   puts $text
+                   if {$nbLigne >=22} {
+                       puts "--------------- more ---------------"
+                       gets stdin
+                       set nbLigne 0
+                   }
+               }
+               destroy .
+             }
+        -([0-9]) { test[lindex $argv 0] }
+        -1([0-9]) { test[lindex $argv 0] }
+        default { if {$argc != 0} { 
+                      puts "Bad argument : [lindex $argv 0]" 
+                  }
+                      helpDoc
+                      destroy .
+                }
+     }
+}
+
+proc test-1 {} {
+# TEST 1
+# On pack dans une autre fenetre. On obtient alors une fenetre globale
+# contenant un boutton "hello world" et une fenetre demandant des informations
+
+    frame .hello -relief raised -bd 1
+    pack .hello -side top -fill both -expand 1
+    
+    
+    frame .hello.f -relief raised -bd 1
+    pack .hello.f -side top -fill both -expand 1
+    button .hello.f.b -text "Hello, world" \
+                      -command {puts stdout "Hello, world"
+                                # Pour rendre la main on doit
+                                # modifier la variable suivante
+                                set Prompt(button) cancel
+                               }
+    pack .hello.f.b
+    
+    frame .hello.f2 -relief raised -bd 1
+    pack .hello.f2 -side top -fill both -expand 1
+    
+    global Prompt Var2(1) Var6 Var7 kiki1 Var2Bis
+    set Var2(1) "DEFAULT VALUE INIT"
+    # set Var3 FALSE
+    set Var2Bis "AAAAAAAAAAAAAAAAAA"
+    set Var6 "OOOOO"
+    set Var7 "/usr/lei/"
+    # set TABLEAU(6) "CHAUVE SOURIS"
+    set kiki1 #123456
+    proc INFOS {} {
+    Prompt_Box \
+                -title "TITRE" \
+                -parent .hello.f2 \
+                -entries {
+                    {-type SEPARATOR -line none -label "LABEL 1"}
+                    {-type ENTRY -label "LABEL 2" -default "DEFAULT 2"
+                     -variable var}
+                    {-type ENTRY -variable Var2Bis -lock 1
+                     -label "LABEL 2bis"}
+                    {-type BOOLEAN -label "LABEL 3" -default FALSE
+                     -variable Var3}
+                    {-type RADIOBUTTON -label "LABEL 4" -default CHIEN
+                     -typearg {CHAT VACHE MOUTTON {CHAUVE SOURIS} CHIEN}
+                     -variable TABLEAU(6)}
+                    {-type POPUP -label "LABEL 6"
+                     -default {MOUTTON}
+                     -typearg {CHAT VACHE MOUTTON {CHAUVE SOURIS} CHIEN}
+                     -variable Var6}
+                    {-type FILE -variable Var7 -label "Save As" 
+                     -default /usr/ 
+                     -operation write -options {-defaultextension .tcl \
+                     -initialfile defaultFile}}
+                    {-type FILE  -label "Open" -default /usr/lei/lib
+                     -operation read }
+                    {-type COLOR -label "Choose a color"
+                     -default blue4 -variable kiki1
+                     -title "choose a background color"}
+                    {-type COLOR -label "Another beautiful color"
+                     -variable kiki(10) -default #223344}
+                         }
+    }
+    set infos [INFOS]
+    puts $infos
+    destroy .hello
+}
+
+proc test-2 {} {
+########################################################################
+# TEST2
+# On appelle la fenetre de dialogue depuis une autre fenetre. l'application
+# executant la procedure Prompt_Box est bloque tant que la fenetre
+# d'Prompt n'est pas referme
+    proc INFOS {} {
+        Prompt_Box \
+                -title "TITRE" \
+                -parent ._test_ \
+                -entries {
+                    {-type SEPARATOR -line both -label "LABEL 1"}
+                    {-type ENTRY -label "LABEL 2" -default "DEFAULT 2" 
+                     -variable var}
+                    {-type ENTRY -variable Var2Bis -lock 1
+                     -label "LABEL 2bis"}
+                    {-type BOOLEAN -label "LABEL 3" -default TRUE
+                     -variable Var3}
+                    {-type RADIOBUTTON -label "LABEL 4" -default CHIEN
+                     -typearg {CHAT VACHE MOUTTON {CHAUVE SOURIS} CHIEN}
+                     -variable TABLEAU(6)}
+                    {-type POPUP -label "LABEL 6"
+                     -default {MOUTTON}
+                     -typearg {CHAT VACHE MOUTTON {CHAUVE SOURIS} CHIEN}
+                     -variable Var6 }
+                    {-type FILE -variable Var7 -label "Save As" \
+                     -default /usr/ \
+                     -operation write -options {-defaultextension .tcl \
+                     -initialfile defaultFile}}
+                    {-type FILE  -label "Open" -default /usr/lei/lib \
+                     -operation read }
+                    {-type COLOR -label "Choose a color" \
+                     -variable kiki(9) -default blue4
+                     -title "choose a background color"}
+                    {-type COLOR -label "Another beautiful color"
+                     -variable kiki(10) -default #223344}
+                                  }
+    }
+    global Prompt TABLEAU(6) Var2Bis infos
+    set infos "AAAA"
+    set TABLEAU(6) "CHAUVE SOURIS"
+    set Var2Bis "Variable par defaut"
+    
+    frame .hello -relief raised -bd 1
+    pack .hello -side top -fill both -expand 1
+    
+    
+    frame .hello.f -relief raised -bd 1
+    pack .hello.f -side top -fill both -expand 1
+    button .hello.f.b -text "Get INFOS..." \
+                      -command {set infos [INFOS]
+                                puts $infos
+                                destroy .}
+    pack .hello.f.b
+    # On attends que la variable soit evaluee. Cela pour empecher
+    # l'execution du test suivant (en cas d'option -all...)
+    tkwait variable info
+}
+proc test-3 {}  {
+########################################################################
+# Test avec aucun label pour quelques types.
+# Aucune variable par defaut n'est specifie. On utilise des variables du
+# type Prompt(value$indice) avec indice qui s'incremente pour chaque
+# entree a partir de zero.
+    global Prompt
+    set a [Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .prompt \
+                -entries { \
+                          {-type ENTRY  -default "DEFAULT 1"}
+                          {-type BOOLEAN  -default OFF}
+                          {-type SEPARATOR}
+                          {-type ENTRY -label "LABEL 3"}
+                          {-label "LABEL 4" -default "DEFAULT 5"}
+                          {-type BOOLEAN -label "LABEL 6" -default 1}
+                          {-type SEPARATOR -label "CECI EST UN SEPARATEUR..."}
+                          {-type RADIOBUTTON -default CHIEN
+                           -typearg {H F ENFANT CHIEN VACHE MOUTON}}
+                         }]
+    puts $a
+    # Les variables sont stockees dans le tableau Prompt...
+    puts "Prompt ==> [array get Prompt]"
+    
+}
+proc test-4 {} {
+########################################################################
+# Test 4 On leve une erreur si un parametre n'est pas valide.
+# Ici on tape -tite au lieu de -title...
+    Prompt_Box \
+                -tite "Titre de la fenetre" \
+                -parent .prompt \
+                -entries { 
+                          {-type ENTRY  -default "DEFAULT 1"}
+                         }
+}
+proc test-5 {} {
+########################################################################
+# Test 5 On leve une erreur si un parametre n'est pas valide.
+# Ici on leve une erreur si un parametre n'est pas specifie. 
+# -typearg est par exemple obligatoire pour le menu POPUP et RADIOBUTTON
+    Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .prompt \
+                -entries { 
+                          {-type RADIOBUTTON -default CHIEN}
+                         }
+}
+proc test-6 {} {
+########################################################################
+# Test 6 On leve une erreur si un parametre est manquant valide.
+# On doit specifier une variable avec l'option -lock de l'entry de type
+# ENTRY 
+Prompt_Box \
+            -title "Titre de la fenetre" \
+            -parent .prompt \
+            -entries { 
+                      {-type ENTRY -default CHIEN -lock 1}
+                     }
+}
+proc test-7 {} {
+########################################################################
+# Test 7 On leve une erreur si un parametre est manquant erronne.
+# On doit specifier open ou close apres l'option -operation de l'entry de
+# type FILE
+    Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .prompt \
+                -entries {
+                    {-type FILE -variable Var7 -label "Save As"
+                     -default /usr/
+                     -operation sauve -options {-defaultextension .tcl
+                     -initialfile defaultFile}}
+                     }
+}
+proc test-8 {} {
+########################################################################
+# Test 8 La valeur par defaut sera pout tous les types :
+#     1) Si l'option variable est specifie :
+#            - la valeur de la variable si elle existe.
+#            - la valeur precise par l'option -default
+#     2) Si l'option variable n'est pas specifie :
+#            - la valeur de l'option -default
+#            - vide si il n'y a aucune option -default de specifie
+    global var1
+    set var1 "Valeur par defaut de var1 (utilise)"
+    set Prompt(1,value2) "Valeur par defaut de Prompt(1,value2) (non utilise)"
+    puts [Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .prompt \
+                -entries {
+                    {-type ENTRY -label "Variable Var1" -variable var1
+                     -default "Valeur par defaut 1 (non utilise)..."}
+                    {-type ENTRY -label "Variable Var2" -variable var2
+                     -default "Valeur par defaut 2 (utilise)..."}
+                    {-type ENTRY -label "Variable Prompt(value2)"
+                     -default "Valeur par defaut 3 (utilise)..."}
+                    {-type BOOLEAN -label "LABEL 3" -default TRUE
+                     -variable Var3} 
+                         }]
+   destroy .
+}
+proc test-9 {} {
+# TEST 1
+# On pack dans une autre fenetre. On obtient alors une fenetre globale
+# contenant un boutton "hello world" contenue dans la fenetre demandant 
+# des informations
+# On cree la frame "top"
+    frame ._test_
+    pack ._test_
+    # On cree une frame qui contiendra le boutton
+    set f ._test_.testframe
+    frame $f
+    frame $f.f -relief raised
+    # On cree le boutton
+    button $f.f.b -text "Hello, world" \
+                  -command {puts stdout "Hello, world"
+                            # Pour rendre la main on doit
+                            # modifier la variable suivante
+                            set Prompt(button) cancel
+                           }
+    pack $f.f.b
+    pack  $f.f
+    # On cree une frame qui contiendra le 2eme boutton
+    set f ._test_.testframe2
+    frame $f
+    frame $f.f -relief raised
+    # On cree le boutton numero 2
+    
+    button $f.f.b -text "Hello, world" \
+                  -command {puts stdout "Hello, world"
+                            # Pour rendre la main on doit
+                            # modifier la variable suivante
+                            set Prompt(button) cancel
+                           }
+    pack $f.f.b
+    pack $f.f
+    global Prompt
+    set Var2(1) "DEFAULT VALUE INIT"
+    # set Var3 FALSE
+    set Var2Bis "AAAAAAAAAAAAAAAAAA"
+    set Var6 "OOOOO"
+    set Var7 "/usr/lei/"
+    set TABLEAU(6) "CHAUVE SOURIS"
+    set kiki1 #123456
+    proc INFOS {} {
+    Prompt_Box \
+                -title "TITRE" \
+                -parent ._test_ \
+                -entries {
+                    {-type SEPARATOR -line both -label "LABEL 1"}
+                    {-type ENTRY -label "LABEL 2" -default "DEFAUT 2"
+                     -variable var}
+                    {-type ENTRY -variable Var2Bis -lock 1
+                     -label "LABEL 2bis"}
+                    {-type BOOLEAN -label "LABEL 3" -default FALSE
+                     -variable Var3}
+                    {-type RADIOBUTTON -label "LABEL 6"
+                     -default {MOUTTON}
+                     -typearg {CHAT VACHE MOUTTON {CHAUVE SOURIS} CHIEN}
+                     -variable TABLEAU(6)}
+                    {-type WINDOW -frame ._test_.testframe}
+                    {-type POPUP -label "LABEL 6"
+                     -default {MOUTTON}
+                     -typearg {CHAT VACHE MOUTTON {CHAUVE SOURIS} CHIEN}
+                     -variable Var6 }
+                    {-type FILE -variable Var7 -label "Save As" 
+                     -default /usr/ 
+                     -operation write -options {-defaultextension .tcl \
+                     -initialfile defaultFile}}
+                    {-type WINDOW -frame ._test_.testframe2}
+                    {-type FILE  -label "Open" -default /usr/lei/lib
+                     -operation read }
+                    {-type COLOR -label "Choose a color"
+                     -default blue4 -variable kiki1
+                     -title "choose a background color"}
+                    {-type COLOR -label "Another beautiful color"
+                     -variable kiki(10) -default #223344}
+                    {-type ENTRY -label "LABEL 12" -default "DEFAUT 12"}
+                    {-type ENTRY -label "LABEL 13" -default "DEFAUT 13"}
+                         }
+    }
+    # puts $kiki1
+    set infos [INFOS]
+    # puts $kiki1
+    puts $infos
+}
+proc test-10 {} {
+########################################################################
+# Test 10 Obtenir un prompt facilement... 
+    puts [Prompt_Box \
+                -label "Entrer votre nom"]
+}
+
+proc test-11 {} {
+########################################################################
+# Test 12 Test de developpement...
+    global Prompt
+    global VariableEssai1
+    global VariableEssai2
+    set VariableEssai1(1) "Valeur par defaut (utilise)"
+    set VariableEssai2 TRUE
+    set a [Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .test \
+                -entries {
+                  {-type ENTRY -variable VariableEssai1(1)
+                   -default "Valeur par defaut (non utilise)"
+                   -label "LABEL 1" }
+                  {-type ENTRY -default "Valeur par defaut (utilise)"
+                   -label "LABEL 1bis"}
+                  {-type BOOLEAN -label "LABEL 2" -default FALSE
+                     -variable VariableEssai2}
+                  {-type BOOLEAN -label "LABEL 3" -default FALSE}} ]
+    puts "VariableEssai1(1)=$VariableEssai1(1)"
+    puts "VariableEssai2=$VariableEssai2"
+    puts "Prompt(value3)=$Prompt(value3)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    puts "args --> [array get argument]"
+    destroy .
+}
+
+proc test-13 {} {
+########################################################################
+# Test 13 Test de developpement...
+    global VariableEssai
+    global VariableEssai1
+    global Prompt
+    set VariableEssai(2) CHIEN
+    set a [Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .test \
+                -entries {
+                  {-type RADIOBUTTON -label "LABEL 1"
+                   -default {MOUTON}
+                   -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                   -variable VariableEssai1}
+                  {-type RADIOBUTTON -label "LABEL 2"
+                   -default {VACHE}
+                   -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                   -variable VariableEssai(2)}
+                  {-type RADIOBUTTON -label "LABEL 3"
+                   -default {CHAT}
+                   -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}}
+                  {-type RADIOBUTTON -label "LABEL 4"
+                   -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}}
+    } ]
+    puts "VariableEssai1=$VariableEssai1"
+    puts "VariableEssai(2)=$VariableEssai(2)"
+    puts "Prompt(value2)=$Prompt(value2)"
+    puts "Prompt(value3)=$Prompt(value3)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    puts "args --> [array get argument]"
+    destroy .
+} 
+
+proc test-12 {} {
+########################################################################
+# Test 14 Test de developpement...
+    global Prompt
+    global VariableEssai VariableEssai1
+    set VariableEssai(2) CHIEN
+    set a [Prompt_Box \
+                -title "Titre de la fenetre" \
+                -parent .test \
+                -entries {
+                    {-type POPUP -label "LABEL 1"
+                     -default {MOUTON}
+                     -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                     -variable VariableEssai1 }
+                    {-type POPUP -label "LABEL 2"
+                     -default {MOUTON}
+                     -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}
+                     -variable VariableEssai(2) }
+                    {-type POPUP -label "LABEL 3"
+                     -default {CHAUVE SOURIS}
+                     -typearg {CHAT VACHE MOUTON {CHAUVE SOURIS} CHIEN}}
+    } ]
+    puts "VariableEssai1=$VariableEssai1"
+    puts "VariableEssai(2)=$VariableEssai(2)"
+    puts "Prompt(value2)=$Prompt(value2)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    puts "args --> [array get argument]"
+    destroy .
+}
+
+proc test-14 {} {
+########################################################################
+# Test 15 Test de developpement... Ici on change le niveau d'appel a la
+# procedure Prompt_Box
+    global Prompt
+    global VariableEssai1 VariableEssai
+    set VariableEssai1 {} ; # Pour un type fichier on prends la valeur par
+                            # default si la variable est vide...
+    set VariableEssai(2) "~/TMP/"
+    proc niveau1 {} {
+        return [niveau2]
+    }
+    proc niveau2 {} {
+        return  [Prompt_Box \
+                    -title "Titre de la fenetre" \
+                    -parent .test \
+                    -entries {
+                        {-type FILE -variable VariableEssai1 -label "Save As" 
+                         -default /usr/ 
+                         -operation write -options {-defaultextension .tcl \
+                         -initialfile defaultFile}}
+                        {-type FILE -variable VariableEssai(2) -label "Save As" 
+                         -default /usr/bin -options {-defaultextension .tcl \
+                         -initialfile defaultFile}}
+                        {-type FILE  -label "Open" -default /usr/lei/lib
+                         -operation read }}
+                ]
+    }
+    # level 0, on appele un procedure qui sera au niveau 1, etc...
+    set a [niveau1]
+    puts "VariableEssai1=$VariableEssai1"
+    puts "VariableEssai(2)=$VariableEssai(2)"
+    puts "Prompt(value2)=$Prompt(value2)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    puts "args --> [array get argument]"
+    destroy .
+}
+
+proc test-15 {} {
+########################################################################
+# Test 16 Test de developpement... Ici on change le niveau d'appel a la
+# procedure Prompt_Box
+    global Prompt VariableEssai VariableEssai1
+    set VariableEssai(2) #112233
+    proc niveau1 {} {
+        return [niveau2]
+    }
+    proc niveau2 {} {
+        return  [Prompt_Box \
+                    -title "Titre de la fenetre" \
+                    -parent .test \
+                    -entries {
+                    {-type COLOR -label "Choose a color"
+                     -default blue4 -variable VariableEssai1
+                     -title "choose a background color"}
+                    {-type COLOR -label "Another beautiful color"
+                     -variable VariableEssai(2) -default #223344}
+                    {-type COLOR -label "Another beautiful color"
+                     -default #111111}}
+                ]
+    }
+    # level 0, on appele un procedure qui sera au niveau 1, etc...
+    set a [niveau1]
+    puts "VariableEssai1=$VariableEssai1"
+    puts "VariableEssai(2)=$VariableEssai(2)"
+    puts "Prompt(value2)=$Prompt(value2)"
+    puts $a
+    puts "Prompt --> [array get Prompt]"
+    puts "args --> [array get argument]"
+}
+
+proc test-16 {} {
+########################################################################
+# Test 17 Obtenir un prompt facilement... Il faut que la variable 
+# VariableEssai soit globale
+    global VariableEssai
+    set VariableEssai "Valeur par defaut (utilise)"
+    Prompt_Box \
+                -parent .essai \
+                -label "Entrer votre nom" \
+                -title "Entrer votre nom" \
+                -variable VariableEssai
+    puts $VariableEssai
+}
+proc test-17 {} {
+########################################################################
+# Test 18 Obtenir un prompt facilement... Il faut que la variable 
+# VariableEssai soit globale
+global toto
+global Prompt
+set toto "default value (used)"
+proc prompt {} {
+    return [Prompt_Box \
+                -parent .essai \
+                -title "Entrer votre nom" \
+                -entries {
+                  {-type SEPARATOR -line both}
+                  {-type ENTRY -label "LABEL 1" -variable toto}
+                  {-type ENTRY -label "LABEL 2" -variable toto -lock 1}
+                  {-type ENTRY -label "LABEL 3" }
+                         }]
+}
+puts [prompt]
+puts [array get Prompt]
+destroy .
+}
+
+proc test-18 {} {
+Prompt_Box
+}
+main
+
+# proc test-11 {} {
+# ########################################################################
+# # Test 11 Plusieurs fenetres crees par PromptBox ! Un jolie exemple...
+#     proc anotherWindow {} {
+#         Prompt_Box \
+#                 -title "Titre de la fenetre" \
+#                 -parent ._test_2 \
+#                 -entries {
+#                     {-type ENTRY -variable Variable1
+#                          -label "LABEL 1"}
+#                     {-type ENTRY -variable Variable2
+#                          -label "LABEL 2"} 
+#                     {-type ENTRY -variable Variable3
+#                          -label "LABEL 3"} 
+#                     {-type ENTRY -variable Variable4
+#                          -label "LABEL 4"}
+#                          }
+#     } ; # endProc anotherWindow
+#     global Variable1 Variable2 Variable3 Variable4
+#     set Variable1 "Valeur par defaut 1 (utilise)"
+#     set Variable2 "Valeur par defaut 2 (utilise)"
+#     set Variable3 "Valeur par defaut 3 (utilise)"
+#     set Variable4 "Valeur par defaut 4 (utilise)"
+#     # On cree la frame "top"
+#     frame ._test_
+#     pack ._test_
+#     # On cree une frame qui contiendra le boutton
+#     set f ._test_.testframe
+#     frame $f
+#     frame $f.f -relief raised
+#     # On cree le boutton
+#     button $f.f.b -text "Modifier ses valeurs..." \
+#                  -command {# Pour eviter les collisions entre les informations
+#                             # des 2 fenetres crees par la procedure Prompt_Box
+#                             # On sauvegarde les informations de la premiere
+#                             # fenetre dans un tableau temporaire pendant 
+#                             # l'execution de la seconde fenetre appelee par 
+#                             # la procedure Prompt_Box
+#                             puts [anotherWindow]}
+#     pack $f.f.b
+#     pack  $f.f
+#     set a [Prompt_Box \
+#                 -title "Titre de la fenetre" \
+#                 -parent ._test_ \
+#                 -label "Entrer votre nom" \
+#                 -variable VariableEssai \
+#                 -default "Valeur par defaut (non utilise)" \
+#                 -entries {
+#                     {-type ENTRY -variable Variable1 -lock 1
+#                          -label "LABEL 1" -width 50}
+#                     {-type ENTRY -variable Variable2 -lock 1
+#                          -label "LABEL 2"} 
+#                     {-type ENTRY -variable Variable3 -lock 1
+#                          -label "LABEL 3" -width 12} 
+#                     {-type ENTRY -variable Variable4 -lock 1
+#                          -label "LABEL 4"}
+#                     {-type WINDOW -frame ._test_.testframe}
+#                          }
+#           ]
+#     puts "Variable1=$Variable1\nVariable2=$Variable2"
+#     puts "Variable3=$Variable3\nVariable4=$Variable4"
+#     
+#     puts $a ; # a vaudra "" car il n'y a que des ENTRY lochees
+#     # puts [array get Prompt]
+# }
